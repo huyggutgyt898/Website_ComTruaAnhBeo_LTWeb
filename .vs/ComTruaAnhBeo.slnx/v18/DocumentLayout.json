@@ -1,0 +1,137 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\subject\\web development\\project\\comtruaanhbeo\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\subject\\web development\\project\\comtruaanhbeo\\models\\ef\\comtruaanhbeocontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:models\\ef\\comtruaanhbeocontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\subject\\web development\\project\\comtruaanhbeo\\models\\entities\\danhgia.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:models\\entities\\danhgia.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\subject\\web development\\project\\comtruaanhbeo\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\subject\\web development\\project\\comtruaanhbeo\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\subject\\web development\\project\\comtruaanhbeo\\helpers\\webconstants.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:helpers\\webconstants.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\subject\\web development\\project\\comtruaanhbeo\\helpers\\utils.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:helpers\\utils.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Views\\Home\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\Home\\Index.cshtml",
+              "ToolTip": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Views\\Home\\Index.cshtml",
+              "RelativeToolTip": "Views\\Home\\Index.cshtml",
+              "ViewState": "AgIAAFMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-11-07T06:25:23.008Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ComTruaAnhBeoContext.cs",
+              "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Models\\EF\\ComTruaAnhBeoContext.cs",
+              "RelativeDocumentMoniker": "Models\\EF\\ComTruaAnhBeoContext.cs",
+              "ToolTip": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Models\\EF\\ComTruaAnhBeoContext.cs",
+              "RelativeToolTip": "Models\\EF\\ComTruaAnhBeoContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-07T06:16:18.013Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-23T08:26:13.941Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "HomeController.cs",
+              "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Controllers\\HomeController.cs",
+              "RelativeDocumentMoniker": "Controllers\\HomeController.cs",
+              "ToolTip": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Controllers\\HomeController.cs",
+              "RelativeToolTip": "Controllers\\HomeController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-23T08:25:12.281Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Webconstants.cs",
+              "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Helpers\\Webconstants.cs",
+              "RelativeDocumentMoniker": "Helpers\\Webconstants.cs",
+              "ToolTip": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Helpers\\Webconstants.cs",
+              "RelativeToolTip": "Helpers\\Webconstants.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-23T08:22:08.619Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "Utils.cs",
+              "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Helpers\\Utils.cs",
+              "RelativeDocumentMoniker": "Helpers\\Utils.cs",
+              "ToolTip": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Helpers\\Utils.cs",
+              "RelativeToolTip": "Helpers\\Utils.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-23T08:20:38.921Z"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "DanhGia.cs",
+              "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Models\\Entities\\DanhGia.cs",
+              "RelativeDocumentMoniker": "Models\\Entities\\DanhGia.cs",
+              "ToolTip": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Models\\Entities\\DanhGia.cs",
+              "RelativeToolTip": "Models\\Entities\\DanhGia.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-07T06:18:36.227Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

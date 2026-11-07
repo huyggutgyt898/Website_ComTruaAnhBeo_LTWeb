@@ -1,0 +1,64 @@
+:root {
+      --plt-brown: #4A1511;
+      --plt-brown-dark: #330D0A;
+      --plt-gold: #FFC700;
+      --plt-gold-hover: #E6B300;
+      --plt-cream: #FFFDF9;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--plt-cream);
+      color: #261715;
+      overflow-x: hidden;
+    }
+    .font-brand {
+      font-family: 'Montserrat', 'Inter', sans-serif;
+    }
+    .bg-plt-brown {
+      background-color: var(--plt-brown);
+    }
+    .bg-plt-brown-dark {
+      background-color: var(--plt-brown-dark);
+    }
+    .text-plt-gold {
+      color: var(--plt-gold);
+    }
+    .bg-plt-gold {
+      background-color: var(--plt-gold);
+    }
+    .border-plt-gold {
+      border-color: var(--plt-gold);
+    }
+    .card-gradient-overlay {
+      background: linear-gradient(180deg, rgba(62, 16, 12, 0.90) 0%, rgba(74, 21, 17, 0.45) 38%, rgba(0, 0, 0, 0.05) 100%);
+    }
+    .dish-card {
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+    }
+    .dish-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 28px -8px rgba(74, 21, 17, 0.18);
+    }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f5ebe6;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #7c2d26;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #4A1511;
+    }
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 199, 0, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(255, 199, 0, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(255, 199, 0, 0); }
+    }
+    .pulse-gold {
+      animation: pulse-ring 2s infinite;
+    }

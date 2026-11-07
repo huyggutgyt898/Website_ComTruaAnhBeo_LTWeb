@@ -69,19 +69,6 @@
       { id: 44, catId: 4, name: "Nước sâm", price: 11000, unit: "Chai", hot: true, img: "/images/thumb_trada.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Herbal_tea_bottle.jpg", desc: "Nước sâm bông cúc mía lau nhà nấu thanh nhiệt (11.000đ/chai)." }
     ];
 
-    // Bảng Tài khoản mẫu trong SQL Server
-    let sqlAccounts = [
-      { id: 1, name: "Mr. Khoa (Quản lý Anh Béo)", phone: "0775058143", email: "mrkhoa.anhbeo@gmail.com", pass: "anhbeo123", role: "QuanTriVien", address: "450 Lê Văn Việt, Phường Tăng Nhơn Phú, TP.HCM" },
-      { id: 2, name: "Nguyễn Minh Tuấn", phone: "0909123456", email: "minhtuan.sgn@gmail.com", pass: "khach123", role: "KhachHang", address: "380 Lê Văn Việt, Phường Tăng Nhơn Phú, TP.HCM" },
-      { id: 3, name: "Trần Ngọc Lan", phone: "0918234567", email: "ngoclan.tran@gmail.com", pass: "khach123", role: "KhachHang", address: "50 Võ Văn Ngân, Phường Bình Thọ, TP. Thủ Đức, TP.HCM" },
-      { id: 4, name: "Lê Hoàng Phúc", phone: "0987654321", email: "hoangphuc.le@gmail.com", pass: "khach123", role: "KhachHang", address: "25 Nguyễn Thị Minh Khai, Quận 1, TP.HCM" }
-    ];
-
-    // Bảng Mã OTP Quên mật khẩu Gmail
-    let sqlOtpLogs = [
-      { id: 1, email: "minhtuan.sgn@gmail.com", otp: "839201", createdAt: "2026-10-24 09:15:00", used: true }
-    ];
-
     // Hàm tạo nội dung Email chuẩn xác theo đề bài
     function buildConfirmationEmailBody(customerName, paymentMethod) {
       return `CƠM TRƯA ANH BÉO xin chào,\nCảm ơn ${customerName} đã đặt hàng và thanh toán thành công bằng phương thức ${paymentMethod}. Chúng tôi đã nhận được đơn đặt hàng của bạn. Đơn hàng của bạn đang được chuẩn bị và sẽ tiến hành giao hàng trong vòng 1 tiếng. Chúc ${customerName} 1 bữa trưa ngon miệng!\nTrân trọng,\nCơm trưa Anh Béo.`;
@@ -174,8 +161,7 @@
     let activeCategory = "ALL";
     let searchQuery = "";
     let currentUser = null;
-    let activeGeneratedOtp = null;
-    let activeOtpEmail = "";
+    let authRequestInProgress = false;
 
     // Định dạng tiền VNĐ
     function formatVND(amount) {
@@ -872,7 +858,7 @@
         closeSuccessModal();
         switchView("menu", true);
       });
-      // 10. Đăng nhập / Đăng xuất / Quên mật khẩu đổi bằng Gmail (Báo mã xác nhận về)
+      // 10. Đăng nhập, đăng ký và đăng xuất tài khoản khách
       const modalAuth = document.getElementById("modalAuth");
       function setAuthTab(tabName) {
         document.querySelectorAll(".auth-tab-btn").forEach(btn => {
@@ -899,16 +885,27 @@
       document.getElementById("btnJumpForgotFromLogin").addEventListener("click", () => {
         setAuthTab("forgot");
       });
+      document.getElementById("btnBackLoginFromForgot").addEventListener("click", () => {
+        setAuthTab("login");
+      });
 
       function updateAuthHeaderState() {
         const label = document.getElementById("headerAuthLabel");
         const authButton = document.getElementById("btnHeaderAuth");
         const profileBox = document.getElementById("loggedInProfileBox");
+        const authTabs = document.getElementById("authTabs");
+        const loginForm = document.getElementById("formLogin");
+        const registerForm = document.getElementById("formRegister");
+        const forgotBox = document.getElementById("formForgotBox");
         if (currentUser) {
           const userLabel = currentUser.name.split(" ").slice(-2).join(" ");
           label.textContent = userLabel;
           authButton.setAttribute("aria-label", userLabel);
           profileBox.classList.remove("hidden");
+          authTabs.classList.add("hidden");
+          loginForm.classList.add("hidden");
+          registerForm.classList.add("hidden");
+          forgotBox.classList.add("hidden");
           document.getElementById("profileNameDisplay").textContent = currentUser.name;
           document.getElementById("profileEmailDisplay").textContent = currentUser.email;
           document.getElementById("profilePhoneDisplay").textContent = currentUser.phone;
@@ -918,132 +915,113 @@
           document.getElementById("orderFullName").value = currentUser.name;
           document.getElementById("orderPhone").value = currentUser.phone;
           document.getElementById("orderEmail").value = currentUser.email;
-          if (currentUser.address) {
-            document.getElementById("orderAddress").value = currentUser.address;
-          }
+          document.getElementById("orderAddress").value = currentUser.address || "";
           updateCartAndCheckoutUI();
         } else {
           label.textContent = "Đăng nhập";
           authButton.setAttribute("aria-label", "Đăng nhập");
           profileBox.classList.add("hidden");
+          authTabs.classList.remove("hidden");
+          setAuthTab("login");
         }
       }
 
-      // Xử lý Đăng nhập
-      document.getElementById("formLogin").addEventListener("submit", (e) => {
-        e.preventDefault();
-        const userInp = document.getElementById("loginEmailOrPhone").value.trim().toLowerCase();
-        const passInp = document.getElementById("loginPassword").value.trim();
+      function getAntiforgeryToken() {
+        return document.querySelector('#formLogin input[name="__RequestVerificationToken"]')?.value;
+      }
 
-        const found = sqlAccounts.find(a => (a.email.toLowerCase() === userInp || a.phone === userInp) && a.pass === passInp);
-        if (!found) {
-          showToast("❌ Sai Gmail/SĐT hoặc mật khẩu! Hãy thử lại hoặc bấm Quên mật khẩu.");
-          return;
-        }
-        currentUser = found;
-        updateAuthHeaderState();
-        modalAuth.classList.add("hidden");
-        showToast(`👋 Đăng nhập thành công: Xin chào ${found.name}!`);
-      });
-
-      // Xử lý Đăng xuất
-      document.getElementById("btnLogoutAccount").addEventListener("click", () => {
-        currentUser = null;
-        updateAuthHeaderState();
-        showToast("🚪 Đã đăng xuất tài khoản thành công.");
-      });
-
-      // Xử lý Đăng ký tài khoản mới
-      document.getElementById("formRegister").addEventListener("submit", (e) => {
-        e.preventDefault();
-        const name = document.getElementById("regName").value.trim();
-        const phone = document.getElementById("regPhone").value.trim();
-        const email = document.getElementById("regEmail").value.trim();
-        const pass = document.getElementById("regPass").value.trim();
-
-        if (sqlAccounts.some(a => a.email.toLowerCase() === email.toLowerCase())) {
-          showToast("⚠️ Gmail này đã được đăng ký!");
-          return;
-        }
-        const newAcc = {
-          id: sqlAccounts.length + 1,
-          name,
-          phone,
-          email,
-          pass,
-          role: "KhachHang",
-          address: "450 Lê Văn Việt, Phường Tăng Nhơn Phú, TP.HCM"
-        };
-        sqlAccounts.push(newAcc);
-        currentUser = newAcc;
-        updateAuthHeaderState();
-        modalAuth.classList.add("hidden");
-        showToast(`🎉 Đăng ký và đăng nhập thành công: ${name}!`);
-      });
-
-      // Xử lý Gửi mã xác nhận OTP về Gmail (Quên mật khẩu)
-      document.getElementById("btnSendGmailOtp").addEventListener("click", () => {
-        const gmail = document.getElementById("forgotGmailInput").value.trim();
-        if (!gmail || !gmail.includes("@")) {
-          showToast("⚠️ Vui lòng nhập địa chỉ Gmail hợp lệ!");
-          return;
-        }
-        activeGeneratedOtp = String(Math.floor(100000 + Math.random() * 900000));
-        activeOtpEmail = gmail;
-
-        sqlOtpLogs.push({
-          id: sqlOtpLogs.length + 1,
-          email: gmail,
-          otp: activeGeneratedOtp,
-          createdAt: new Date().toISOString().slice(0, 19).replace("T", " "),
-          used: false
+      async function postAuthForm(form, url) {
+        const response = await fetch(url, {
+          method: "POST",
+          body: new FormData(form),
+          credentials: "same-origin"
         });
+        const result = await response.json().catch(() => null);
+        if (!response.ok) {
+          const validationMessage = result?.errors
+            ? Object.values(result.errors).flat()[0]
+            : null;
+          throw new Error(result?.message || validationMessage || "Không thể xử lý yêu cầu. Vui lòng thử lại.");
+        }
+        return result;
+      }
 
-        document.getElementById("otpTargetGmailLabel").textContent = gmail;
-        document.getElementById("otpGeneratedCodeDisplay").textContent = activeGeneratedOtp;
-        document.getElementById("otpGmailNotificationBanner").classList.remove("hidden");
-        document.getElementById("forgotOtpInput").value = activeGeneratedOtp;
-        showToast(`📩 Đã gửi mã xác nhận (${activeGeneratedOtp}) về Gmail: ${gmail}!`);
+      async function submitAuthForm(event, url, successMessage) {
+        event.preventDefault();
+        if (authRequestInProgress) return;
+
+        authRequestInProgress = true;
+        const form = event.currentTarget;
+        form.setAttribute("aria-busy", "true");
+        try {
+          const result = await postAuthForm(form, url);
+          currentUser = result.user;
+          updateAuthHeaderState();
+          form.reset();
+          modalAuth.classList.add("hidden");
+          showToast(successMessage(currentUser));
+        } catch (error) {
+          showToast(`❌ ${error.message}`);
+        } finally {
+          authRequestInProgress = false;
+          form.removeAttribute("aria-busy");
+        }
+      }
+
+      document.getElementById("formLogin").addEventListener("submit", (event) => {
+        submitAuthForm(event, "/auth/login", (user) => `👋 Đăng nhập thành công: Xin chào ${user.name}!`);
       });
 
-      // Xử lý Xác nhận đổi mật khẩu bằng mã OTP Gmail
-      document.getElementById("btnConfirmResetPass").addEventListener("click", () => {
-        const gmail = document.getElementById("forgotGmailInput").value.trim();
-        const otpInp = document.getElementById("forgotOtpInput").value.trim();
-        const newPass = document.getElementById("forgotNewPassInput").value.trim();
-
-        if (!activeGeneratedOtp || otpInp !== activeGeneratedOtp) {
-          showToast("❌ Mã xác nhận OTP chưa đúng! Vui lòng bấm 'Gửi mã' trước.");
-          return;
-        }
-        if (!newPass) {
-          showToast("⚠️ Vui lòng nhập mật khẩu mới!");
-          return;
-        }
-
-        let acc = sqlAccounts.find(a => a.email.toLowerCase() === gmail.toLowerCase());
-        if (!acc) {
-          acc = {
-            id: sqlAccounts.length + 1,
-            name: gmail.split("@")[0],
-            phone: "0909000111",
-            email: gmail,
-            pass: newPass,
-            role: "KhachHang",
-            address: "TP. Hồ Chí Minh"
-          };
-          sqlAccounts.push(acc);
-        } else {
-          acc.pass = newPass;
-        }
-
-        const logItem = sqlOtpLogs.find(l => l.otp === activeGeneratedOtp);
-        if (logItem) logItem.used = true;
-
-        document.getElementById("loginEmailOrPhone").value = gmail;
-        document.getElementById("loginPassword").value = newPass;
-        setAuthTab("login");
-        showToast(`✅ Đổi mật khẩu thành công bằng Gmail (${gmail})! Bạn có thể đăng nhập ngay.`);
+      document.getElementById("formRegister").addEventListener("submit", (event) => {
+        submitAuthForm(event, "/auth/register", (user) => `🎉 Đăng ký thành công: ${user.name}!`);
       });
+
+      document.getElementById("btnLogoutAccount").addEventListener("click", async () => {
+        if (authRequestInProgress) return;
+
+        authRequestInProgress = true;
+        const body = new FormData();
+        body.append("__RequestVerificationToken", getAntiforgeryToken() || "");
+        try {
+          const response = await fetch("/auth/logout", {
+            method: "POST",
+            body,
+            credentials: "same-origin"
+          });
+          const result = await response.json().catch(() => null);
+          if (!response.ok) {
+            throw new Error(result?.message || "Không thể đăng xuất. Vui lòng thử lại.");
+          }
+
+          currentUser = null;
+          updateAuthHeaderState();
+          showToast("🚪 Đã đăng xuất tài khoản thành công.");
+        } catch (error) {
+          showToast(`❌ ${error.message}`);
+        } finally {
+          authRequestInProgress = false;
+        }
+      });
+
+      async function loadCurrentUser() {
+        try {
+          const response = await fetch("/auth/current", {
+            credentials: "same-origin",
+            cache: "no-store"
+          });
+          if (!response.ok) {
+            throw new Error("Không thể kiểm tra trạng thái đăng nhập.");
+          }
+
+          const result = await response.json();
+          currentUser = result.user;
+          updateAuthHeaderState();
+        } catch (error) {
+          console.error("Không thể tải trạng thái tài khoản:", error);
+          showToast("Không thể kiểm tra trạng thái đăng nhập. Vui lòng tải lại trang.");
+        }
+      }
+
+      loadCurrentUser();
 
     });

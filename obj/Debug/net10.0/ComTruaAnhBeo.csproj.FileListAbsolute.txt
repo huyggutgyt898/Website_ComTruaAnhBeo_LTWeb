@@ -392,7 +392,6 @@ D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\scopedcss\pro
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\3npk5z6x7d-{0}-w9b7el8egs-w9b7el8egs.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\4y4sbug701-{0}-b9sayid5wm-b9sayid5wm.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\vcfdyi48iz-{0}-61n19gt1b8-61n19gt1b8.gz
-D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\45g7q2e8jt-{0}-g2o28jrryk-g2o28jrryk.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\me7m76g5bk-{0}-xtxxf3hu2r-xtxxf3hu2r.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\3lk1c416tp-{0}-bqjiyaj88i-bqjiyaj88i.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\jbwx29aup7-{0}-c2jlpeoesf-c2jlpeoesf.gz
@@ -460,10 +459,14 @@ D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\staticwebasse
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\staticwebassets.development.json
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\staticwebassets.build.endpoints.json
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\swae.build.ex.cache
-D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\ComTruaA.0A54D5AF.Up2Date
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\ComTruaAnhBeo.dll
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\refint\ComTruaAnhBeo.dll
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\ComTruaAnhBeo.pdb
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\ComTruaAnhBeo.genruntimeconfig.cache
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\ref\ComTruaAnhBeo.dll
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\ComTruaAnhBeo.sourcelink.json
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\45g7q2e8jt-{0}-434wfdwa4b-434wfdwa4b.gz
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\System.Security.Cryptography.Pkcs.dll
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\win\lib\net10.0\System.Security.Cryptography.Pkcs.dll
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt

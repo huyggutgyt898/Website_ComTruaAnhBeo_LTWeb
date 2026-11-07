@@ -668,7 +668,7 @@
     </div>
   </div>
 
-  <!-- ================= MODAL 2: ĐĂNG NHẬP / ĐĂNG KÝ / QUÊN MẬT KHẨU ĐỔI BẰNG GMAIL (BÁO MÃ XÁC NHẬN VỀ) ================= -->
+  <!-- ================= MODAL 2: ĐĂNG NHẬP / ĐĂNG KÝ / QUÊN MẬT KHẨU ================= -->
   <div id="modalAuth" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border-2 border-plt-gold space-y-5 my-8">
       <div class="flex items-center justify-between border-b border-stone-200 pb-3">
@@ -681,8 +681,8 @@
         <button id="btnCloseAuthModal" type="button" class="text-stone-400 hover:text-stone-700 text-xl font-bold">✕</button>
       </div>
 
-      <!-- Chuyển tab Đăng nhập / Đăng ký / Quên mật khẩu Gmail -->
-      <div class="grid grid-cols-3 gap-1.5 bg-stone-100 p-1.5 rounded-xl text-xs font-extrabold">
+      <!-- Chuyển tab Đăng nhập / Đăng ký / Quên mật khẩu -->
+      <div id="authTabs" class="grid grid-cols-3 gap-1.5 bg-stone-100 p-1.5 rounded-xl text-xs font-extrabold">
         <button type="button" data-authtab="login" class="auth-tab-btn py-2 rounded-lg bg-plt-brown text-plt-gold">Đăng nhập</button>
         <button type="button" data-authtab="register" class="auth-tab-btn py-2 rounded-lg text-stone-600 hover:bg-stone-200">Đăng ký</button>
         <button type="button" data-authtab="forgot" class="auth-tab-btn py-2 rounded-lg text-stone-600 hover:bg-stone-200">Quên mật khẩu</button>
@@ -695,7 +695,7 @@
           <span id="profileNameDisplay">--</span>
         </div>
         <div class="text-xs text-stone-600 space-y-1">
-          <div>📧 Gmail: <strong id="profileEmailDisplay">--</strong></div>
+          <div>📧 Email: <strong id="profileEmailDisplay">--</strong></div>
           <div>📞 SĐT: <strong id="profilePhoneDisplay">--</strong></div>
           <div>🔑 Vai trò: <strong id="profileRoleDisplay">--</strong></div>
         </div>
@@ -707,20 +707,21 @@
 
       <!-- TAB 1: FORM ĐĂNG NHẬP -->
       <form id="formLogin" class="space-y-4">
+        @Html.AntiForgeryToken()
         <div>
-          <label for="loginEmailOrPhone" class="block text-xs font-bold uppercase text-stone-700 mb-1">Gmail hoặc Số điện thoại *</label>
-          <input id="loginEmailOrPhone" type="text" required value="minhtuan.sgn@gmail.com"
-                 placeholder="Nhập Gmail hoặc SĐT..."
+          <label for="loginEmailOrPhone" class="block text-xs font-bold uppercase text-stone-700 mb-1">Email hoặc Số điện thoại *</label>
+          <input id="loginEmailOrPhone" name="Identifier" type="text" required autocomplete="username" maxlength="150"
+                 placeholder="Nhập email hoặc số điện thoại..."
                  class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-plt-brown" />
         </div>
         <div>
           <label for="loginPassword" class="block text-xs font-bold uppercase text-stone-700 mb-1">Mật khẩu *</label>
-          <input id="loginPassword" type="password" required value="khach123"
+          <input id="loginPassword" name="Password" type="password" required autocomplete="current-password" maxlength="100"
                  placeholder="Nhập mật khẩu..."
                  class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-plt-brown" />
         </div>
         <div class="flex items-center justify-between text-xs">
-          <span class="text-stone-500">Tài khoản mẫu: <code class="font-bold">minhtuan.sgn@gmail.com</code> / <code class="font-bold">khach123</code></span>
+          <span class="text-stone-500">Đăng nhập bằng tài khoản khách hàng</span>
           <button id="btnJumpForgotFromLogin" type="button" class="text-red-700 font-bold hover:underline">Quên mật khẩu?</button>
         </div>
         <button type="submit" class="w-full py-3 rounded-xl bg-plt-brown hover:bg-amber-900 text-plt-gold font-brand font-extrabold text-sm uppercase shadow transition">
@@ -730,24 +731,30 @@
 
       <!-- TAB 2: FORM ĐĂNG KÝ -->
       <form id="formRegister" class="hidden space-y-3.5">
+        @Html.AntiForgeryToken()
         <div>
           <label for="regName" class="block text-xs font-bold uppercase text-stone-700 mb-1">Họ và tên *</label>
-          <input id="regName" type="text" required placeholder="VD: Phạm Gia Huy"
+          <input id="regName" name="FullName" type="text" required autocomplete="name" maxlength="100" placeholder="VD: Phạm Gia Huy"
                  class="w-full px-3.5 py-2 rounded-xl border border-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-plt-brown" />
         </div>
         <div>
           <label for="regPhone" class="block text-xs font-bold uppercase text-stone-700 mb-1">Số điện thoại *</label>
-          <input id="regPhone" type="tel" required placeholder="VD: 0938112233"
+          <input id="regPhone" name="Phone" type="tel" required autocomplete="tel" inputmode="numeric" maxlength="10" placeholder="VD: 0938112233"
                  class="w-full px-3.5 py-2 rounded-xl border border-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-plt-brown" />
         </div>
         <div>
-          <label for="regEmail" class="block text-xs font-bold uppercase text-stone-700 mb-1">Địa chỉ Gmail *</label>
-          <input id="regEmail" type="email" required placeholder="VD: giahuy@gmail.com"
+          <label for="regAddress" class="block text-xs font-bold uppercase text-stone-700 mb-1">Địa chỉ nhận hàng *</label>
+          <input id="regAddress" name="Address" type="text" required autocomplete="street-address" maxlength="255" placeholder="Nhập địa chỉ nhận hàng"
+                 class="w-full px-3.5 py-2 rounded-xl border border-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-plt-brown" />
+        </div>
+        <div>
+          <label for="regEmail" class="block text-xs font-bold uppercase text-stone-700 mb-1">Email *</label>
+          <input id="regEmail" name="Email" type="email" required autocomplete="email" maxlength="150" placeholder="VD: giahuy@gmail.com"
                  class="w-full px-3.5 py-2 rounded-xl border border-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-plt-brown" />
         </div>
         <div>
           <label for="regPass" class="block text-xs font-bold uppercase text-stone-700 mb-1">Mật khẩu *</label>
-          <input id="regPass" type="password" required placeholder="Tối thiểu 6 ký tự"
+          <input id="regPass" name="Password" type="password" required autocomplete="new-password" minlength="8" maxlength="100" placeholder="Tối thiểu 8 ký tự"
                  class="w-full px-3.5 py-2 rounded-xl border border-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-plt-brown" />
         </div>
         <button type="submit" class="w-full py-3 rounded-xl bg-plt-gold hover:bg-amber-400 text-amber-950 font-brand font-extrabold text-sm uppercase shadow transition">
@@ -755,50 +762,14 @@
         </button>
       </form>
 
-      <!-- TAB 3: QUÊN MẬT KHẨU ĐỔI BẰNG GMAIL (BÁO MÃ XÁC NHẬN VỀ) -->
+      <!-- TAB 3: KHÔI PHỤC MẬT KHẨU (CHƯA TRIỂN KHAI) -->
       <div id="formForgotBox" class="hidden space-y-4">
-        <div class="bg-amber-50 p-3 rounded-xl border border-amber-200 text-xs text-stone-700">
-          Nhập địa chỉ <strong>Gmail</strong> của bạn và bấm <strong>“Gửi mã xác nhận”</strong>. Hệ thống sẽ gửi mã OTP 6 số về Gmail để bạn đổi mật khẩu mới.
+        <div class="bg-amber-50 p-4 rounded-xl border border-amber-200 text-sm text-stone-700">
+          Tính năng khôi phục mật khẩu chưa được triển khai. Vui lòng liên hệ cửa hàng để được hỗ trợ.
         </div>
-
-        <div>
-          <label for="forgotGmailInput" class="block text-xs font-bold uppercase text-stone-700 mb-1">Địa chỉ Gmail cần khôi phục *</label>
-          <div class="flex gap-2">
-            <input id="forgotGmailInput" type="email" value="minhtuan.sgn@gmail.com"
-                   placeholder="Nhập Gmail của bạn..."
-                   class="flex-grow px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-plt-brown" />
-            <button id="btnSendGmailOtp" type="button"
-                    class="px-3.5 py-2.5 rounded-xl bg-plt-brown hover:bg-amber-900 text-plt-gold font-bold text-xs uppercase shrink-0 transition">
-              📩 Gửi mã
-            </button>
-          </div>
-        </div>
-
-        <!-- Hộp thông báo mô phỏng Gmail nhận được mã xác nhận -->
-        <div id="otpGmailNotificationBanner" class="hidden p-3.5 rounded-xl bg-emerald-50 border-2 border-emerald-500 text-xs space-y-1">
-          <div class="font-extrabold text-emerald-800 uppercase">📬 Đã báo mã xác nhận về Gmail!</div>
-          <p class="text-stone-700">Hộp thư <strong id="otpTargetGmailLabel"></strong> vừa nhận được mã xác nhận từ Cơm Trưa Anh Béo:</p>
-          <div class="text-center py-1.5 bg-white rounded-lg border border-emerald-300 font-brand font-black text-xl tracking-widest text-red-600" id="otpGeneratedCodeDisplay">
-            ------
-          </div>
-          <p class="text-[11px] text-stone-500">(Mã đã được tự động điền sẵn hoặc bạn có thể nhập lại bên dưới)</p>
-        </div>
-
-        <div>
-          <label for="forgotOtpInput" class="block text-xs font-bold uppercase text-stone-700 mb-1">Mã xác nhận 6 số gửi về Gmail *</label>
-          <input id="forgotOtpInput" type="text" maxlength="6" placeholder="Nhập mã 6 số (VD: 682914)"
-                 class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm font-bold tracking-widest focus:outline-none focus:ring-2 focus:ring-plt-brown" />
-        </div>
-
-        <div>
-          <label for="forgotNewPassInput" class="block text-xs font-bold uppercase text-stone-700 mb-1">Mật khẩu mới *</label>
-          <input id="forgotNewPassInput" type="password" placeholder="Nhập mật khẩu mới..."
-                 class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-plt-brown" />
-        </div>
-
-        <button id="btnConfirmResetPass" type="button"
-                class="w-full py-3 rounded-xl bg-plt-gold hover:bg-amber-400 text-amber-950 font-brand font-extrabold text-sm uppercase shadow transition">
-          🔄 Xác nhận đổi mật khẩu bằng Gmail
+        <button id="btnBackLoginFromForgot" type="button"
+                class="w-full py-3 rounded-xl bg-plt-brown hover:bg-amber-900 text-plt-gold font-brand font-extrabold text-sm uppercase transition">
+          Quay lại đăng nhập
         </button>
       </div>
     </div>

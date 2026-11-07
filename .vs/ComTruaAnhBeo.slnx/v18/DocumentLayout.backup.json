@@ -3,20 +3,24 @@
   "WorkspaceRootPath": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\subject\\web development\\project\\comtruaanhbeo\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\subject\\web development\\project\\comtruaanhbeo\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\subject\\web development\\project\\comtruaanhbeo\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\subject\\web development\\project\\comtruaanhbeo\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
       "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\subject\\web development\\project\\comtruaanhbeo\\models\\ef\\comtruaanhbeocontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:models\\ef\\comtruaanhbeocontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\subject\\web development\\project\\comtruaanhbeo\\models\\entities\\danhgia.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:models\\entities\\danhgia.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\subject\\web development\\project\\comtruaanhbeo\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\subject\\web development\\project\\comtruaanhbeo\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -38,60 +42,35 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
+              "Title": "appsettings.Development.json",
+              "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\appsettings.Development.json",
+              "RelativeDocumentMoniker": "appsettings.Development.json",
+              "ToolTip": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\appsettings.Development.json",
+              "RelativeToolTip": "appsettings.Development.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-11-07T08:53:47.076Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "Index.cshtml",
               "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Views\\Home\\Index.cshtml",
               "RelativeDocumentMoniker": "Views\\Home\\Index.cshtml",
               "ToolTip": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Views\\Home\\Index.cshtml",
               "RelativeToolTip": "Views\\Home\\Index.cshtml",
-              "ViewState": "AgIAAFMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAD8DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-11-07T06:25:23.008Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-11-07T06:25:23.008Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "DanhGia.cs",
-              "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Models\\Entities\\DanhGia.cs",
-              "RelativeDocumentMoniker": "Models\\Entities\\DanhGia.cs",
-              "ToolTip": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Models\\Entities\\DanhGia.cs",
-              "RelativeToolTip": "Models\\Entities\\DanhGia.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-11-07T06:18:36.227Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "ComTruaAnhBeoContext.cs",
-              "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Models\\EF\\ComTruaAnhBeoContext.cs",
-              "RelativeDocumentMoniker": "Models\\EF\\ComTruaAnhBeoContext.cs",
-              "ToolTip": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Models\\EF\\ComTruaAnhBeoContext.cs",
-              "RelativeToolTip": "Models\\EF\\ComTruaAnhBeoContext.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-11-07T06:16:18.013Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "Program.cs",
-              "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Program.cs",
-              "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Program.cs",
-              "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-10-23T08:26:13.941Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "HomeController.cs",
               "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Controllers\\HomeController.cs",
               "RelativeDocumentMoniker": "Controllers\\HomeController.cs",
@@ -103,7 +82,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAADkAAAAAAAAAAAAAADwAAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-23T08:26:13.941Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
               "Title": "Webconstants.cs",
               "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Helpers\\Webconstants.cs",
               "RelativeDocumentMoniker": "Helpers\\Webconstants.cs",
@@ -114,8 +106,24 @@
               "WhenOpened": "2026-10-23T08:22:08.619Z"
             },
             {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 2,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-11-07T08:53:51.275Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
               "Title": "Utils.cs",
               "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Helpers\\Utils.cs",
               "RelativeDocumentMoniker": "Helpers\\Utils.cs",
@@ -126,8 +134,16 @@
               "WhenOpened": "2026-10-23T08:20:38.921Z"
             },
             {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "DanhGia.cs",
+              "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Models\\Entities\\DanhGia.cs",
+              "RelativeDocumentMoniker": "Models\\Entities\\DanhGia.cs",
+              "ToolTip": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Models\\Entities\\DanhGia.cs",
+              "RelativeToolTip": "Models\\Entities\\DanhGia.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-07T06:18:36.227Z"
             }
           ]
         }

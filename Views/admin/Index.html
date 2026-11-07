@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cơm Trưa Anh Béo - Trang Quản Trị Hệ Thống</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/admin-common.css">
+  <style>
+    .portal-container {
+      max-width: 900px;
+      margin: 60px auto;
+      padding: 0 20px;
+      text-align: center;
+    }
+    .portal-header {
+      margin-bottom: 40px;
+    }
+    .portal-header h1 {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--brand-burgundy);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .portal-header p {
+      font-size: 16px;
+      color: var(--text-secondary);
+    }
+    .portal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+    .portal-card {
+      background: var(--white);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-light);
+      padding: 30px 24px;
+      box-shadow: var(--shadow-sm);
+      text-decoration: none;
+      color: var(--text-primary);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .portal-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--brand-burgundy);
+    }
+    .portal-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: var(--radius-md);
+      background: var(--brand-yellow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      margin-bottom: 18px;
+    }
+    .portal-card-title {
+      font-size: 19px;
+      font-weight: 800;
+      color: var(--brand-burgundy);
+      margin-bottom: 8px;
+    }
+    .portal-card-desc {
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+    .portal-card-btn {
+      margin-top: auto;
+      padding: 10px 20px;
+      background: var(--brand-burgundy);
+      color: var(--white);
+      border-radius: var(--radius-sm);
+      font-size: 13.5px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+    .portal-card:hover .portal-card-btn {
+      background: var(--brand-burgundy-light);
+    }
+  </style>
+</head>
+<body style="background: var(--brand-cream);">
+
+  <!-- Shared Admin Header Mount Target -->
+  <div id="appHeader"></div>
+
+  <!-- Portal Container -->
+  <div class="portal-container">
+    <div class="portal-header">
+      <h1>HỆ THỐNG QUẢN TRỊ ADMIN</h1>
+      <p>Chọn phân hệ bạn muốn truy cập và làm việc trực tiếp</p>
+    </div>
+
+    <div class="portal-grid">
+      <!-- Card 1: Quản lý đơn hàng -->
+      <a href="orders.html" class="portal-card">
+        <div class="portal-icon">📋</div>
+        <div class="portal-card-title">Quản Lý Đơn Hàng</div>
+        <div class="portal-card-desc">Tiếp nhận đơn cơm trưa, theo dõi quy trình bếp nấu, in phiếu bếp và kết nối giao hàng Lalamove.</div>
+        <div class="portal-card-btn">
+          <span>Truy cập Đơn hàng</span>
+          <span>→</span>
+        </div>
+      </a>
+
+      <!-- Card 2: Quản lý món ăn -->
+      <a href="adminpage.html" class="portal-card">
+        <div class="portal-icon">🍚</div>
+        <div class="portal-card-title">Quản Lý Món Ăn</div>
+        <div class="portal-card-desc">Quản lý thực đơn 44 món cơm trưa, phân loại, giá bán, size cơm và topping món ăn kèm.</div>
+        <div class="portal-card-btn">
+          <span>Truy cập Món ăn</span>
+          <span>→</span>
+        </div>
+      </a>
+
+      <!-- Card 3: Quản lý khuyến mãi -->
+      <a href="Promotions.html" class="portal-card">
+        <div class="portal-icon">🏷️</div>
+        <div class="portal-card-title">Quản Lý Khuyến Mãi</div>
+        <div class="portal-card-desc">Thiết lập mã giảm giá, voucher chiết khấu %, miễn phí giao hàng và công cụ thử nghiệm tính tiền.</div>
+        <div class="portal-card-btn">
+          <span>Truy cập Khuyến mãi</span>
+          <span>→</span>
+        </div>
+      </a>
+
+      <!-- Card 4: Quản lý tài khoản Website -->
+      <a href="accounts.html" class="portal-card">
+        <div class="portal-icon">👥</div>
+        <div class="portal-card-title">Quản Lý Tài Khoản</div>
+        <div class="portal-card-desc">Quản lý hồ sơ khách hàng, sổ địa chỉ nhận cơm, lịch sử đơn và phân quyền khóa/mở khóa tài khoản.</div>
+        <div class="portal-card-btn">
+          <span>Truy cập Tài khoản</span>
+          <span>→</span>
+        </div>
+      </a>
+
+      <!-- Card 5: Thống kê & Báo cáo -->
+      <a href="statistics.html" class="portal-card">
+        <div class="portal-icon">📊</div>
+        <div class="portal-card-title">Thống Kê & Báo Cáo</div>
+        <div class="portal-card-desc">Báo cáo doanh thu, món bán chạy nhất, quản lý đánh giá khách hàng và phân tích chi phí giao hàng Lalamove.</div>
+        <div class="portal-card-btn">
+          <span>Truy cập Báo cáo</span>
+          <span>→</span>
+        </div>
+      </a>
+
+      <!-- Card 6: Cấu hình giao hàng -->
+      <a href="delivery.html" class="portal-card">
+        <div class="portal-icon">🛵</div>
+        <div class="portal-card-title">Cấu Hình Giao Hàng</div>
+        <div class="portal-card-desc">Thiết lập phạm vi giao cơm TP.HCM, bật/tắt nhận đơn, giá trị đơn tối thiểu và chính sách miễn phí vận chuyển.</div>
+        <div class="portal-card-btn">
+          <span>Truy cập Cấu hình</span>
+          <span>→</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../js/admin-common.js"></script>
+</body>
+</html>

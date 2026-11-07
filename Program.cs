@@ -1,7 +1,11 @@
 using ComTruaAnhBeo.Models;
+using ComTruaAnhBeo.Models.Auth;
+using ComTruaAnhBeo.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +15,44 @@ builder.Services.AddDbContext<ComTruaAnhBeoContext>(options =>
 
 // 2. Đăng ký dịch vụ MVC Controllers và Views
 builder.Services.AddControllersWithViews();
+builder.Services.AddMemoryCache();
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Email"));
+builder.Services.AddTransient<IEmailSender, SmtpEmailSender>();
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.OnRejected = async (context, cancellationToken) =>
+    {
+        context.HttpContext.Response.ContentType = "application/json";
+        context.HttpContext.Response.Headers.RetryAfter = "600";
+        await context.HttpContext.Response.WriteAsJsonAsync(
+            new
+            {
+                message = "Bạn đã gửi quá nhiều yêu cầu mã xác nhận từ kết nối này. Vui lòng thử lại sau tối đa 10 phút."
+            },
+            cancellationToken);
+    };
+    options.AddPolicy("registration-email-send", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 20,
+                Window = TimeSpan.FromMinutes(10),
+                QueueLimit = 0,
+                AutoReplenishment = true
+            }));
+    options.AddPolicy("registration-email-verify", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 20,
+                Window = TimeSpan.FromMinutes(10),
+                QueueLimit = 0,
+                AutoReplenishment = true
+            }));
+});
 
 // 3. Đăng ký PasswordHasher cho entity TaiKhoan
 builder.Services.AddScoped<IPasswordHasher<TaiKhoan>, PasswordHasher<TaiKhoan>>();
@@ -46,6 +88,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseRateLimiter();
 
 // Bắt buộc: UseAuthentication phải đặt trước UseAuthorization
 app.UseAuthentication();

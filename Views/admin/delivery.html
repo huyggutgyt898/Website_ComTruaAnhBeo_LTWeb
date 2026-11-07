@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cơm Trưa Anh Béo - Cấu Hình Giao Hàng</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Dual Stylesheets for Admin base and Delivery module -->
+  <link rel="stylesheet" href="../css/admin-common.css">
+  <link rel="stylesheet" href="../css/delivery.css">
+</head>
+<body data-active-nav="delivery">
+
+  <!-- SHARED ADMIN HEADER MOUNT TARGET -->
+  <div id="appHeader"></div>
+
+  <!-- =========================================================================
+       2. THREE-COLUMN BODY CONTAINER
+       ========================================================================= -->
+  <div class="admin-body-container">
+
+    <!-- SHARED SIDEBAR NAVIGATION MOUNT TARGET -->
+    <div id="appSidebar"></div>
+
+    <!-- =======================================================================
+         COLUMN 2: CENTRAL WORKSPACE (WARM CREAM BACKGROUND)
+         ======================================================================= -->
+    <main class="center-workspace">
+      <!-- Title & Headline -->
+      <div class="workspace-top-bar">
+        <div class="page-heading-group">
+          <h1>CẤU HÌNH GIAO HÀNG</h1>
+          <p>Quản lý phạm vi phục vụ, giá trị đơn tối thiểu và chính sách miễn phí vận chuyển tại TP. Hồ Chí Minh</p>
+        </div>
+      </div>
+
+      <!-- Overview Summary Hero Cards (3 Cards) -->
+      <div class="delivery-overview-grid">
+        <!-- Card 1: Trạng thái tiếp nhận giao hàng -->
+        <div class="delivery-summary-card card-status-enabled" id="cardDeliveryStatus">
+          <div class="delivery-card-icon-wrap">🛵</div>
+          <div class="delivery-card-content">
+            <span class="delivery-card-label">Trạng thái giao hàng</span>
+            <span class="delivery-card-value" id="valDeliveryStatus">ĐANG MỞ GIAO HÀNG</span>
+            <span class="delivery-card-subtext" id="subDeliveryStatus">Phục vụ các quận/huyện TP. Hồ Chí Minh</span>
+          </div>
+        </div>
+
+        <!-- Card 2: Giá trị đơn hàng tối thiểu -->
+        <div class="delivery-summary-card card-min-order">
+          <div class="delivery-card-icon-wrap">🍱</div>
+          <div class="delivery-card-content">
+            <span class="delivery-card-label">Đơn tối thiểu giao</span>
+            <span class="delivery-card-value" id="valMinOrder">50.000đ</span>
+            <span class="delivery-card-subtext">Đơn đạt mức này mới được đặt</span>
+          </div>
+        </div>
+
+        <!-- Card 3: Ngưỡng miễn phí vận chuyển -->
+        <div class="delivery-summary-card card-freeship">
+          <div class="delivery-card-icon-wrap">🎉</div>
+          <div class="delivery-card-content">
+            <span class="delivery-card-label">Ngưỡng miễn phí ship</span>
+            <span class="delivery-card-value" id="valFreeShip">200.000đ</span>
+            <span class="delivery-card-subtext">Quán tài trợ 100% cước Lalamove</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scope Notice Banner: Ho Chi Minh City Policy -->
+      <div class="hcm-scope-banner">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2M12 11.5C10.62 11.5 9.5 10.38 9.5 9C9.5 7.62 10.62 6.5 12 6.5C13.38 6.5 14.5 7.62 14.5 9C14.5 10.38 13.38 11.5 12 11.5Z"/>
+        </svg>
+        <div>
+          <div class="hcm-banner-title">Khu vực phục vụ cố định: TP. Hồ Chí Minh</div>
+          <p class="hcm-banner-desc">
+            Hệ thống website Cơm Trưa Anh Béo <strong>chỉ tiếp nhận các đơn hàng có địa chỉ giao thuộc phạm vi TP. Hồ Chí Minh</strong> (22 quận/huyện và TP. Thủ Đức). Tất cả các yêu cầu đặt hàng có vị trí ngoài TP.HCM sẽ tự động bị từ chối để đảm bảo chất lượng cơm trưa nóng hổi và thời gian giao hàng nhanh nhất.
+          </p>
+        </div>
+      </div>
+
+      <!-- Delivery Policy Rules Box -->
+      <div class="delivery-detail-box">
+        <h3>
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+            <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3M19 19H5V5H19V19M17 12H7V10H17V12M13 16H7V14H13V16M17 8H7V6H17V8Z"/>
+          </svg>
+          Quy tắc áp dụng giao cơm văn phòng
+        </h3>
+        
+        <div class="rule-list">
+          <div class="rule-item">
+            <div class="rule-icon">⚙️</div>
+            <div class="rule-content">
+              <strong>1. Bật/Tắt tính năng giao hàng linh hoạt</strong>
+              <p>Khi quán quá tải trong giờ cao điểm hoặc gặp sự cố bất khả kháng, quản trị viên có thể gạt tắt công tắc giao hàng để tạm ngừng nhận đơn mà không ảnh hưởng đến menu.</p>
+            </div>
+          </div>
+
+          <div class="rule-item">
+            <div class="rule-icon">🍱</div>
+            <div class="rule-content">
+              <strong>2. Kiểm soát đơn hàng đạt chuẩn tối thiểu</strong>
+              <p>Khách hàng cần chọn các món cơm, phần ăn hoặc nước uống có tổng giá trị tiền hàng đạt từ mức tối thiểu đã cấu hình trở lên mới có thể tiến hành bước đặt hàng.</p>
+            </div>
+          </div>
+
+          <div class="rule-item">
+            <div class="rule-icon">🚚</div>
+            <div class="rule-content">
+              <strong>3. Chính sách ưu đãi miễn cước Lalamove</strong>
+              <p>Đối với các đơn cơm trưa nhóm hoặc văn phòng đạt từ ngưỡng miễn phí ship, quán sẽ tự động thanh toán toàn bộ chi phí tài xế Lalamove, khách không phải trả thêm phí giao hàng.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Fast Order Simulator -->
+        <div class="delivery-simulator-card">
+          <div class="simulator-header">
+            <div class="simulator-title">
+              <span>🧪</span> Công cụ thử nghiệm tính điều kiện đơn hàng
+            </div>
+            <span style="font-size: 11.5px; color: var(--text-muted);">Kiểm tra phản hồi tức thì trên giao diện</span>
+          </div>
+
+          <div class="simulator-body">
+            <div class="sim-input-wrap">
+              <label for="simOrderAmount">Nhập giá trị đơn hàng giả định (VNĐ):</label>
+              <div class="price-input-wrapper">
+                <input type="number" id="simOrderAmount" class="form-control" value="120000" min="0" step="10000" placeholder="VD: 120000">
+                <span class="price-currency-tag">VNĐ</span>
+              </div>
+            </div>
+
+            <div class="sim-result-box">
+              <div class="sim-result-status" id="simResultStatus">--</div>
+              <div class="sim-result-hint" id="simResultHint">--</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- =======================================================================
+         COLUMN 3: RIGHT CONTEXTUAL ACTION & SETTINGS PANEL (~390px)
+         ======================================================================= -->
+    <aside class="right-action-panel">
+      <!-- Top Header of Right Panel -->
+      <div class="panel-header">
+        <div class="panel-header-title-group">
+          <h2>CHỈNH SỬA CẤU HÌNH</h2>
+          <span>Cập nhật thông số giao hàng</span>
+        </div>
+      </div>
+
+      <!-- Form Body Container -->
+      <div class="panel-body">
+        <form id="deliverySettingsForm" onsubmit="event.preventDefault(); saveDeliverySettings();">
+          
+          <div class="delivery-settings-form-card">
+            <!-- 1. Enable/Disable Delivery Switch -->
+            <div class="setting-field-group">
+              <div class="switch-row">
+                <div class="switch-text-group">
+                  <span class="switch-title">Tiếp nhận giao hàng</span>
+                  <span class="switch-desc">Bật/tắt nhận đơn giao tận nơi</span>
+                </div>
+                <label class="switch-control">
+                  <input type="checkbox" id="switchDelivery" checked>
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <!-- 2. Fixed Delivery Scope Area -->
+            <div class="setting-field-group" style="margin-top: 18px;">
+              <label class="setting-field-label">
+                <span>📍</span> Khu vực giao hàng áp dụng
+              </label>
+              <div class="readonly-display-input">
+                TP. Hồ Chí Minh
+              </div>
+              <span class="setting-field-hint">Phạm vi cố định 22 quận/huyện & TP. Thủ Đức. Đơn ngoài tỉnh bị từ chối.</span>
+            </div>
+
+            <!-- 3. Minimum Order Value -->
+            <div class="setting-field-group">
+              <label class="setting-field-label" for="inputMinOrder">
+                <span>🍱</span> Giá trị đơn tối thiểu (VNĐ) <span class="required">*</span>
+              </label>
+              <div class="price-input-wrapper">
+                <input type="number" id="inputMinOrder" class="form-control" placeholder="50000" min="0" step="1000" required>
+                <span class="price-currency-tag">VNĐ</span>
+              </div>
+              <span class="setting-field-hint">Khách phải mua đạt từ số tiền này trở lên mới được đặt giao cơm.</span>
+              <div class="field-error-msg" id="errorMinOrder"></div>
+            </div>
+
+            <!-- 4. Free Shipping Threshold -->
+            <div class="setting-field-group">
+              <label class="setting-field-label" for="inputFreeShip">
+                <span>🎉</span> Ngưỡng miễn phí giao hàng (VNĐ) <span class="required">*</span>
+              </label>
+              <div class="price-input-wrapper">
+                <input type="number" id="inputFreeShip" class="form-control" placeholder="200000" min="0" step="5000" required>
+                <span class="price-currency-tag">VNĐ</span>
+              </div>
+              <span class="setting-field-hint">Đơn hàng đạt từ mức này sẽ được quán tài trợ 100% cước Lalamove.</span>
+              <div class="field-error-msg" id="errorFreeShip"></div>
+            </div>
+          </div>
+
+          <!-- Save Button -->
+          <button type="submit" class="btn-save-settings" id="btnSaveDelivery">
+            <svg viewBox="0 0 24 24">
+              <path d="M15 9H5V5H15M12 19A3 3 0 0 1 9 16A3 3 0 0 1 12 13A3 3 0 0 1 15 16A3 3 0 0 1 12 19M17 3H5C3.89 3 3 3.9 3 5V19A2 2 0 0 0 5 21H19A2 2 0 0 0 21 19V7L17 3Z"/>
+            </svg>
+            <span>Lưu cấu hình</span>
+          </button>
+
+          <!-- Reset Defaults Button -->
+          <button type="button" class="btn-reset-defaults" onclick="resetDeliveryDefaults()">
+            <span>↺</span>
+            <span>Khôi phục mặc định (50k - 200k)</span>
+          </button>
+
+        </form>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Scripts -->
+  <script src="../js/admin-common.js"></script>
+  <script src="../js/delivery.js"></script>
+</body>
+</html>

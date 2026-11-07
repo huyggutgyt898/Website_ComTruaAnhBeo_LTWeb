@@ -757,9 +757,53 @@
           <input id="regPass" name="Password" type="password" required autocomplete="new-password" minlength="8" maxlength="100" placeholder="Tối thiểu 8 ký tự"
                  class="w-full px-3.5 py-2 rounded-xl border border-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-plt-brown" />
         </div>
-        <button type="submit" class="w-full py-3 rounded-xl bg-plt-gold hover:bg-amber-400 text-amber-950 font-brand font-extrabold text-sm uppercase shadow transition">
-          ✨ Tạo tài khoản mới
+        <button id="btnRequestRegistrationCode" type="submit" aria-busy="false" class="w-full py-3 rounded-xl bg-plt-gold hover:bg-amber-400 text-amber-950 font-brand font-extrabold text-sm uppercase shadow transition">
+          <span class="inline-flex items-center gap-2">
+            <span id="registrationCodeButtonIcon" aria-hidden="true">✉️</span>
+            <svg id="registrationCodeButtonSpinner" class="hidden h-4 w-4 animate-spin motion-reduce:animate-none" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-90" fill="currentColor" d="M4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4z"></path>
+            </svg>
+            <span>Gửi mã xác nhận qua email</span>
+          </span>
         </button>
+        <div id="registrationVerification" class="hidden space-y-3">
+          <p id="registrationCodeNotice" class="text-sm text-stone-600" aria-live="polite"></p>
+          <fieldset>
+            <legend class="mb-2 text-xs font-bold uppercase text-stone-700">Mã xác nhận gồm 6 số *</legend>
+            <div class="grid grid-cols-6 gap-2">
+              <input data-registration-otp inputmode="numeric" autocomplete="one-time-code" maxlength="6" aria-label="Số thứ 1 trên 6"
+                     class="aspect-square min-w-0 w-full rounded-xl border border-stone-400 bg-white text-center text-xl font-bold tabular-nums focus:outline-none focus:ring-2 focus:ring-plt-brown" />
+              <input data-registration-otp inputmode="numeric" maxlength="1" aria-label="Số thứ 2 trên 6"
+                     class="aspect-square min-w-0 w-full rounded-xl border border-stone-400 bg-white text-center text-xl font-bold tabular-nums focus:outline-none focus:ring-2 focus:ring-plt-brown" />
+              <input data-registration-otp inputmode="numeric" maxlength="1" aria-label="Số thứ 3 trên 6"
+                     class="aspect-square min-w-0 w-full rounded-xl border border-stone-400 bg-white text-center text-xl font-bold tabular-nums focus:outline-none focus:ring-2 focus:ring-plt-brown" />
+              <input data-registration-otp inputmode="numeric" maxlength="1" aria-label="Số thứ 4 trên 6"
+                     class="aspect-square min-w-0 w-full rounded-xl border border-stone-400 bg-white text-center text-xl font-bold tabular-nums focus:outline-none focus:ring-2 focus:ring-plt-brown" />
+              <input data-registration-otp inputmode="numeric" maxlength="1" aria-label="Số thứ 5 trên 6"
+                     class="aspect-square min-w-0 w-full rounded-xl border border-stone-400 bg-white text-center text-xl font-bold tabular-nums focus:outline-none focus:ring-2 focus:ring-plt-brown" />
+              <input data-registration-otp inputmode="numeric" maxlength="1" aria-label="Số thứ 6 trên 6"
+                     class="aspect-square min-w-0 w-full rounded-xl border border-stone-400 bg-white text-center text-xl font-bold tabular-nums focus:outline-none focus:ring-2 focus:ring-plt-brown" />
+            </div>
+            <p id="registrationCodeError" class="mt-2 min-h-4 text-xs text-red-600" aria-live="polite"></p>
+          </fieldset>
+          <div class="flex items-center justify-between text-xs text-stone-500" role="status">
+            <span id="registrationResendHint">Chưa nhận được mã?</span>
+            <button id="btnResendRegistrationCode" type="button" disabled class="inline-flex items-center gap-1 font-bold text-stone-400 disabled:cursor-not-allowed">
+              <svg id="registrationResendSpinner" class="hidden h-3.5 w-3.5 animate-spin motion-reduce:animate-none" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-90" fill="currentColor" d="M4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4z"></path>
+              </svg>
+              <span id="registrationResendLabel">Gửi lại sau 1:00</span>
+            </button>
+          </div>
+          <button id="btnVerifyRegistrationCode" type="button" class="w-full py-3 rounded-xl bg-plt-brown hover:bg-amber-900 text-plt-gold font-brand font-extrabold text-sm uppercase transition">
+            Xác nhận email &amp; tạo tài khoản
+          </button>
+          <button id="btnEditRegistration" type="button" class="w-full text-xs font-bold text-stone-600 hover:underline">
+            Đổi thông tin đăng ký
+          </button>
+        </div>
       </form>
 
       <!-- TAB 3: KHÔI PHỤC MẬT KHẨU (CHƯA TRIỂN KHAI) -->

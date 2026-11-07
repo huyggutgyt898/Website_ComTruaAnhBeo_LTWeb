@@ -468,5 +468,15 @@ D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\ref\ComTruaAn
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\ComTruaAnhBeo.sourcelink.json
 D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\System.Security.Cryptography.Pkcs.dll
 D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\win\lib\net10.0\System.Security.Cryptography.Pkcs.dll
-D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\45g7q2e8jt-{0}-0iqlfbkl3f-0iqlfbkl3f.gz
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build\appsettings.Development.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build\appsettings.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build\efpt.config.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build\ComTruaAnhBeo.staticwebassets.runtime.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build\ComTruaAnhBeo.staticwebassets.endpoints.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build\ComTruaAnhBeo.exe
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build\ComTruaAnhBeo.deps.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build\ComTruaAnhBeo.runtimeconfig.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build\ComTruaAnhBeo.dll
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build\ComTruaAnhBeo.pdb
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\45g7q2e8jt-{0}-rx59vdxpzc-rx59vdxpzc.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt

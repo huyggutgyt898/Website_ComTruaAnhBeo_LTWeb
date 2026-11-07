@@ -1,0 +1,316 @@
+/**
+ * Cơm Trưa Anh Béo - Promotions Management Module (Quản lý khuyến mãi)
+ * File: wwwroot/css/promotions.css
+ */
+
+@import url("admin-common.css");
+
+/* ==========================================================================
+   PROMOTIONS BADGES & COUPON TAGS
+   ========================================================================== */
+.coupon-code-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #FFF8E6;
+  border: 1.5px dashed var(--brand-burgundy);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 800;
+  font-size: 13.5px;
+  color: var(--brand-burgundy);
+  letter-spacing: 0.5px;
+  user-select: all;
+  box-shadow: 0 1px 3px rgba(74, 21, 17, 0.08);
+}
+
+.coupon-code-pill svg {
+  width: 14px;
+  height: 14px;
+  fill: var(--brand-burgundy);
+}
+
+.promo-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.promo-type-percent {
+  background: #E1F5FE;
+  color: #0277BD;
+  border: 1px solid rgba(2, 119, 189, 0.25);
+}
+
+.promo-type-fixed {
+  background: #E8F5E9;
+  color: #2E7D32;
+  border: 1px solid rgba(46, 125, 50, 0.25);
+}
+
+.promo-type-shipping {
+  background: #FFF3E0;
+  color: #E65100;
+  border: 1px solid rgba(230, 81, 0, 0.25);
+}
+
+/* ==========================================================================
+   USAGE PROGRESS BAR
+   ========================================================================== */
+.usage-cell-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 110px;
+}
+
+.usage-text-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.usage-progress-bar {
+  width: 100%;
+  height: 6px;
+  background: #E8DDD1;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.usage-progress-fill {
+  height: 100%;
+  background: var(--brand-burgundy);
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease;
+}
+
+.usage-progress-fill.near-limit {
+  background: var(--warning);
+}
+
+.usage-progress-fill.full {
+  background: var(--danger);
+}
+
+/* ==========================================================================
+   DATE & TIME DISPLAY
+   ========================================================================== */
+.date-meta-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12.5px;
+}
+
+.date-row-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+}
+
+.date-status-pill {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  width: fit-content;
+}
+
+.date-status-running {
+  background: #E8F5E9;
+  color: #1B5E20;
+}
+
+.date-status-upcoming {
+  background: #E3F2FD;
+  color: #0D47A1;
+}
+
+.date-status-expired {
+  background: #FFEBEE;
+  color: #B71C1C;
+}
+
+/* ==========================================================================
+   INTERACTIVE DISCOUNT VALIDATOR / CALCULATOR WIDGET (IN RIGHT PANEL)
+   ========================================================================== */
+.discount-tester-card {
+  background: #FAF5EE;
+  border: 1.5px dashed var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  margin-top: 14px;
+  margin-bottom: 14px;
+}
+
+.tester-title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.tester-title-text {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--brand-burgundy);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+}
+
+.tester-input-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.tester-field-group label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 3px;
+}
+
+.tester-field-group input {
+  width: 100%;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--white);
+  color: var(--brand-burgundy);
+  outline: none;
+}
+
+.tester-field-group input:focus {
+  border-color: var(--brand-burgundy);
+}
+
+.btn-test-calculator {
+  width: 100%;
+  height: 34px;
+  background: var(--brand-yellow);
+  color: var(--brand-burgundy);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(74, 21, 17, 0.1);
+}
+
+.btn-test-calculator:hover {
+  background: var(--brand-yellow-hover);
+  transform: translateY(-1px);
+}
+
+.tester-result-box {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  display: none;
+  border: 1px solid transparent;
+}
+
+.tester-result-box.valid {
+  display: block;
+  background: #E8F7EC;
+  border-color: #A5D6A7;
+  color: #1B5E20;
+}
+
+.tester-result-box.invalid {
+  display: block;
+  background: #FFEBEE;
+  border-color: #EF9A9A;
+  color: #B71C1C;
+}
+
+.tester-calc-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.tester-calc-total {
+  border-top: 1px dashed rgba(0, 0, 0, 0.15);
+  padding-top: 6px;
+  margin-top: 6px;
+  font-weight: 800;
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+/* ==========================================================================
+   FILTER TABS / PILLS
+   ========================================================================== */
+.quick-type-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.quick-type-pill {
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid var(--border-light);
+  background: var(--white);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.quick-type-pill:hover {
+  border-color: var(--brand-burgundy);
+  color: var(--brand-burgundy);
+}
+
+.quick-type-pill.active {
+  background: var(--brand-burgundy);
+  color: var(--white);
+  border-color: var(--brand-burgundy);
+}
+
+/* Status Badges */
+.badge-status-inactive {
+  background: #FFF8E1;
+  color: #F57F17;
+  border: 1px solid rgba(245, 127, 23, 0.3);
+}
+
+.badge-status-expired {
+  background: #FFEBEE;
+  color: #C62828;
+  border: 1px solid rgba(198, 40, 40, 0.3);
+}
+
+.badge-status-exhausted {
+  background: #EEEEEE;
+  color: #616161;
+  border: 1px solid #DEDEDE;
+}

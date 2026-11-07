@@ -162,6 +162,8 @@
     let searchQuery = "";
     let currentUser = null;
     let authRequestInProgress = false;
+    let registrationChallengeId = null;
+    let registrationCooldownTimer = null;
 
     // Định dạng tiền VNĐ
     function formatVND(amount) {
@@ -927,9 +929,13 @@
       }
 
       async function postAuthForm(form, url) {
+        return postAuthFormData(new FormData(form), url);
+      }
+
+      async function postAuthFormData(formData, url) {
         const response = await fetch(url, {
           method: "POST",
-          body: new FormData(form),
+          body: formData,
           credentials: "same-origin"
         });
         const result = await response.json().catch(() => null);
@@ -968,8 +974,244 @@
         submitAuthForm(event, "/auth/login", (user) => `👋 Đăng nhập thành công: Xin chào ${user.name}!`);
       });
 
-      document.getElementById("formRegister").addEventListener("submit", (event) => {
-        submitAuthForm(event, "/auth/register", (user) => `🎉 Đăng ký thành công: ${user.name}!`);
+      const registrationForm = document.getElementById("formRegister");
+      const registrationOtpInputs = [...document.querySelectorAll("[data-registration-otp]")];
+      const registrationVerification = document.getElementById("registrationVerification");
+      const registrationCodeError = document.getElementById("registrationCodeError");
+      const registrationResendButton = document.getElementById("btnResendRegistrationCode");
+      const registrationResendLabel = document.getElementById("registrationResendLabel");
+      const registrationResendHint = document.getElementById("registrationResendHint");
+      const registrationCodeButton = document.getElementById("btnRequestRegistrationCode");
+      const registrationCodeButtonIcon = document.getElementById("registrationCodeButtonIcon");
+      const registrationCodeButtonSpinner = document.getElementById("registrationCodeButtonSpinner");
+      const registrationResendSpinner = document.getElementById("registrationResendSpinner");
+      const registrationFields = ["FullName", "Phone", "Address", "Email", "Password"]
+        .map(name => registrationForm.elements.namedItem(name));
+
+      function clearRegistrationCodeError() {
+        registrationCodeError.textContent = "";
+        registrationOtpInputs.forEach(input => {
+          input.classList.remove("border-red-500");
+          input.classList.add("border-stone-400");
+        });
+      }
+
+      function clearRegistrationOtp() {
+        registrationOtpInputs.forEach(input => {
+          input.value = "";
+        });
+        clearRegistrationCodeError();
+      }
+
+      function distributeRegistrationCode(value, startIndex = 0) {
+        const digits = value.replace(/\D/g, "").slice(0, registrationOtpInputs.length);
+        if (!digits) return;
+
+        for (let index = startIndex; index < registrationOtpInputs.length; index += 1) {
+          registrationOtpInputs[index].value = digits[index - startIndex] || "";
+        }
+
+        const nextIndex = Math.min(startIndex + digits.length, registrationOtpInputs.length - 1);
+        registrationOtpInputs[nextIndex].focus();
+        registrationOtpInputs[nextIndex].select();
+      }
+
+      registrationOtpInputs.forEach((input, index) => {
+        input.addEventListener("input", () => {
+          clearRegistrationCodeError();
+          const digits = input.value.replace(/\D/g, "");
+          input.value = "";
+          if (index === 0 && digits.length > 1) {
+            distributeRegistrationCode(digits);
+          } else if (digits) {
+            input.value = digits.slice(-1);
+            if (index < registrationOtpInputs.length - 1) {
+              registrationOtpInputs[index + 1].focus();
+            }
+          }
+        });
+
+        input.addEventListener("paste", event => {
+          event.preventDefault();
+          distributeRegistrationCode(event.clipboardData.getData("text"), index);
+        });
+
+        input.addEventListener("keydown", event => {
+          if (event.key === "Backspace" && !input.value && index > 0) {
+            registrationOtpInputs[index - 1].focus();
+          }
+          if (event.key === "ArrowLeft" && index > 0) {
+            registrationOtpInputs[index - 1].focus();
+          }
+          if (event.key === "ArrowRight" && index < registrationOtpInputs.length - 1) {
+            registrationOtpInputs[index + 1].focus();
+          }
+        });
+      });
+
+      function startRegistrationResendCountdown(seconds) {
+        if (registrationCooldownTimer) clearInterval(registrationCooldownTimer);
+        let remaining = seconds;
+        registrationResendButton.disabled = true;
+        registrationResendButton.classList.add("text-stone-400");
+        registrationResendButton.classList.remove("text-plt-brown");
+
+        const updateCountdown = () => {
+          const minutes = Math.floor(remaining / 60);
+          const remainder = String(remaining % 60).padStart(2, "0");
+          if (remaining > 0) {
+            registrationResendLabel.textContent = `Gửi lại sau ${minutes}:${remainder}`;
+            remaining -= 1;
+            return;
+          }
+
+          clearInterval(registrationCooldownTimer);
+          registrationCooldownTimer = null;
+          registrationResendButton.disabled = false;
+          registrationResendLabel.textContent = "Gửi lại mã";
+          registrationResendButton.classList.remove("text-stone-400");
+          registrationResendButton.classList.add("text-plt-brown");
+        };
+
+        updateCountdown();
+        registrationCooldownTimer = setInterval(updateCountdown, 1000);
+      }
+
+      function showRegistrationCodeStep(result) {
+        registrationChallengeId = result.challengeId;
+        registrationForm.querySelector("#registrationCodeNotice").textContent =
+          `Mã 6 số đã được gửi đến ${result.email}. Mã có hiệu lực trong 10 phút.`;
+        registrationFields.forEach(field => {
+          field.readOnly = true;
+        });
+        registrationVerification.classList.remove("hidden");
+        registrationCodeButton.classList.add("hidden");
+        clearRegistrationOtp();
+        startRegistrationResendCountdown(result.resendAfterSeconds);
+        registrationOtpInputs[0].focus();
+      }
+
+      function resetRegistrationCodeStep() {
+        if (registrationCooldownTimer) {
+          clearInterval(registrationCooldownTimer);
+          registrationCooldownTimer = null;
+        }
+        registrationChallengeId = null;
+        registrationFields.forEach(field => {
+          field.readOnly = false;
+        });
+        registrationCodeButton.classList.remove("hidden");
+        registrationVerification.classList.add("hidden");
+        registrationResendHint.textContent = "Chưa nhận được mã?";
+        registrationResendButton.disabled = true;
+        registrationResendLabel.textContent = "Gửi lại sau 1:00";
+        clearRegistrationOtp();
+      }
+
+      registrationForm.addEventListener("submit", async event => {
+        event.preventDefault();
+        if (registrationChallengeId) {
+          document.getElementById("btnVerifyRegistrationCode").click();
+          return;
+        }
+        if (authRequestInProgress) return;
+
+        authRequestInProgress = true;
+        registrationForm.setAttribute("aria-busy", "true");
+        registrationCodeButton.setAttribute("aria-busy", "true");
+        registrationCodeButton.setAttribute("aria-disabled", "true");
+        registrationCodeButtonIcon.classList.add("hidden");
+        registrationCodeButtonSpinner.classList.remove("hidden");
+        try {
+          const result = await postAuthForm(registrationForm, "/auth/register/send-code");
+          showRegistrationCodeStep(result);
+          showToast("📧 Mã xác nhận đã được gửi đến email của bạn.");
+        } catch (error) {
+          showToast(`❌ ${error.message}`);
+        } finally {
+          authRequestInProgress = false;
+          registrationForm.removeAttribute("aria-busy");
+          registrationCodeButton.setAttribute("aria-busy", "false");
+          registrationCodeButton.removeAttribute("aria-disabled");
+          registrationCodeButtonIcon.classList.remove("hidden");
+          registrationCodeButtonSpinner.classList.add("hidden");
+        }
+      });
+
+      registrationResendButton.addEventListener("click", async () => {
+        if (authRequestInProgress || registrationResendButton.disabled) return;
+
+        authRequestInProgress = true;
+        registrationResendButton.setAttribute("aria-busy", "true");
+        registrationResendButton.setAttribute("aria-disabled", "true");
+        registrationResendButton.disabled = true;
+        registrationResendSpinner.classList.remove("hidden");
+        try {
+          const result = await postAuthForm(registrationForm, "/auth/register/send-code");
+          showRegistrationCodeStep(result);
+          showToast("📧 Mã xác nhận mới đã được gửi.");
+        } catch (error) {
+          showToast(`❌ ${error.message}`);
+        } finally {
+          authRequestInProgress = false;
+          registrationResendButton.removeAttribute("aria-busy");
+          registrationResendButton.removeAttribute("aria-disabled");
+          registrationResendSpinner.classList.add("hidden");
+          if (!registrationCooldownTimer) {
+            registrationResendButton.disabled = false;
+          }
+        }
+      });
+
+      document.getElementById("btnEditRegistration").addEventListener("click", () => {
+        resetRegistrationCodeStep();
+        registrationForm.elements.namedItem("Email").focus();
+      });
+
+      document.getElementById("btnVerifyRegistrationCode").addEventListener("click", async event => {
+        if (authRequestInProgress) return;
+
+        const code = registrationOtpInputs.map(input => input.value).join("");
+        if (!/^\d{6}$/.test(code)) {
+          registrationCodeError.textContent = code
+            ? "Mã còn thiếu số, vui lòng nhập đủ 6 số."
+            : "Vui lòng nhập mã xác nhận.";
+          registrationOtpInputs.forEach(input => {
+            input.classList.toggle("border-red-500", !input.value);
+            input.classList.toggle("border-stone-400", Boolean(input.value));
+          });
+          registrationOtpInputs.find(input => !input.value)?.focus();
+          return;
+        }
+
+        authRequestInProgress = true;
+        const verifyButton = event.currentTarget;
+        verifyButton.disabled = true;
+        verifyButton.setAttribute("aria-busy", "true");
+        try {
+          const formData = new FormData(registrationForm);
+          formData.append("ChallengeId", registrationChallengeId);
+          formData.append("Code", code);
+          const result = await postAuthFormData(formData, "/auth/register/verify");
+          currentUser = result.user;
+          updateAuthHeaderState();
+          registrationForm.reset();
+          resetRegistrationCodeStep();
+          modalAuth.classList.add("hidden");
+          showToast(`🎉 Đăng ký thành công: ${currentUser.name}!`);
+        } catch (error) {
+          registrationCodeError.textContent = error.message;
+          registrationOtpInputs.forEach(input => {
+            input.value = "";
+            input.classList.remove("border-stone-400");
+            input.classList.add("border-red-500");
+          });
+          registrationOtpInputs[0].focus();
+        } finally {
+          authRequestInProgress = false;
+          verifyButton.disabled = false;
+          verifyButton.removeAttribute("aria-busy");
+        }
       });
 
       document.getElementById("btnLogoutAccount").addEventListener("click", async () => {

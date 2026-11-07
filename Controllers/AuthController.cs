@@ -1,14 +1,20 @@
 using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 using ComTruaAnhBeo.Models;
 using ComTruaAnhBeo.Models.Auth;
+using ComTruaAnhBeo.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using System.Net.Mail;
 
 namespace ComTruaAnhBeo.Controllers;
 
@@ -16,18 +22,30 @@ namespace ComTruaAnhBeo.Controllers;
 public sealed class AuthController : Controller
 {
     private const string CustomerRole = "KhachHang";
+    private static readonly TimeSpan VerificationCodeLifetime = TimeSpan.FromMinutes(10);
+    private static readonly TimeSpan VerificationResendInterval = TimeSpan.FromMinutes(1);
+    private const int MaxVerificationAttempts = 5;
     private readonly ComTruaAnhBeoContext _db;
     private readonly IPasswordHasher<TaiKhoan> _passwordHasher;
     private readonly IAntiforgery _antiforgery;
+    private readonly IMemoryCache _cache;
+    private readonly IEmailSender _emailSender;
+    private readonly ILogger<AuthController> _logger;
 
     public AuthController(
         ComTruaAnhBeoContext db,
         IPasswordHasher<TaiKhoan> passwordHasher,
-        IAntiforgery antiforgery)
+        IAntiforgery antiforgery,
+        IMemoryCache cache,
+        IEmailSender emailSender,
+        ILogger<AuthController> logger)
     {
         _db = db;
         _passwordHasher = passwordHasher;
         _antiforgery = antiforgery;
+        _cache = cache;
+        _emailSender = emailSender;
+        _logger = logger;
     }
 
     [HttpGet("current")]
@@ -53,10 +71,11 @@ public sealed class AuthController : Controller
         });
     }
 
-    [HttpPost("register")]
+    [HttpPost("register/send-code")]
     [AllowAnonymous]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Register([FromForm] RegisterRequest request)
+    [EnableRateLimiting("registration-email-send")]
+    public async Task<IActionResult> SendRegistrationCode([FromForm] RegisterRequest request)
     {
         if (!ModelState.IsValid)
         {
@@ -69,7 +88,26 @@ public sealed class AuthController : Controller
             return Conflict(new { message = "Email này đã được đăng ký." });
         }
 
-        var account = new TaiKhoan
+        var emailKey = GetEmailKey(email);
+        var cooldownKey = GetCooldownKey(emailKey);
+        if (_cache.TryGetValue(cooldownKey, out _))
+        {
+            return StatusCode(StatusCodes.Status429TooManyRequests, new
+            {
+                message = "Vui lòng đợi 1 phút trước khi gửi lại mã."
+            });
+        }
+
+        if (_cache.TryGetValue<string>(GetActiveChallengeKey(emailKey), out var oldChallengeId) &&
+            oldChallengeId is not null)
+        {
+            _cache.Remove(GetChallengeKey(oldChallengeId));
+        }
+
+        var challengeId = Microsoft.AspNetCore.WebUtilities.WebEncoders.Base64UrlEncode(
+            RandomNumberGenerator.GetBytes(32));
+        var code = RandomNumberGenerator.GetInt32(0, 1_000_000).ToString("D6");
+        var accountForHash = new TaiKhoan
         {
             HoTen = request.FullName.Trim(),
             Sdt = request.Phone.Trim(),
@@ -78,7 +116,119 @@ public sealed class AuthController : Controller
             VaiTro = CustomerRole,
             HoatDong = true
         };
-        account.MatKhauHash = _passwordHasher.HashPassword(account, request.Password);
+        var pendingRegistration = new PendingRegistration(
+            accountForHash.HoTen,
+            accountForHash.Sdt,
+            accountForHash.Email,
+            accountForHash.DiaChi,
+            _passwordHasher.HashPassword(accountForHash, request.Password),
+            HashCode(challengeId, code),
+            DateTimeOffset.UtcNow.Add(VerificationCodeLifetime));
+
+        _cache.Set(GetChallengeKey(challengeId), pendingRegistration, VerificationCodeLifetime);
+        _cache.Set(GetActiveChallengeKey(emailKey), challengeId, VerificationCodeLifetime);
+        _cache.Set(cooldownKey, true, VerificationResendInterval);
+
+        try
+        {
+            await _emailSender.SendRegistrationCodeAsync(
+                email,
+                accountForHash.HoTen,
+                code,
+                HttpContext.RequestAborted);
+        }
+        catch (EmailSenderConfigurationException exception)
+        {
+            RemovePendingRegistration(challengeId, emailKey);
+            _cache.Remove(cooldownKey);
+            _logger.LogError(exception, "Email verification is not configured.");
+            return StatusCode(StatusCodes.Status503ServiceUnavailable, new
+            {
+                message = "Ứng dụng chưa nạp đủ cấu hình SMTP. Hãy chạy scripts/Configure-EmailSecrets.ps1 rồi khởi động lại ứng dụng."
+            });
+        }
+        catch (SmtpException exception)
+        {
+            RemovePendingRegistration(challengeId, emailKey);
+            _cache.Remove(cooldownKey);
+            _logger.LogError(exception, "Failed to send a registration verification email.");
+            return StatusCode(StatusCodes.Status503ServiceUnavailable, new
+            {
+                message = "Gmail SMTP từ chối gửi email. Kiểm tra Gmail và App Password; xem log ứng dụng để biết lỗi kết nối."
+            });
+        }
+
+        return Ok(new
+        {
+            message = "Mã xác nhận đã được gửi qua email.",
+            challengeId,
+            email,
+            expiresInSeconds = (int)VerificationCodeLifetime.TotalSeconds,
+            resendAfterSeconds = (int)VerificationResendInterval.TotalSeconds
+        });
+    }
+
+    [HttpPost("register/verify")]
+    [AllowAnonymous]
+    [ValidateAntiForgeryToken]
+    [EnableRateLimiting("registration-email-verify")]
+    public async Task<IActionResult> VerifyRegistration([FromForm] VerifyRegistrationRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
+
+        if (!_cache.TryGetValue<PendingRegistration>(GetChallengeKey(request.ChallengeId), out var pending) ||
+            pending is null ||
+            pending.ExpiresAtUtc <= DateTimeOffset.UtcNow)
+        {
+            return BadRequest(new { message = "Mã xác nhận đã hết hạn. Vui lòng gửi mã mới." });
+        }
+
+        var emailKey = GetEmailKey(pending.Email);
+        if (!_cache.TryGetValue<string>(GetActiveChallengeKey(emailKey), out var activeChallengeId) ||
+            !string.Equals(activeChallengeId, request.ChallengeId, StringComparison.Ordinal))
+        {
+            return BadRequest(new { message = "Mã xác nhận không còn hiệu lực. Vui lòng gửi mã mới." });
+        }
+
+        if (pending.FailedAttempts >= MaxVerificationAttempts)
+        {
+            RemovePendingRegistration(request.ChallengeId, emailKey);
+            return StatusCode(StatusCodes.Status429TooManyRequests, new
+            {
+                message = "Bạn đã nhập sai mã quá nhiều lần. Vui lòng gửi mã mới."
+            });
+        }
+
+        var submittedCodeHash = HashCode(request.ChallengeId, request.Code);
+        if (!CryptographicOperations.FixedTimeEquals(pending.CodeHash, submittedCodeHash))
+        {
+            pending.FailedAttempts++;
+            if (pending.FailedAttempts >= MaxVerificationAttempts)
+            {
+                RemovePendingRegistration(request.ChallengeId, emailKey);
+                return StatusCode(StatusCodes.Status429TooManyRequests, new
+                {
+                    message = "Bạn đã nhập sai mã quá nhiều lần. Vui lòng gửi mã mới."
+                });
+            }
+
+            return BadRequest(new { message = "Mã xác nhận chưa đúng. Vui lòng kiểm tra email." });
+        }
+
+        RemovePendingRegistration(request.ChallengeId, emailKey);
+        var account = new TaiKhoan
+        {
+            HoTen = pending.FullName,
+            Sdt = pending.Phone,
+            Email = pending.Email,
+            DiaChi = pending.Address,
+            MatKhauHash = pending.PasswordHash,
+            VaiTro = CustomerRole,
+            HoatDong = true
+        };
 
         try
         {
@@ -206,5 +356,47 @@ public sealed class AuthController : Controller
         }
 
         return false;
+    }
+
+    private void RemovePendingRegistration(string challengeId, string emailKey)
+    {
+        _cache.Remove(GetChallengeKey(challengeId));
+        var activeChallengeKey = GetActiveChallengeKey(emailKey);
+        if (_cache.TryGetValue<string>(activeChallengeKey, out var activeChallengeId) &&
+            string.Equals(activeChallengeId, challengeId, StringComparison.Ordinal))
+        {
+            _cache.Remove(activeChallengeKey);
+        }
+    }
+
+    private static string GetEmailKey(string email) =>
+        Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(email)));
+
+    private static string GetChallengeKey(string challengeId) => $"registration:challenge:{challengeId}";
+
+    private static string GetActiveChallengeKey(string emailKey) => $"registration:active:{emailKey}";
+
+    private static string GetCooldownKey(string emailKey) => $"registration:cooldown:{emailKey}";
+
+    private static byte[] HashCode(string challengeId, string code) =>
+        SHA256.HashData(Encoding.UTF8.GetBytes($"{challengeId}:{code}"));
+
+    private sealed class PendingRegistration(
+        string fullName,
+        string phone,
+        string email,
+        string address,
+        string passwordHash,
+        byte[] codeHash,
+        DateTimeOffset expiresAtUtc)
+    {
+        public string FullName { get; } = fullName;
+        public string Phone { get; } = phone;
+        public string Email { get; } = email;
+        public string Address { get; } = address;
+        public string PasswordHash { get; } = passwordHash;
+        public byte[] CodeHash { get; } = codeHash;
+        public DateTimeOffset ExpiresAtUtc { get; } = expiresAtUtc;
+        public int FailedAttempts { get; set; }
     }
 }

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cơm Trưa Anh Béo - Quản Lý Tài Khoản Website</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Dual-path Stylesheets for Live Server and ASP.NET Core -->
+  <link rel="stylesheet" href="../css/admin-common.css">
+  <link rel="stylesheet" href="../css/accounts.css">
+</head>
+<body data-active-nav="accounts">
+
+  <!-- SHARED ADMIN HEADER MOUNT TARGET -->
+  <div id="appHeader"></div>
+
+  <!-- =========================================================================
+       2. THREE-COLUMN BODY CONTAINER
+       ========================================================================= -->
+  <div class="admin-body-container">
+
+    <!-- SHARED SIDEBAR NAVIGATION MOUNT TARGET -->
+    <div id="appSidebar"></div>
+
+    <!-- =======================================================================
+         COLUMN 2: CENTRAL WORKSPACE (LARGEST AREA, WARM CREAM BACKGROUND)
+         ======================================================================= -->
+    <main class="center-workspace">
+      <!-- Title & Headline -->
+      <div class="workspace-top-bar">
+        <div class="page-heading-group">
+          <h1>QUẢN LÝ TÀI KHOẢN WEBSITE</h1>
+          <p>Xem danh sách khách hàng đăng ký qua website, sổ địa chỉ và theo dõi lịch sử đơn hàng</p>
+        </div>
+      </div>
+
+      <!-- KPI Summary Pills -->
+      <div class="account-kpi-grid">
+        <div class="account-kpi-card account-kpi-total">
+          <div class="kpi-avatar-wrap">👥</div>
+          <div class="kpi-data-wrap">
+            <span class="kpi-label-text">Tổng tài khoản</span>
+            <span class="kpi-count-num" id="kpiTotalAccounts">0</span>
+          </div>
+        </div>
+        <div class="account-kpi-card account-kpi-active">
+          <div class="kpi-avatar-wrap">🟢</div>
+          <div class="kpi-data-wrap">
+            <span class="kpi-label-text">Đang hoạt động</span>
+            <span class="kpi-count-num" id="kpiActiveAccounts">0</span>
+          </div>
+        </div>
+        <div class="account-kpi-card account-kpi-locked">
+          <div class="kpi-avatar-wrap">🔒</div>
+          <div class="kpi-data-wrap">
+            <span class="kpi-label-text">Đã khóa / Tạm dừng</span>
+            <span class="kpi-count-num" id="kpiLockedAccounts">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toolbar: Search & Filter -->
+      <div class="account-toolbar-card">
+        <!-- Search Box -->
+        <div class="account-search-box">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="var(--text-muted)">
+            <path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/>
+          </svg>
+          <input type="text" id="searchAccountInput" class="account-search-input" placeholder="Tìm theo tên khách hàng, số điện thoại, email...">
+        </div>
+
+        <!-- Status Filter Select -->
+        <select id="filterAccountStatus" class="account-select-filter">
+          <option value="ALL">Tất cả trạng thái</option>
+          <option value="ACTIVE">Đang hoạt động</option>
+          <option value="LOCKED">Đã khóa</option>
+          <option value="INACTIVE">Tạm dừng</option>
+        </select>
+
+        <!-- Reset Button -->
+        <button class="btn-filter-reset" onclick="resetAllFilters()" title="Đặt lại bộ lọc">
+          <span>↺</span>
+          <span>Đặt lại</span>
+        </button>
+      </div>
+
+      <!-- Account List Table -->
+      <div class="account-table-container">
+        <table class="account-data-table">
+          <thead>
+            <tr>
+              <th>Khách hàng</th>
+              <th>Số điện thoại</th>
+              <th>Email</th>
+              <th>Ngày đăng ký</th>
+              <th>Trạng thái</th>
+              <th style="text-align: right;">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="accountTableBody">
+            <!-- Dynamic rows rendered by JS -->
+          </tbody>
+        </table>
+
+        <!-- Dedicated Empty State (Mandatory Vietnamese per AGENTS.md) -->
+        <div class="account-empty-state-wrap" id="accountEmptyState">
+          <div class="account-empty-icon">👥</div>
+          <h3 class="account-empty-title">Chưa có tài khoản</h3>
+          <p class="account-empty-desc">Hiện chưa có dữ liệu tài khoản khách hàng nào hoặc hệ thống đang chờ kết nối dữ liệu từ máy chủ.</p>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+            <button class="btn-refresh-orders" onclick="resetAllFilters()">
+              <span>🔄</span>
+              <span>Làm mới danh sách</span>
+            </button>
+            <button class="bulk-action-btn bulk-btn-print" onclick="loadDemoAccountsForTesting()" title="Chỉ dùng để kiểm thử UI và tương tác giao diện">
+              🧪 Nạp dữ liệu kiểm thử UI Live Server
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination Bar -->
+      <div class="order-toolbar-card" id="accountPaginationBar" style="display: none; flex-direction: row; justify-content: space-between; align-items: center; margin-top: -8px;">
+        <span style="font-size: 13px; font-weight: 600; color: var(--text-secondary);" id="paginationInfoText">
+          Hiển thị 0 - 0 trên 0 tài khoản
+        </span>
+        <div id="paginationButtonsWrap" style="display: flex; gap: 6px;">
+          <!-- Rendered via JS -->
+        </div>
+      </div>
+    </main>
+
+    <!-- =======================================================================
+         COLUMN 3: RIGHT DETAIL & ACTION PANEL (~390px)
+         ======================================================================= -->
+    <aside class="account-detail-panel right-action-panel" id="accountDetailPanel">
+      <!-- Empty Placeholder when no account selected -->
+      <div class="panel-empty-placeholder" id="panelEmptyPlaceholder">
+        <div class="empty-icon">👤</div>
+        <h3>CHỌN MỘT TÀI KHOẢN</h3>
+        <p>Bấm vào bất kỳ dòng khách hàng nào trong danh sách bên trái để xem thông tin chi tiết, sổ địa chỉ giao hàng, lịch sử đơn và quản lý tài khoản.</p>
+      </div>
+
+      <!-- Detailed Content when account is selected -->
+      <div id="panelDetailContent" style="display: none; flex-direction: column; height: 100%;">
+        <!-- Header -->
+        <div class="account-panel-header">
+          <div class="account-panel-title-wrap">
+            <h2>HỒ SƠ KHÁCH HÀNG</h2>
+            <span>Chi tiết & quản lý tài khoản</span>
+          </div>
+          <span class="badge-acc-status badge-acc-active" id="panelAccountStatusBadge">
+            Đang hoạt động
+          </span>
+        </div>
+
+        <!-- Scrollable Body -->
+        <div class="account-panel-body">
+          <!-- 1. Personal Information Card -->
+          <div class="user-profile-header-card">
+            <div class="user-profile-avatar-lg" id="panelAccountAvatar">--</div>
+            <div class="user-profile-info-wrap">
+              <span class="user-profile-name" id="panelAccountFullName">--</span>
+              <span style="font-size: 12px; font-weight: 700; color: var(--text-primary); font-family: 'Courier New', monospace;" id="panelAccountPhone">--</span>
+              <span style="font-size: 11.5px; color: var(--text-secondary);" id="panelAccountEmail">--</span>
+              <span style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
+                Ngày tham gia: <strong id="panelAccountRegDate">--</strong>
+              </span>
+            </div>
+          </div>
+
+          <!-- 2. Saved Delivery Addresses -->
+          <div class="panel-section-box">
+            <div class="panel-section-header">
+              <span>📍 Sổ địa chỉ giao hàng</span>
+            </div>
+            <div id="panelSavedAddressesList">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- 3. Order History -->
+          <div class="panel-section-box">
+            <div class="panel-section-header">
+              <span>📦 Lịch sử đơn hàng</span>
+            </div>
+            <div id="panelOrderHistoryList">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- 4. Historical Preservation Rule Banner -->
+          <div class="preservation-notice-banner">
+            <strong>Chính sách dữ liệu:</strong> Toàn bộ lịch sử đơn hàng, hóa đơn và doanh thu đã phát sinh sẽ luôn được hệ thống bảo lưu an toàn ngay cả khi tài khoản bị khóa hoặc xóa.
+          </div>
+        </div>
+
+        <!-- Sticky Footer with Management Action Buttons -->
+        <div class="account-panel-actions-footer" id="panelActionsFooter">
+          <!-- Rendered dynamically via JS -->
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- =========================================================================
+       3. MODALS (DEACTIVATE & DELETE ACCOUNT CONFIRMATION)
+       ========================================================================= -->
+
+  <!-- Modal 1: Vô hiệu hóa tài khoản -->
+  <div class="admin-modal-backdrop" id="deactivateAccountModal" style="display: none;">
+    <div class="admin-modal-box">
+      <div class="admin-modal-header">
+        <h3>XÁC NHẬN VÔ HIỆU HÓA TÀI KHOẢN</h3>
+        <button class="btn-modal-close" onclick="closeDeactivateModal()">✕</button>
+      </div>
+      <div class="admin-modal-body">
+        <p style="font-size: 13.5px; color: var(--text-primary); margin-bottom: 12px;">
+          Bạn có chắc chắn muốn tạm dừng (vô hiệu hóa) tài khoản của khách hàng:
+        </p>
+        <div style="background: #FAF6F0; padding: 10px 14px; border-radius: var(--radius-sm); font-weight: 700; color: var(--brand-burgundy); margin-bottom: 14px;" id="deactivateTargetName">
+          --
+        </div>
+        <p style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.5;">
+          Khách hàng sẽ tạm thời không thể đăng nhập vào website để đặt món cho đến khi được kích hoạt lại.
+        </p>
+      </div>
+      <div class="admin-modal-footer">
+        <button class="bulk-action-btn bulk-btn-print" onclick="closeDeactivateModal()">Hủy bỏ</button>
+        <button class="bulk-action-btn bulk-btn-confirm" onclick="confirmDeactivateAccount()">Xác nhận vô hiệu hóa</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Xóa tài khoản (Bảo lưu dữ liệu lịch sử) -->
+  <div class="admin-modal-backdrop" id="deleteAccountModal" style="display: none;">
+    <div class="admin-modal-box">
+      <div class="admin-modal-header">
+        <h3>XÁC NHẬN XÓA TÀI KHOẢN KHÁCH HÀNG</h3>
+        <button class="btn-modal-close" onclick="closeDeleteModal()">✕</button>
+      </div>
+      <div class="admin-modal-body">
+        <p style="font-size: 13.5px; color: var(--danger); font-weight: 700; margin-bottom: 12px;">
+          ⚠️ Hành động xóa tài khoản không thể hoàn tác:
+        </p>
+        <div style="background: #FFEBEE; border: 1px solid rgba(198, 40, 40, 0.2); padding: 10px 14px; border-radius: var(--radius-sm); font-weight: 700; color: var(--danger); margin-bottom: 14px;" id="deleteTargetName">
+          --
+        </div>
+        <div class="preservation-notice-banner" style="background: #FFF9E6; border-left-color: #FFA000;">
+          <strong>BẢO LƯU DỮ LIỆU ĐƠN HÀNG:</strong> Toàn bộ các đơn hàng đã đặt, thông tin giao nhận lịch sử và số tiền thanh toán trước đây của khách hàng sẽ <u>vẫn được giữ nguyên trên hệ thống báo cáo</u> để đảm bảo số liệu kế toán.
+        </div>
+      </div>
+      <div class="admin-modal-footer">
+        <button class="bulk-action-btn bulk-btn-print" onclick="closeDeleteModal()">Hủy bỏ</button>
+        <button class="bulk-action-btn bulk-btn-cancel" onclick="confirmDeleteAccount()">Xác nhận xóa tài khoản</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Scripts -->
+  <script src="../js/admin-common.js"></script>
+  <script src="../js/accounts.js"></script>
+</body>
+</html>

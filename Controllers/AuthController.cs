@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -17,13 +18,16 @@ public sealed class AuthController : Controller
     private const string CustomerRole = "KhachHang";
     private readonly ComTruaAnhBeoContext _db;
     private readonly IPasswordHasher<TaiKhoan> _passwordHasher;
+    private readonly IAntiforgery _antiforgery;
 
     public AuthController(
         ComTruaAnhBeoContext db,
-        IPasswordHasher<TaiKhoan> passwordHasher)
+        IPasswordHasher<TaiKhoan> passwordHasher,
+        IAntiforgery antiforgery)
     {
         _db = db;
         _passwordHasher = passwordHasher;
+        _antiforgery = antiforgery;
     }
 
     [HttpGet("current")]
@@ -139,6 +143,15 @@ public sealed class AuthController : Controller
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return Ok(new { message = "Đã đăng xuất." });
+    }
+
+    [HttpGet("antiforgery")]
+    [AllowAnonymous]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult AntiforgeryToken()
+    {
+        var tokens = _antiforgery.GetAndStoreTokens(HttpContext);
+        return Ok(new { token = tokens.RequestToken });
     }
 
     private IActionResult InvalidCredentials() =>

@@ -926,10 +926,6 @@
         }
       }
 
-      function getAntiforgeryToken() {
-        return document.querySelector('#formLogin input[name="__RequestVerificationToken"]')?.value;
-      }
-
       async function postAuthForm(form, url) {
         const response = await fetch(url, {
           method: "POST",
@@ -980,12 +976,19 @@
         if (authRequestInProgress) return;
 
         authRequestInProgress = true;
-        const body = new FormData();
-        body.append("__RequestVerificationToken", getAntiforgeryToken() || "");
         try {
+          const tokenResponse = await fetch("/auth/antiforgery", {
+            credentials: "same-origin",
+            cache: "no-store"
+          });
+          const tokenResult = await tokenResponse.json().catch(() => null);
+          if (!tokenResponse.ok || !tokenResult?.token) {
+            throw new Error(tokenResult?.message || "Không thể xác thực yêu cầu đăng xuất. Vui lòng tải lại trang.");
+          }
+
           const response = await fetch("/auth/logout", {
             method: "POST",
-            body,
+            headers: { "RequestVerificationToken": tokenResult.token },
             credentials: "same-origin"
           });
           const result = await response.json().catch(() => null);

@@ -1,5 +1,13 @@
+wwwroot\css\accounts.css
+wwwroot\css\admin-common.css
+wwwroot\css\admin-login.css
+wwwroot\css\adminpage.css
+wwwroot\css\delivery.css
 wwwroot\css\index.css
+wwwroot\css\orders.css
+wwwroot\css\promotions.css
 wwwroot\css\site.css
+wwwroot\css\statistics.css
 wwwroot\favicon.ico
 wwwroot\images\card_bulk.jpg
 wwwroot\images\card_menu.jpg
@@ -20,8 +28,15 @@ wwwroot\images\thumb_suonxao.jpg
 wwwroot\images\thumb_thitkho.jpg
 wwwroot\images\thumb_trada.jpg
 wwwroot\images\thumb_trung.jpg
+wwwroot\js\accounts.js
+wwwroot\js\admin-common.js
+wwwroot\js\adminpage.js
+wwwroot\js\delivery.js
 wwwroot\js\index.js
+wwwroot\js\orders.js
+wwwroot\js\promotions.js
 wwwroot\js\site.js
+wwwroot\js\statistics.js
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css
@@ -146,3 +161,18 @@ D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\js\index.js
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\css\site.css
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\css\index.css
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\favicon.ico
+D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\css\accounts.css
+D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\css\admin-common.css
+D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\css\admin-login.css
+D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\css\adminpage.css
+D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\css\delivery.css
+D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\css\orders.css
+D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\css\promotions.css
+D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\css\statistics.css
+D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\js\accounts.js
+D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\js\admin-common.js
+D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\js\adminpage.js
+D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\js\delivery.js
+D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\js\orders.js
+D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\js\promotions.js
+D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\js\statistics.js

@@ -75,9 +75,9 @@ const SHARED_COMPONENTS_TEMPLATE = `
     <!-- Admin Profile with Dropdown Menu -->
     <div class="admin-profile-wrapper">
       <div class="admin-profile" id="adminProfileBtn" title="Tài khoản quản trị">
-        <div class="profile-avatar">AB</div>
+        <div class="profile-avatar">QT</div>
         <div class="profile-info">
-          <span class="profile-name">Anh Béo</span>
+          <span class="profile-name">Quản trị viên</span>
           <span class="profile-role">Quản trị viên</span>
         </div>
         <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" class="profile-chevron">
@@ -88,8 +88,8 @@ const SHARED_COMPONENTS_TEMPLATE = `
       <!-- Admin Profile Dropdown Menu -->
       <div class="admin-profile-dropdown" id="adminProfileDropdown" role="menu" aria-label="Menu tài khoản quản trị">
         <div class="profile-dropdown-header">
-          <strong>Anh Béo (Admin)</strong>
-          <span>admin@comtruaanhbeo.vn</span>
+          <strong>Quản trị viên</strong>
+          <span></span>
         </div>
         <div class="profile-dropdown-divider"></div>
         <a href="/" target="_blank" rel="noopener noreferrer" class="profile-dropdown-item" role="menuitem" title="Mở trang bán hàng cho khách xem thử (tab mới)">
@@ -252,6 +252,41 @@ async function initSharedComponents() {
     }
   } catch (e) {
     // Graceful fallback: embedded template already actively rendered
+  }
+
+  await updateAdminProfile();
+}
+
+async function updateAdminProfile() {
+  try {
+    const response = await fetch('/auth/current', {
+      credentials: 'same-origin',
+      cache: 'no-store'
+    });
+    const result = await response.json().catch(() => null);
+    if (!response.ok) {
+      throw new Error(result?.message || 'Không thể tải thông tin tài khoản quản trị.');
+    }
+
+    const user = result?.user;
+    if (!user || user.role !== 'Admin') {
+      window.location.assign('/admin/login');
+      return;
+    }
+
+    const name = user.name || 'Quản trị viên';
+    const initials = name.trim().split(/\s+/).slice(-2).map(part => part[0]).join('').toUpperCase() || 'QT';
+    const avatar = document.querySelector('.profile-avatar');
+    const profileName = document.querySelector('.profile-name');
+    const dropdownName = document.querySelector('.profile-dropdown-header strong');
+    const dropdownEmail = document.querySelector('.profile-dropdown-header span');
+
+    if (avatar) avatar.textContent = initials;
+    if (profileName) profileName.textContent = name;
+    if (dropdownName) dropdownName.textContent = `${name} (Admin)`;
+    if (dropdownEmail) dropdownEmail.textContent = user.email || '';
+  } catch (error) {
+    showToast(error instanceof Error ? error.message : 'Không thể tải thông tin tài khoản quản trị.', 'error');
   }
 }
 
@@ -417,11 +452,32 @@ function closeLogoutModal() {
   }
 }
 
-function confirmLogout() {
+async function confirmLogout() {
   closeLogoutModal();
-  // Backend auth is not yet implemented: prepare UI only without pretending logout succeeded
-  showToast('Chức năng đăng xuất: Đang chờ kết nối dịch vụ xác thực máy chủ (Backend Auth Service chưa tích hợp).', 'info');
-  // TODO: Connect real backend logout API endpoint (e.g. POST /api/auth/logout)
+  try {
+    const tokenResponse = await fetch('/auth/antiforgery', {
+      credentials: 'same-origin',
+      cache: 'no-store'
+    });
+    const tokenResult = await tokenResponse.json().catch(() => null);
+    if (!tokenResponse.ok || !tokenResult?.token) {
+      throw new Error(tokenResult?.message || 'Không thể xác thực yêu cầu đăng xuất. Vui lòng tải lại trang.');
+    }
+
+    const response = await fetch('/auth/logout', {
+      method: 'POST',
+      headers: { RequestVerificationToken: tokenResult.token },
+      credentials: 'same-origin'
+    });
+    const result = await response.json().catch(() => null);
+    if (!response.ok) {
+      throw new Error(result?.message || 'Không thể đăng xuất. Vui lòng thử lại.');
+    }
+
+    window.location.assign('/admin/login');
+  } catch (error) {
+    showToast(error instanceof Error ? error.message : 'Không thể đăng xuất. Vui lòng thử lại.', 'error');
+  }
 }
 
 function showToast(message, type = 'info') {
@@ -453,4 +509,3 @@ function showToast(message, type = 'info') {
     setTimeout(() => toast.remove(), 300);
   }, 3500);
 }
-

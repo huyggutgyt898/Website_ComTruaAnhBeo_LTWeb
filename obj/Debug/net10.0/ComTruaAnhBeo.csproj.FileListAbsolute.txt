@@ -478,5 +478,40 @@ C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build\ComTruaAnhBeo.deps.json
 C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build\ComTruaAnhBeo.runtimeconfig.json
 C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build\ComTruaAnhBeo.dll
 C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build\ComTruaAnhBeo.pdb
-D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\45g7q2e8jt-{0}-rx59vdxpzc-rx59vdxpzc.gz
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\lvc55difus-{0}-zrlm7ad5hp-zrlm7ad5hp.gz
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\3gh6wk9f4x-{0}-vfucy1zp6v-vfucy1zp6v.gz
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\al2gpypzg0-{0}-vno4k61jvy-vno4k61jvy.gz
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\vmkjom0rlv-{0}-rrn5qdxdws-rrn5qdxdws.gz
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\6s385t1rky-{0}-xj9r3qvjfu-xj9r3qvjfu.gz
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\sgbxgy3bbn-{0}-osf0m1dgc6-osf0m1dgc6.gz
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\rwfj4q0wj4-{0}-cv7mxa37rh-cv7mxa37rh.gz
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\fni68rqyfp-{0}-2cfw7fjuat-2cfw7fjuat.gz
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\sdq4hy4o41-{0}-kdap6424fg-kdap6424fg.gz
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\z2lgvmvpbf-{0}-iqqabqj0ez-iqqabqj0ez.gz
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\j85yiowp77-{0}-dd4sk8y2zg-dd4sk8y2zg.gz
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\oowzqmoojz-{0}-nkbj9n9zwu-nkbj9n9zwu.gz
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\udf4nsjn5i-{0}-ozj5zn2ucr-ozj5zn2ucr.gz
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\h7cnx0ojbb-{0}-9edakno7va-9edakno7va.gz
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\b5466zazxr-{0}-ftv2fid77z-ftv2fid77z.gz
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-auth-final-bin\appsettings.Development.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-auth-final-bin\appsettings.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-auth-final-bin\efpt.config.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-auth-final-bin\ComTruaAnhBeo.staticwebassets.runtime.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-auth-final-bin\ComTruaAnhBeo.staticwebassets.endpoints.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-auth-final-bin\ComTruaAnhBeo.exe
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-auth-final-bin\ComTruaAnhBeo.deps.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-auth-final-bin\ComTruaAnhBeo.runtimeconfig.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-auth-final-bin\ComTruaAnhBeo.dll
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-auth-final-bin\ComTruaAnhBeo.pdb
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-admin-session\appsettings.Development.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-admin-session\appsettings.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-admin-session\efpt.config.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-admin-session\ComTruaAnhBeo.staticwebassets.runtime.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-admin-session\ComTruaAnhBeo.staticwebassets.endpoints.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-admin-session\ComTruaAnhBeo.exe
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-admin-session\ComTruaAnhBeo.deps.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-admin-session\ComTruaAnhBeo.runtimeconfig.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-admin-session\ComTruaAnhBeo.dll
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-admin-session\ComTruaAnhBeo.pdb
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\45g7q2e8jt-{0}-r2xa9qb939-r2xa9qb939.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt

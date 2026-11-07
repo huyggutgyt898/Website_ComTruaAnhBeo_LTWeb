@@ -71,7 +71,8 @@ builder.Services
             : CookieSecurePolicy.Always;
         options.ExpireTimeSpan = TimeSpan.FromHours(12);
         options.SlidingExpiration = true;
-        options.LoginPath = "/TaiKhoan/DangNhap"; // Đường dẫn chuyển hướng khi chưa đăng nhập (nếu có)
+        options.LoginPath = "/admin/login";
+        options.AccessDeniedPath = "/admin/forbidden";
     });
 
 builder.Services.AddAuthorization();

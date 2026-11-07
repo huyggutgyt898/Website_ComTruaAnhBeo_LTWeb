@@ -943,9 +943,32 @@
           const validationMessage = result?.errors
             ? Object.values(result.errors).flat()[0]
             : null;
-          throw new Error(result?.message || validationMessage || "Không thể xử lý yêu cầu. Vui lòng thử lại.");
+          const responseMessage = response.headers.get("content-type")?.includes("application/json")
+            ? "Không thể xử lý yêu cầu. Vui lòng thử lại."
+            : `Máy chủ không trả về phản hồi hợp lệ (HTTP ${response.status}). Vui lòng thử lại sau.`;
+          const error = new Error(result?.message || validationMessage || responseMessage);
+          error.status = response.status;
+          throw error;
         }
         return result;
+      }
+
+      function submitAdminLoginForm(customerForm) {
+        const adminForm = document.createElement("form");
+        adminForm.method = "post";
+        adminForm.action = "/admin/login";
+        adminForm.classList.add("hidden");
+
+        for (const name of ["Identifier", "Password", "__RequestVerificationToken", "returnUrl"]) {
+          const input = document.createElement("input");
+          input.type = "hidden";
+          input.name = name;
+          input.value = name === "returnUrl" ? "/admin" : customerForm.elements[name]?.value ?? "";
+          adminForm.appendChild(input);
+        }
+
+        document.body.appendChild(adminForm);
+        adminForm.submit();
       }
 
       async function submitAuthForm(event, url, successMessage) {
@@ -963,6 +986,10 @@
           modalAuth.classList.add("hidden");
           showToast(successMessage(currentUser));
         } catch (error) {
+          if (error.status === 403) {
+            submitAdminLoginForm(form);
+            return;
+          }
           showToast(`❌ ${error.message}`);
         } finally {
           authRequestInProgress = false;
@@ -1259,7 +1286,11 @@
           }
 
           const result = await response.json();
-          currentUser = result.user;
+          if (result.user?.role === "Admin") {
+            window.location.assign("/admin");
+            return;
+          }
+          currentUser = result.user?.role === "KhachHang" ? result.user : null;
           updateAuthHeaderState();
         } catch (error) {
           console.error("Không thể tải trạng thái tài khoản:", error);

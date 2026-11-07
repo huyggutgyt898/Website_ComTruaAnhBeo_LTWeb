@@ -266,19 +266,30 @@ public sealed class AuthController : Controller
 
         if (accounts.Count != 1 || string.IsNullOrEmpty(accounts[0].MatKhauHash))
         {
+            var adminAccountExists = await _db.TaiKhoans.AnyAsync(account =>
+                account.HoatDong &&
+                account.VaiTro == AdminController.AdminRole &&
+                (account.Email == identifier || account.Sdt == identifier));
+            if (adminAccountExists)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new
+                {
+                    message = "Đây là tài khoản quản trị. Vui lòng đăng nhập tại trang quản trị /admin/login."
+                });
+            }
+
             return InvalidCredentials();
         }
 
         var account = accounts[0];
-        var verification = _passwordHasher.VerifyHashedPassword(account, account.MatKhauHash, request.Password);
-        if (verification == PasswordVerificationResult.Failed)
+        var previousHash = account.MatKhauHash;
+        if (!AccountPasswordVerifier.VerifyAndUpgrade(account, request.Password, _passwordHasher))
         {
             return InvalidCredentials();
         }
 
-        if (verification == PasswordVerificationResult.SuccessRehashNeeded)
+        if (!string.Equals(account.MatKhauHash, previousHash, StringComparison.Ordinal))
         {
-            account.MatKhauHash = _passwordHasher.HashPassword(account, request.Password);
             await _db.SaveChangesAsync();
         }
 

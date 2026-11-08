@@ -1,5 +1,6 @@
 {
   "Version": 1,
+<<<<<<< HEAD
   "WorkspaceRootPath": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\",
   "Documents": [
     {
@@ -36,6 +37,84 @@
     },
     {
       "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\subject\\web development\\project\\comtruaanhbeo\\helpers\\utils.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+=======
+  "WorkspaceRootPath": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\website_comtruaanhbeo_ltweb-develop\\website_comtruaanhbeo_ltweb-develop\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\website_comtruaanhbeo_ltweb-develop\\website_comtruaanhbeo_ltweb-develop\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\website_comtruaanhbeo_ltweb-develop\\website_comtruaanhbeo_ltweb-develop\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\website_comtruaanhbeo_ltweb-develop\\website_comtruaanhbeo_ltweb-develop\\efpt.config.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:efpt.config.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\website_comtruaanhbeo_ltweb-develop\\website_comtruaanhbeo_ltweb-develop\\.dockerignore||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:.dockerignore||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\website_comtruaanhbeo_ltweb-develop\\website_comtruaanhbeo_ltweb-develop\\models\\errorviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:models\\errorviewmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\website_comtruaanhbeo_ltweb-develop\\website_comtruaanhbeo_ltweb-develop\\models\\ef\\comtruaanhbeocontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:models\\ef\\comtruaanhbeocontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\website_comtruaanhbeo_ltweb-develop\\website_comtruaanhbeo_ltweb-develop\\models\\auth\\verifyregistrationrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:models\\auth\\verifyregistrationrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\website_comtruaanhbeo_ltweb-develop\\website_comtruaanhbeo_ltweb-develop\\models\\auth\\registerrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:models\\auth\\registerrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\website_comtruaanhbeo_ltweb-develop\\website_comtruaanhbeo_ltweb-develop\\models\\auth\\loginrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:models\\auth\\loginrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\website_comtruaanhbeo_ltweb-develop\\website_comtruaanhbeo_ltweb-develop\\models\\auth\\emailsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:models\\auth\\emailsettings.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\website_comtruaanhbeo_ltweb-develop\\website_comtruaanhbeo_ltweb-develop\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\website_comtruaanhbeo_ltweb-develop\\website_comtruaanhbeo_ltweb-develop\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\website_comtruaanhbeo_ltweb-develop\\website_comtruaanhbeo_ltweb-develop\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\website_comtruaanhbeo_ltweb-develop\\website_comtruaanhbeo_ltweb-develop\\app_data\\dataprotection-keys\\key-df9203b9-8516-4d35-82d6-b804d1d5fcdb.xml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:app_data\\dataprotection-keys\\key-df9203b9-8516-4d35-82d6-b804d1d5fcdb.xml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\website_comtruaanhbeo_ltweb-develop\\website_comtruaanhbeo_ltweb-develop\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\website_comtruaanhbeo_ltweb-develop\\website_comtruaanhbeo_ltweb-develop\\models\\entities\\danhgia.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:models\\entities\\danhgia.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\website_comtruaanhbeo_ltweb-develop\\website_comtruaanhbeo_ltweb-develop\\helpers\\webconstants.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:helpers\\webconstants.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|d:\\website_comtruaanhbeo_ltweb-develop\\website_comtruaanhbeo_ltweb-develop\\helpers\\utils.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
       "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:helpers\\utils.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -46,27 +125,63 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
+<<<<<<< HEAD
           "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
+=======
+          "SelectedChildIndex": 6,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{b1e99781-ab81-11d0-b683-00aa00a3ee26}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Bookmark",
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
               "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
             },
             {
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "appsettings.Development.json",
+<<<<<<< HEAD
               "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\appsettings.Development.json",
               "RelativeDocumentMoniker": "appsettings.Development.json",
               "ToolTip": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\appsettings.Development.json",
               "RelativeToolTip": "appsettings.Development.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAwAAAAAAAAAA==",
+=======
+              "DocumentMoniker": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\appsettings.Development.json",
+              "RelativeDocumentMoniker": "appsettings.Development.json",
+              "ToolTip": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\appsettings.Development.json",
+              "RelativeToolTip": "appsettings.Development.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAABAAAAAAAAAA==",
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2026-11-07T08:53:47.076Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
+<<<<<<< HEAD
               "DocumentIndex": 6,
               "Title": "HomeController.cs",
               "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Controllers\\HomeController.cs",
@@ -76,10 +191,23 @@
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-10-23T08:25:12.281Z"
+=======
+              "DocumentIndex": 1,
+              "Title": "AdminController.cs",
+              "DocumentMoniker": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\Controllers\\AdminController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AdminController.cs",
+              "ToolTip": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\Controllers\\AdminController.cs",
+              "RelativeToolTip": "Controllers\\AdminController.cs",
+              "ViewState": "AgIAAKwAAAAAAAAAAAA+wLIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-07T14:13:20.564Z",
+              "EditorCaption": ""
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
+<<<<<<< HEAD
               "Title": "AuthController.cs",
               "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Controllers\\AuthController.cs",
               "RelativeDocumentMoniker": "Controllers\\AuthController.cs",
@@ -100,14 +228,188 @@
               "ViewState": "AgIAAFMAAAAAAAAAAAAAAFwAAAA+AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-10-23T08:26:13.941Z"
+=======
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\appsettings.json",
+              "RelativeDocumentMoniker": "appsettings.json",
+              "ToolTip": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\appsettings.json",
+              "RelativeToolTip": "appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-11-07T08:53:51.275Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "efpt.config.json",
+              "DocumentMoniker": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\efpt.config.json",
+              "RelativeDocumentMoniker": "efpt.config.json",
+              "ToolTip": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\efpt.config.json",
+              "RelativeToolTip": "efpt.config.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-11-07T13:56:56.141Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": ".dockerignore",
+              "DocumentMoniker": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\.dockerignore",
+              "RelativeDocumentMoniker": ".dockerignore",
+              "ToolTip": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\.dockerignore",
+              "RelativeToolTip": ".dockerignore",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-11-07T14:19:45.429Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "RegisterRequest.cs",
+              "DocumentMoniker": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\Models\\Auth\\RegisterRequest.cs",
+              "RelativeDocumentMoniker": "Models\\Auth\\RegisterRequest.cs",
+              "ToolTip": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\Models\\Auth\\RegisterRequest.cs",
+              "RelativeToolTip": "Models\\Auth\\RegisterRequest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-07T14:14:08.867Z",
+              "EditorCaption": ""
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
             },
             {
               "$type": "Document",
               "DocumentIndex": 7,
+<<<<<<< HEAD
               "Title": "Webconstants.cs",
               "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Helpers\\Webconstants.cs",
               "RelativeDocumentMoniker": "Helpers\\Webconstants.cs",
               "ToolTip": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Helpers\\Webconstants.cs",
+=======
+              "Title": "VerifyRegistrationRequest.cs",
+              "DocumentMoniker": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\Models\\Auth\\VerifyRegistrationRequest.cs",
+              "RelativeDocumentMoniker": "Models\\Auth\\VerifyRegistrationRequest.cs",
+              "ToolTip": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\Models\\Auth\\VerifyRegistrationRequest.cs",
+              "RelativeToolTip": "Models\\Auth\\VerifyRegistrationRequest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-07T14:14:21.822Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ErrorViewModel.cs",
+              "DocumentMoniker": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\Models\\ErrorViewModel.cs",
+              "RelativeDocumentMoniker": "Models\\ErrorViewModel.cs",
+              "ToolTip": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\Models\\ErrorViewModel.cs",
+              "RelativeToolTip": "Models\\ErrorViewModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-07T14:14:33.449Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "LoginRequest.cs",
+              "DocumentMoniker": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\Models\\Auth\\LoginRequest.cs",
+              "RelativeDocumentMoniker": "Models\\Auth\\LoginRequest.cs",
+              "ToolTip": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\Models\\Auth\\LoginRequest.cs",
+              "RelativeToolTip": "Models\\Auth\\LoginRequest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-07T14:14:17.347Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ComTruaAnhBeoContext.cs",
+              "DocumentMoniker": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\Models\\EF\\ComTruaAnhBeoContext.cs",
+              "RelativeDocumentMoniker": "Models\\EF\\ComTruaAnhBeoContext.cs",
+              "ToolTip": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\Models\\EF\\ComTruaAnhBeoContext.cs",
+              "RelativeToolTip": "Models\\EF\\ComTruaAnhBeoContext.cs",
+              "ViewState": "AgIAAEcBAAAAAAAAAAAAAEcBAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-07T13:56:47.156Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "EmailSettings.cs",
+              "DocumentMoniker": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\Models\\Auth\\EmailSettings.cs",
+              "RelativeDocumentMoniker": "Models\\Auth\\EmailSettings.cs",
+              "ToolTip": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\Models\\Auth\\EmailSettings.cs",
+              "RelativeToolTip": "Models\\Auth\\EmailSettings.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-07T14:14:04.783Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "HomeController.cs",
+              "DocumentMoniker": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\Controllers\\HomeController.cs",
+              "RelativeDocumentMoniker": "Controllers\\HomeController.cs",
+              "ToolTip": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\Controllers\\HomeController.cs",
+              "RelativeToolTip": "Controllers\\HomeController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-23T08:25:12.281Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AuthController.cs",
+              "ToolTip": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "Controllers\\AuthController.cs",
+              "ViewState": "AgIAAA8BAAAAAAAAAAASwAsBAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-07T09:28:28.637Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "key-df9203b9-8516-4d35-82d6-b804d1d5fcdb.xml",
+              "DocumentMoniker": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\App_Data\\DataProtection-Keys\\key-df9203b9-8516-4d35-82d6-b804d1d5fcdb.xml",
+              "RelativeDocumentMoniker": "App_Data\\DataProtection-Keys\\key-df9203b9-8516-4d35-82d6-b804d1d5fcdb.xml",
+              "ToolTip": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\App_Data\\DataProtection-Keys\\key-df9203b9-8516-4d35-82d6-b804d1d5fcdb.xml",
+              "RelativeToolTip": "App_Data\\DataProtection-Keys\\key-df9203b9-8516-4d35-82d6-b804d1d5fcdb.xml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003576|",
+              "WhenOpened": "2026-11-07T13:57:40.804Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAABIAAAAAAAAAAAAAAFwAAAA+AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-10-23T08:26:13.941Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "Webconstants.cs",
+              "DocumentMoniker": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\Helpers\\Webconstants.cs",
+              "RelativeDocumentMoniker": "Helpers\\Webconstants.cs",
+              "ToolTip": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\Helpers\\Webconstants.cs",
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
               "RelativeToolTip": "Helpers\\Webconstants.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -115,6 +417,7 @@
             },
             {
               "$type": "Document",
+<<<<<<< HEAD
               "DocumentIndex": 3,
               "Title": "appsettings.json",
               "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\appsettings.json",
@@ -132,6 +435,13 @@
               "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Views\\Home\\Index.cshtml",
               "RelativeDocumentMoniker": "Views\\Home\\Index.cshtml",
               "ToolTip": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Views\\Home\\Index.cshtml",
+=======
+              "DocumentIndex": 15,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\Views\\Home\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\Home\\Index.cshtml",
+              "ToolTip": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\Views\\Home\\Index.cshtml",
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
               "RelativeToolTip": "Views\\Home\\Index.cshtml",
               "ViewState": "AgIAAD8DAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
@@ -139,11 +449,19 @@
             },
             {
               "$type": "Document",
+<<<<<<< HEAD
               "DocumentIndex": 8,
               "Title": "Utils.cs",
               "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Helpers\\Utils.cs",
               "RelativeDocumentMoniker": "Helpers\\Utils.cs",
               "ToolTip": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Helpers\\Utils.cs",
+=======
+              "DocumentIndex": 18,
+              "Title": "Utils.cs",
+              "DocumentMoniker": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\Helpers\\Utils.cs",
+              "RelativeDocumentMoniker": "Helpers\\Utils.cs",
+              "ToolTip": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\Helpers\\Utils.cs",
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
               "RelativeToolTip": "Helpers\\Utils.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -151,11 +469,19 @@
             },
             {
               "$type": "Document",
+<<<<<<< HEAD
               "DocumentIndex": 5,
               "Title": "DanhGia.cs",
               "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Models\\Entities\\DanhGia.cs",
               "RelativeDocumentMoniker": "Models\\Entities\\DanhGia.cs",
               "ToolTip": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Models\\Entities\\DanhGia.cs",
+=======
+              "DocumentIndex": 16,
+              "Title": "DanhGia.cs",
+              "DocumentMoniker": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\Models\\Entities\\DanhGia.cs",
+              "RelativeDocumentMoniker": "Models\\Entities\\DanhGia.cs",
+              "ToolTip": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\Models\\Entities\\DanhGia.cs",
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
               "RelativeToolTip": "Models\\Entities\\DanhGia.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",

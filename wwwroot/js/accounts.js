@@ -482,11 +482,19 @@ function handleNavClick(module) {
   if (module === 'tai-khoan') {
     showToast("Bạn đang ở trang Quản lý tài khoản Website", "info");
   } else if (module === 'don-hang') {
+<<<<<<< HEAD
     window.location.href = "orders.html";
   } else if (module === 'mon-an') {
     window.location.href = "adminpage.html";
   } else if (module === 'khuyen-mai') {
     window.location.href = "Promotions.html";
+=======
+    window.location.href = "/admin/orders";
+  } else if (module === 'mon-an') {
+    window.location.href = "/admin/products";
+  } else if (module === 'khuyen-mai') {
+    window.location.href = "/admin/promotions";
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
   }
 }
 

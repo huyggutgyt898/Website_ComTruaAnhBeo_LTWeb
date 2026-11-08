@@ -97,6 +97,7 @@ wwwroot\lib\jquery\dist\jquery.slim.js
 wwwroot\lib\jquery\dist\jquery.slim.min.js
 wwwroot\lib\jquery\dist\jquery.slim.min.map
 wwwroot\lib\jquery\LICENSE.txt
+<<<<<<< HEAD
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\lib\jquery\LICENSE.txt
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\lib\jquery\dist\jquery.slim.min.map
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\lib\jquery\dist\jquery.slim.min.js
@@ -176,3 +177,84 @@ D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\js\delivery.js
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\js\orders.js
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\js\promotions.js
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\js\statistics.js
+=======
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\css\accounts.css
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\css\admin-common.css
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\css\admin-login.css
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\css\adminpage.css
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\css\delivery.css
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\css\index.css
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\css\orders.css
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\css\promotions.css
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\css\site.css
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\css\statistics.css
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\favicon.ico
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\js\accounts.js
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\js\adminpage.js
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\js\delivery.js
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\js\orders.js
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\js\promotions.js
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\js\site.js
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\js\statistics.js
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.min.css.map
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.css
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.css.map
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.min.css
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap-grid.rtl.min.css.map
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.css.map
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.min.css.map
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.css
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.css.map
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.min.css
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap-reboot.rtl.min.css.map
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.css
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.css.map
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.min.css
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.min.css.map
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.css
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.css.map
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.min.css
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap-utilities.rtl.min.css.map
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap.css
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap.css.map
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap.min.css.map
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.css
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.css.map
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.min.css
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\css\bootstrap.rtl.min.css.map
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.js.map
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\js\bootstrap.bundle.min.js.map
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.js.map
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.min.js
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\js\bootstrap.esm.min.js.map
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\js\bootstrap.js
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\js\bootstrap.js.map
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\js\bootstrap.min.js
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\bootstrap\dist\js\bootstrap.min.js.map
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\jquery-validation-unobtrusive\dist\jquery.validate.unobtrusive.js
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\jquery-validation-unobtrusive\dist\jquery.validate.unobtrusive.min.js
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\jquery-validation-unobtrusive\LICENSE.txt
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\jquery-validation\dist\additional-methods.js
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\jquery-validation\dist\additional-methods.min.js
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\jquery-validation\dist\jquery.validate.js
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\jquery-validation\dist\jquery.validate.min.js
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\jquery-validation\LICENSE.md
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\jquery\dist\jquery.js
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\jquery\dist\jquery.min.js
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\jquery\dist\jquery.min.map
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\jquery\dist\jquery.slim.js
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\jquery\dist\jquery.slim.min.js
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\jquery\dist\jquery.slim.min.map
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\lib\jquery\LICENSE.txt
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\js\admin-common.js
+D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\wwwroot\js\index.js
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563

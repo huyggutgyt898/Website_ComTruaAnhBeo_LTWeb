@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@(ViewData["Title"] ?? "Quản trị") - Cơm Trưa Anh Béo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Shared Admin Stylesheet -->
+    <link rel="stylesheet" href="~/css/admin-common.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body data-active-nav="@ViewData["ActiveNav"]">
+
+    <!-- Shared Header, Sidebar & Logout Modal Component -->
+    <partial name="_AdminHeader" />
+
+    <!-- Three-Column Body Container -->
+    <div class="admin-body-container">
+        @RenderBody()
+    </div>
+
+    <!-- Floating Toast Notifications Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Shared Admin JavaScript Script -->
+    <script src="~/js/admin-common.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

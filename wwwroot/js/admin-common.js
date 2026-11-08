@@ -114,42 +114,66 @@ const SHARED_COMPONENTS_TEMPLATE = `
 <!-- SHARED ADMIN SIDEBAR -->
 <aside class="admin-sidebar" id="sharedAdminSidebar">
   <nav class="sidebar-nav">
+<<<<<<< HEAD
     <a class="sidebar-nav-item" data-nav="orders" href="orders.html" title="Trang Quản lý đơn hàng">
+=======
+    <a class="sidebar-nav-item" data-nav="orders" href="/admin/orders" title="Trang Quản lý đơn hàng">
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
       <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
         <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3M19 19H5V5H19V19M17 12H7V10H17V12M13 16H7V14H13V16M17 8H7V6H17V8Z"/>
       </svg>
       <span>Quản lý đơn hàng</span>
     </a>
 
+<<<<<<< HEAD
     <a class="sidebar-nav-item" data-nav="dishes" href="adminpage.html" title="Trang Quản lý món ăn">
+=======
+    <a class="sidebar-nav-item" data-nav="dishes" href="/admin/products" title="Trang Quản lý món ăn">
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
       <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
         <path d="M18.06 22.99H5.94C4.33 22.99 3 21.66 3 20.05V13.88C3 13.06 3.67 12.39 4.49 12.39H19.51C20.33 12.39 21 13.06 21 13.88V20.05C21 21.66 19.67 22.99 18.06 22.99M12 2C10.9 2 10 2.9 10 4V10H14V4C14 2.9 13.1 2 12 2M6 4C4.9 4 4 4.9 4 6V10H8V6C8 4.9 7.1 4 6 4M18 4C16.9 4 16 4.9 16 6V10H20V6C20 4.9 19.1 4 18 4Z"/>
       </svg>
       <span>Quản lý món ăn</span>
     </a>
 
+<<<<<<< HEAD
     <a class="sidebar-nav-item" data-nav="promotions" href="Promotions.html" title="Quản lý khuyến mãi">
+=======
+    <a class="sidebar-nav-item" data-nav="promotions" href="/admin/promotions" title="Quản lý khuyến mãi">
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
       <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
         <path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/>
       </svg>
       <span>Quản lý khuyến mãi</span>
     </a>
 
+<<<<<<< HEAD
     <a class="sidebar-nav-item" data-nav="accounts" href="accounts.html" title="Quản lý tài khoản">
+=======
+    <a class="sidebar-nav-item" data-nav="accounts" href="/admin/accounts" title="Quản lý tài khoản">
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
       <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
         <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
       </svg>
       <span>Quản lý tài khoản</span>
     </a>
 
+<<<<<<< HEAD
     <a class="sidebar-nav-item" data-nav="statistics" href="statistics.html" title="Thống kê & Báo cáo">
+=======
+    <a class="sidebar-nav-item" data-nav="statistics" href="/admin/statistics" title="Thống kê & Báo cáo">
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
       <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
         <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3M19 19H5V5H19V19M7 10H9V17H7V10M11 7H13V17H11V7M15 13H17V17H15V13Z"/>
       </svg>
       <span>Thống kê & báo cáo</span>
     </a>
 
+<<<<<<< HEAD
     <a class="sidebar-nav-item" data-nav="delivery" href="delivery.html" title="Cấu hình giao hàng">
+=======
+    <a class="sidebar-nav-item" data-nav="delivery" href="/admin/delivery" title="Cấu hình giao hàng">
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
       <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
         <path d="M18 18.5C18 19.33 17.33 20 16.5 20C15.67 20 15 19.33 15 18.5C15 17.67 15.67 17 16.5 17C17.33 17 18 17.67 18 18.5M19.5 9.5L21.46 12H17V9.5H19.5M6 18.5C6 19.33 5.33 20 4.5 20C3.67 20 3 19.33 3 18.5C3 17.67 3.67 17 4.5 17C5.33 17 6 17.67 6 18.5M20 8H17V4H3C1.89 4 1 4.89 1 6V17H3C3 18.66 4.34 20 6 20C7.66 20 9 18.66 9 17H15C15 18.66 16.34 20 18 20C19.66 20 21 18.66 21 17H23V12L20 8Z"/>
       </svg>
@@ -226,6 +250,7 @@ function injectSharedTemplate(htmlContent) {
 }
 
 async function initSharedComponents() {
+<<<<<<< HEAD
   // Step 1: Instantly and synchronously inject embedded template with zero async delay
   injectSharedTemplate(SHARED_COMPONENTS_TEMPLATE);
 
@@ -252,6 +277,18 @@ async function initSharedComponents() {
     }
   } catch (e) {
     // Graceful fallback: embedded template already actively rendered
+=======
+  // If rendered by Razor partial view (_AdminHeader.cshtml), elements already exist in DOM
+  const existingHeader = document.getElementById('sharedAdminHeader');
+  const existingSidebar = document.getElementById('sharedAdminSidebar');
+
+  if (existingHeader || existingSidebar) {
+    highlightActiveNavigation();
+    bindSharedHeaderEvents();
+  } else {
+    // Fallback if legacy mount targets exist
+    injectSharedTemplate(SHARED_COMPONENTS_TEMPLATE);
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
   }
 
   await updateAdminProfile();
@@ -296,7 +333,11 @@ function highlightActiveNavigation() {
 
   if (!activeKey) {
     if (currentPath.includes('orders')) activeKey = 'orders';
+<<<<<<< HEAD
     else if (currentPath.includes('adminpage')) activeKey = 'dishes';
+=======
+    else if (currentPath.includes('adminpage') || currentPath.includes('products')) activeKey = 'dishes';
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
     else if (currentPath.includes('promotions')) activeKey = 'promotions';
     else if (currentPath.includes('accounts')) activeKey = 'accounts';
     else if (currentPath.includes('statistics')) activeKey = 'statistics';
@@ -338,6 +379,7 @@ function bindSharedHeaderEvents() {
   const profileDropdown = document.getElementById('adminProfileDropdown');
   const profileWrapper = document.querySelector('.admin-profile-wrapper');
 
+<<<<<<< HEAD
   if (profileBtn && profileDropdown) {
     profileBtn.onclick = (e) => {
       e.stopPropagation();
@@ -345,6 +387,23 @@ function bindSharedHeaderEvents() {
       const willBeActive = !profileDropdown.classList.contains('active');
       profileDropdown.classList.toggle('active', willBeActive);
       if (profileWrapper) profileWrapper.classList.toggle('active', willBeActive);
+=======
+  window.toggleAdminProfileDropdown = function(e) {
+    if (e) e.stopPropagation();
+    const curDropdown = document.getElementById('adminProfileDropdown');
+    const curWrapper = document.querySelector('.admin-profile-wrapper');
+    if (curDropdown) {
+      closeAllDropdowns(curDropdown);
+      const willBeActive = !curDropdown.classList.contains('active');
+      curDropdown.classList.toggle('active', willBeActive);
+      if (curWrapper) curWrapper.classList.toggle('active', willBeActive);
+    }
+  };
+
+  if (profileBtn && profileDropdown) {
+    profileBtn.onclick = (e) => {
+      window.toggleAdminProfileDropdown(e);
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
     };
   }
 
@@ -452,6 +511,7 @@ function closeLogoutModal() {
   }
 }
 
+<<<<<<< HEAD
 async function confirmLogout() {
   closeLogoutModal();
   try {
@@ -477,6 +537,15 @@ async function confirmLogout() {
     window.location.assign('/admin/login');
   } catch (error) {
     showToast(error instanceof Error ? error.message : 'Không thể đăng xuất. Vui lòng thử lại.', 'error');
+=======
+function confirmLogout() {
+  closeLogoutModal();
+  const form = document.getElementById('adminLogoutForm');
+  if (form) {
+    form.submit();
+  } else {
+    window.location.assign('/admin/logout');
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
   }
 }
 

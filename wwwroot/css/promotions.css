@@ -314,3 +314,37 @@
   color: #616161;
   border: 1px solid #DEDEDE;
 }
+<<<<<<< HEAD
+=======
+
+/* ==========================================================================
+   SAFETY FALLBACKS & MODALS
+   ========================================================================== */
+.pill-radio-label.active-danger {
+  background: #ECEFF1;
+  border-color: #B0BEC5;
+  color: #37474F;
+}
+
+.modal-backdrop,
+.admin-modal-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(40, 10, 8, 0.6) !important;
+  backdrop-filter: blur(3px) !important;
+  display: none;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 99999 !important;
+  padding: 16px !important;
+}
+
+.modal-backdrop.active,
+.admin-modal-backdrop.active {
+  display: flex !important;
+}
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563

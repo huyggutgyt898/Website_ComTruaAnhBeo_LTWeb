@@ -3,7 +3,16 @@
     "",
     "\\Models",
     "\\Views",
+<<<<<<< HEAD
     "\\wwwroot\\lib"
   ],
+=======
+    "\\Views\\admin",
+    "\\Views\\Home",
+    "\\wwwroot",
+    "\\wwwroot\\lib"
+  ],
+  "SelectedNode": "\\Views\\Home\\Index.cshtml",
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
   "PreviewInSolutionExplorer": false
 }

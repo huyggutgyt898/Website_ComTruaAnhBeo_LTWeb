@@ -913,6 +913,18 @@
           document.getElementById("profilePhoneDisplay").textContent = currentUser.phone;
           document.getElementById("profileRoleDisplay").textContent = currentUser.role;
 
+<<<<<<< HEAD
+=======
+          const adminLink = document.getElementById("btnGoToAdminPanel");
+          if (adminLink) {
+            if (currentUser.role === "Admin") {
+              adminLink.classList.remove("hidden");
+            } else {
+              adminLink.classList.add("hidden");
+            }
+          }
+
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
           // Tự động điền thông tin khách vào form đặt hàng
           document.getElementById("orderFullName").value = currentUser.name;
           document.getElementById("orderPhone").value = currentUser.phone;
@@ -932,12 +944,47 @@
         return postAuthFormData(new FormData(form), url);
       }
 
+<<<<<<< HEAD
       async function postAuthFormData(formData, url) {
         const response = await fetch(url, {
+=======
+      async function refreshFormTokens() {
+        try {
+          const res = await fetch("/auth/antiforgery", { cache: "no-store" });
+          if (res.ok) {
+            const data = await res.json();
+            if (data?.token) {
+              document.querySelectorAll('input[name="__RequestVerificationToken"]').forEach(el => {
+                el.value = data.token;
+              });
+              return data.token;
+            }
+          }
+        } catch (_) {}
+        return null;
+      }
+
+      async function postAuthFormData(formData, url) {
+        let response = await fetch(url, {
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
           method: "POST",
           body: formData,
           credentials: "same-origin"
         });
+<<<<<<< HEAD
+=======
+        if (!response.ok && response.status === 400) {
+          const freshToken = await refreshFormTokens();
+          if (freshToken) {
+            formData.set("__RequestVerificationToken", freshToken);
+            response = await fetch(url, {
+              method: "POST",
+              body: formData,
+              credentials: "same-origin"
+            });
+          }
+        }
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
         const result = await response.json().catch(() => null);
         if (!response.ok) {
           const validationMessage = result?.errors
@@ -1286,11 +1333,15 @@
           }
 
           const result = await response.json();
+<<<<<<< HEAD
           if (result.user?.role === "Admin") {
             window.location.assign("/admin");
             return;
           }
           currentUser = result.user?.role === "KhachHang" ? result.user : null;
+=======
+          currentUser = result.user || null;
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
           updateAuthHeaderState();
         } catch (error) {
           console.error("Không thể tải trạng thái tài khoản:", error);

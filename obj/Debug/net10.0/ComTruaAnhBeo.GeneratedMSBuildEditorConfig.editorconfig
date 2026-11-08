@@ -20,17 +20,26 @@ build_property.TargetFrameworkVersion = v10.0
 build_property.EntryPointFilePath = 
 build_property.RootNamespace = ComTruaAnhBeo
 build_property.RootNamespace = ComTruaAnhBeo
+<<<<<<< HEAD
 build_property.ProjectDir = D:\Subject\Web development\Project\ComTruaAnhBeo\
+=======
+build_property.ProjectDir = D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop\
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 10.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+<<<<<<< HEAD
 build_property.MSBuildProjectDirectory = D:\Subject\Web development\Project\ComTruaAnhBeo
+=======
+build_property.MSBuildProjectDirectory = D:\Website_ComTruaAnhBeo_LTWeb-develop\Website_ComTruaAnhBeo_LTWeb-develop
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 10.0
 build_property.EnableCodeStyleSeverity = 
 
+<<<<<<< HEAD
 [D:/Subject/Web development/Project/ComTruaAnhBeo/Views/Auth/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0aFxMb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
@@ -88,5 +97,68 @@ build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/Subject/Web development/Project/ComTruaAnhBeo/Views/Shared/_Layout.cshtml]
+=======
+[D:/Website_ComTruaAnhBeo_LTWeb-develop/Website_ComTruaAnhBeo_LTWeb-develop/Views/Admin/Accounts.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cQWNjb3VudHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Website_ComTruaAnhBeo_LTWeb-develop/Website_ComTruaAnhBeo_LTWeb-develop/Views/Admin/Delivery.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cRGVsaXZlcnkuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Website_ComTruaAnhBeo_LTWeb-develop/Website_ComTruaAnhBeo_LTWeb-develop/Views/Admin/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cTG9naW4uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Website_ComTruaAnhBeo_LTWeb-develop/Website_ComTruaAnhBeo_LTWeb-develop/Views/Admin/Orders.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cT3JkZXJzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Website_ComTruaAnhBeo_LTWeb-develop/Website_ComTruaAnhBeo_LTWeb-develop/Views/Admin/Products.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUHJvZHVjdHMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Website_ComTruaAnhBeo_LTWeb-develop/Website_ComTruaAnhBeo_LTWeb-develop/Views/Admin/Promotions.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUHJvbW90aW9ucy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Website_ComTruaAnhBeo_LTWeb-develop/Website_ComTruaAnhBeo_LTWeb-develop/Views/Admin/Statistics.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cU3RhdGlzdGljcy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Website_ComTruaAnhBeo_LTWeb-develop/Website_ComTruaAnhBeo_LTWeb-develop/Views/Home/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Website_ComTruaAnhBeo_LTWeb-develop/Website_ComTruaAnhBeo_LTWeb-develop/Views/Home/Privacy.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Website_ComTruaAnhBeo_LTWeb-develop/Website_ComTruaAnhBeo_LTWeb-develop/Views/Shared/Error.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Website_ComTruaAnhBeo_LTWeb-develop/Website_ComTruaAnhBeo_LTWeb-develop/Views/Shared/_AdminHeader.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9BZG1pbkhlYWRlci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Website_ComTruaAnhBeo_LTWeb-develop/Website_ComTruaAnhBeo_LTWeb-develop/Views/Shared/_AdminLayout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9BZG1pbkxheW91dC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Website_ComTruaAnhBeo_LTWeb-develop/Website_ComTruaAnhBeo_LTWeb-develop/Views/Shared/_ValidationScriptsPartial.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Website_ComTruaAnhBeo_LTWeb-develop/Website_ComTruaAnhBeo_LTWeb-develop/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Website_ComTruaAnhBeo_LTWeb-develop/Website_ComTruaAnhBeo_LTWeb-develop/Views/_ViewStart.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/Website_ComTruaAnhBeo_LTWeb-develop/Website_ComTruaAnhBeo_LTWeb-develop/Views/Shared/_Layout.cshtml]
+>>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-nt1924mub5

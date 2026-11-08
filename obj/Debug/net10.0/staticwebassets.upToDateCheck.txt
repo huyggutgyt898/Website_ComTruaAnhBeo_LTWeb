@@ -109,6 +109,7 @@ D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\css\site.css
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\css\statistics.css
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\favicon.ico
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\js\accounts.js
+D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\js\admin-common.js
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\js\adminpage.js
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\js\delivery.js
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\js\index.js
@@ -175,4 +176,3 @@ D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\lib\jquery\dist\jquery.
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\lib\jquery\dist\jquery.slim.min.js
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\lib\jquery\dist\jquery.slim.min.map
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\lib\jquery\LICENSE.txt
-D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\js\admin-common.js

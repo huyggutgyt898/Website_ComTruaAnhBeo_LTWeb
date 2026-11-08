@@ -394,4 +394,3 @@ D:\Subject\Web development\Project\ComTruaAnhBeo\obj\verify\runtimes\win-x64\nat
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\verify\runtimes\win-x86\native\msalruntime_x86.dll
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\verify\runtimes\win\lib\net10.0\System.Security.Cryptography.Pkcs.dll
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\z2lgvmvpbf-{0}-zk6f9tnuds-zk6f9tnuds.gz
-D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt

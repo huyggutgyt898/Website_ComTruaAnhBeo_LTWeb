@@ -14,60 +14,7 @@
       KinhDo: 106.791700
     };
 
-    // Toàn bộ 44 món ăn đúng từng tên và giá tiền người dùng yêu cầu
-    const MENU_ITEMS = [
-      // --- NHÓM 1: 24 MÓN CƠM CHÍNH ---
-      { id: 1, catId: 1, name: "Cơm tấm sườn", price: 49000, unit: "Phần", hot: true, img: "/images/thumb_suon.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/C%C6%A1m_t%E1%BA%A5m_S%C3%A0i_G%C3%B2n_(s%C6%B0%E1%BB%9Dn_tr%E1%BB%A9ng),_ng15th8n2022.jpg", desc: "Sườn cốt lết nướng than hoa thơm lừng, kèm mỡ hành, đồ chua, nước mắm kẹo." },
-      { id: 2, catId: 1, name: "Cơm tấm sườn bì chả", price: 69000, unit: "Phần", hot: true, img: "/images/thumb_comtam_full.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/C%C6%A1m_t%E1%BA%A5m_s%C6%B0%E1%BB%9Dn_b%C3%AC_ch%E1%BA%A3.jpg", desc: "Combo truyền thống đầy đặn gồm sườn nướng mật ong, bì thính giòn và chả trứng hấp." },
-      { id: 3, catId: 1, name: "Cơm heo quay cải chua", price: 59000, unit: "Phần", hot: true, img: "/images/thumb_heoquay_cai.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Crispy_roast_pork_belly_with_rice.jpg", desc: "Heo quay da nổ giòn rụm dùng kèm cải chua xào đậm đà chống ngấy." },
-      { id: 4, catId: 1, name: "Cơm heo quay không", price: 55000, unit: "Phần", hot: false, img: "/images/thumb_heoquay.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Crispy_roast_pork_belly_with_rice.jpg", desc: "Thịt ba rọi heo quay da giòn tan, ăn cùng cơm nóng, dưa leo và nước tương ớt." },
-      { id: 5, catId: 1, name: "Cơm sườn xào chua ngọt", price: 55000, unit: "Phần", hot: true, img: "/images/thumb_suonxao.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/SG_th1n2023_(c%C6%A1m_t%E1%BA%A5m_th%E1%BB%8Bt_n%C6%B0%E1%BB%9Bng)_(6).jpg", desc: "Sườn non rim sốt chua ngọt sánh quyện cùng ớt chuông, hành tây và thơm." },
-      { id: 6, catId: 1, name: "Cơm cháy chà bông", price: 39000, unit: "Phần", hot: false, img: "/images/thumb_bicha.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Com_chay_cha_bong.jpg", desc: "Cơm cháy chiên giòn rụm phủ đầy chà bông heo mặn ngọt và mỡ hành thơm phức." },
-      { id: 7, catId: 1, name: "Cơm thịt kho trứng", price: 49000, unit: "Phần", hot: true, img: "/images/thumb_thitkho.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Thit_kho_tau.jpg", desc: "Thịt ba chỉ kho tàu nước dừa tươi mềm rục cùng trứng vịt thấm vị miền Nam." },
-      { id: 8, catId: 1, name: "Cơm gà kho sả ớt", price: 49000, unit: "Phần", hot: false, img: "/images/thumb_duiga_them.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Com_ga_kho_sa_ot.jpg", desc: "Thịt gà ta kho sả ớt cay nồng dậy mùi thơm, cực kỳ bắt cơm ngày trưa." },
-      { id: 9, catId: 1, name: "Cơm đậu hủ sốt cà chua + lạc rang", price: 39000, unit: "Phần", hot: false, img: "/images/thumb_suonxao.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Dau_hu_sot_ca_chua.jpg", desc: "Đậu hủ chiên vàng sốt cà chua tươi, kèm đậu phộng (lạc) rang muối giòn bùi." },
-      { id: 10, catId: 1, name: "Cơm cá chiên + canh cà chua trứng", price: 55000, unit: "Phần", hot: false, img: "/images/thumb_duiga.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Ca_chien_com_trang.jpg", desc: "Cá tươi chiên vàng giòn chấm mắm tỏi ớt, phục vụ kèm 1 tô canh cà chua trứng." },
-      { id: 11, catId: 1, name: "Cơm + 1 đùi vịt quay", price: 69000, unit: "Phần", hot: true, img: "/images/thumb_duiga.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Vit_quay_com_trang.jpg", desc: "Đùi vịt quay lá mắc mật da bóng bẩy, thịt mềm ngọt kèm nước chấm gia truyền." },
-      { id: 12, catId: 1, name: "Cơm bò lúc lắc", price: 59000, unit: "Phần", hot: true, img: "/images/thumb_suonxao.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Bo_luc_lac_with_rice.jpg", desc: "Thịt bò thăn áp chảo lửa lớn mềm ngọt cùng ớt chuông, hành tây sốt tiêu đen." },
-      { id: 13, catId: 1, name: "Cơm thịt heo chiên xù", price: 55000, unit: "Phần", hot: false, img: "/images/thumb_heoquay.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Tonkatsu_with_rice.jpg", desc: "Thịt thăn heo tẩm bột chiên xù vàng ruộm, giòn rụm chấm tương ớt xí muội." },
-      { id: 14, catId: 1, name: "Cơm đùi gà góc tư", price: 65000, unit: "Phần", hot: true, img: "/images/thumb_duiga.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Com_ga_xoi_mo.jpg", desc: "Đùi gà góc tư lớn xối mỡ da giòn rụm, thịt mọng nước ăn kèm đồ chua." },
-      { id: 15, catId: 1, name: "Cơm trứng chiên + canh bầu/ bí", price: 30000, unit: "Phần", hot: false, img: "/images/thumb_trung.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Com_trung_chien.jpg", desc: "Trứng chiên hành lá vàng ươm ăn kèm canh bầu hoặc canh bí thanh mát." },
-      { id: 16, catId: 1, name: "Cơm + rau luộc chấm kho quẹt + canh bầu/ bí", price: 40000, unit: "Phần", hot: false, img: "/images/thumb_rauluoc.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Rau_luoc_kho_quet.jpg", desc: "Rau củ luộc xanh mướt chấm kho quẹt tóp mỡ tôm khô, kèm canh bầu/bí." },
-      { id: 17, catId: 1, name: "Cơm thịt luộc + rau luộc + canh bất kì", price: 50000, unit: "Phần", hot: false, img: "/images/thumb_heoquay_cai.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Thit_luoc_com_trang.jpg", desc: "Ba rọi heo luộc cắt lát mỏng chấm mắm tỏi ớt, kèm rau luộc và 1 canh tự chọn." },
-      { id: 18, catId: 1, name: "Cơm bì chả", price: 39000, unit: "Phần", hot: false, img: "/images/thumb_bicha.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/C%C6%A1m_t%E1%BA%A5m_s%C6%B0%E1%BB%9Dn_b%C3%AC_ch%E1%BA%A3.jpg", desc: "Cơm tấm dẻo thơm ăn kèm bì heo trộn thính và chả trứng chưng mộc nhĩ." },
-      { id: 19, catId: 1, name: "Cơm chả", price: 29000, unit: "Phần", hot: false, img: "/images/thumb_bicha.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/C%C6%A1m_t%E1%BA%A5m_s%C6%B0%E1%BB%9Dn_b%C3%AC_ch%E1%BA%A3.jpg", desc: "Cơm tấm ăn cùng miếng chả trứng hấp dày dặn, mỡ hành và đồ chua." },
-      { id: 20, catId: 1, name: "Cơm xíu mại", price: 45000, unit: "Phần", hot: false, img: "/images/thumb_thitkho.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Xiu_mai_sot_ca.jpg", desc: "Xíu mại thịt băm viên lớn hầm sốt cà chua đậm đà, ăn kèm cơm nóng." },
-      { id: 21, catId: 1, name: "Cơm tôm phủ trứng", price: 69000, unit: "Phần", hot: true, img: "/images/thumb_trung.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Shrimp_and_egg_rice.jpg", desc: "Tôm tươi bóc vỏ xào chín tới phủ lớp trứng non béo mềm tan trong miệng." },
-      { id: 22, catId: 1, name: "Cơm heo quay + sườn bì chả đặc biệt + cơm thêm", price: 99000, unit: "Phần", hot: true, img: "/images/thumb_comtam_full.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/C%C6%A1m_t%E1%BA%A5m_s%C6%B0%E1%BB%9Dn_b%C3%AC_ch%E1%BA%A3.jpg", desc: "Phần đặc biệt kết hợp cả heo quay giòn bì và bộ ba sườn-bì-chả kèm cơm thêm." },
-      { id: 23, catId: 1, name: "Cơm thập cẩm (1p sườn, 1p heo quay, 1p trứng chiên, 1p bì, 1p chả, 1p cải chua, 1 đùi gà nhỏ, 1 canh bất kì, 1 trà đá, cơm thêm miễn phí không giới hạn)", price: 179000, unit: "Combo", hot: true, img: "/images/hero.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/C%C6%A1m_t%E1%BA%A5m_s%C6%B0%E1%BB%9Dn_b%C3%AC_ch%E1%BA%A3.jpg", desc: "Mâm cơm siêu khổng lồ hội tụ đủ 7 món mặn + 1 canh + 1 trà đá + cơm thêm miễn phí không giới hạn!" },
-      { id: 24, catId: 1, name: "Cơm bạch tuộc + kim chi ăn kèm", price: 99000, unit: "Phần", hot: true, img: "/images/thumb_suonxao.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Stir_fried_octopus_rice.jpg", desc: "Bạch tuộc tươi xào sa tế cay giòn sần sật, dùng kèm kim chi cải thảo chua cay." },
-
-      // --- NHÓM 2: 8 MÓN CANH & RAU ---
-      { id: 25, catId: 2, name: "Canh khổ qua", price: 20000, unit: "Tô", hot: true, img: "/images/thumb_canhkhoqua.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Canh_kho_qua_nhoi_thit.jpg", desc: "Khổ qua nhồi thịt băm mộc nhĩ hầm nước xương ngọt thanh, giải nhiệt." },
-      { id: 26, catId: 2, name: "Canh cà chua trứng", price: 15000, unit: "Tô", hot: false, img: "/images/thumb_canh_up.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Tomato_egg_drop_soup.jpg", desc: "Canh trứng vân mây nấu cà chua tươi và hành ngò nóng hổi." },
-      { id: 27, catId: 2, name: "Canh bầu/ canh bí", price: 19000, unit: "Tô", hot: false, img: "/images/thumb_canhkhoqua.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Winter_melon_soup.jpg", desc: "Canh bầu hoặc bí xanh nấu tôm thịt băm ngọt mát." },
-      { id: 28, catId: 2, name: "Canh kim chi", price: 29000, unit: "Tô", hot: false, img: "/images/thumb_khoquet.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Kimchi_jjigae.jpg", desc: "Canh kim chi thịt ba chỉ đậu hủ non chua cay ấm bụng." },
-      { id: 29, catId: 2, name: "Canh khoai mỡ", price: 20000, unit: "Tô", hot: true, img: "/images/thumb_canh_up.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Purple_yam_soup.jpg", desc: "Canh khoai mỡ tím sánh dẻo nấu thịt băm, thơm mùi ngò om và rau ngổ." },
-      { id: 30, catId: 2, name: "Canh khoai môn", price: 20000, unit: "Tô", hot: false, img: "/images/thumb_canhkhoqua.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Taro_soup.jpg", desc: "Canh khoai môn hầm xương mềm bùi, thơm béo tự nhiên." },
-      { id: 31, catId: 2, name: "Canh bắp cải", price: 19000, unit: "Tô", hot: false, img: "/images/thumb_rauluoc.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Cabbage_soup.jpg", desc: "Canh bắp cải nấu thịt băm ngọt lành, thanh đạm." },
-      { id: 32, catId: 2, name: "Rau luộc kho quẹt", price: 25000, unit: "Phần", hot: true, img: "/images/thumb_rauluoc.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Rau_luoc_kho_quet.jpg", desc: "Rau củ thập cẩm luộc xanh giòn chấm nồi kho quẹt tôm khô tóp mỡ sệt kẹo." },
-
-      // --- NHÓM 3: 8 MÓN THÊM (TOPPING) ---
-      { id: 33, catId: 3, name: "Đùi gà thêm (chiên)", price: 29000, unit: "Cái", hot: false, img: "/images/thumb_duiga_them.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Fried_chicken_drumstick.jpg", desc: "Đùi tỏi gà chiên giòn nóng hổi ăn kèm." },
-      { id: 34, catId: 3, name: "Đùi gà góc tư thêm (chiên)", price: 49000, unit: "Cái", hot: true, img: "/images/thumb_duiga.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Com_ga_xoi_mo.jpg", desc: "Đùi gà góc tư lớn chiên nước mắm vàng ruộm." },
-      { id: 35, catId: 3, name: "Xíu mại thêm", price: 14000, unit: "Viên", hot: false, img: "/images/thumb_thitkho.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Xiu_mai_sot_ca.jpg", desc: "1 viên xíu mại thịt heo sốt cà chua đậm đà (14.000đ/viên)." },
-      { id: 38, catId: 3, name: "Nước mắm thêm", price: 2000, unit: "Chén", hot: false, img: "/images/thumb_khoquet.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Nuoc_cham.jpg", desc: "Chén nước mắm kẹo tỏi ớt pha theo công thức riêng của Anh Béo." },
-      { id: 39, catId: 3, name: "Cơm trắng thêm", price: 3000, unit: "Chén", hot: false, img: "/images/thumb_bicha.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Steamed_rice_in_bowl.jpg", desc: "Chén cơm tấm / cơm trắng dẻo nóng." },
-      { id: 40, catId: 3, name: "Cơm chiên thêm", price: 4000, unit: "Chén", hot: false, img: "/images/thumb_trung.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Fried_rice_bowl.jpg", desc: "Chén cơm chiên tỏi trứng vàng thơm." },
-      { id: 41, catId: 3, name: "Tóp mỡ thêm", price: 10000, unit: "Chén", hot: true, img: "/images/thumb_khoquet.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Pork_cracklings.jpg", desc: "Tóp mỡ ba rọi thắng giòn rụm rim mắm tỏi." },
-      { id: 42, catId: 3, name: "Mỡ hành thêm", price: 3000, unit: "Chén", hot: false, img: "/images/thumb_rauluoc.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Scallion_oil.jpg", desc: "Chén mỡ hành xanh mướt thơm béo." },
-
-      // --- NHÓM 4: 4 MÓN NƯỚC UỐNG & KHĂN LẠNH ---
-      { id: 36, catId: 4, name: "Trà đá", price: 4000, unit: "Ly", hot: true, img: "/images/thumb_trada.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Tra_da_Saigon.jpg", desc: "Trà đá hương lài mát lạnh sảng khoái." },
-      { id: 37, catId: 4, name: "Khăn lạnh", price: 2000, unit: "Cái", hot: false, img: "/images/thumb_trada.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Wet_wipe_packet.jpg", desc: "Khăn giấy ướt tiệt trùng mát lạnh." },
-      { id: 43, catId: 4, name: "Nước ngọt (Sting, Coca, 7-Up, Sprite, Pepsi)", price: 17000, unit: "Lon/Chai", hot: true, img: "/images/thumb_trada.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Soft_drink_cans.jpg", desc: "17.000đ (Chọn: Sting, Coca, 7-Up, Sprite, Pepsi ướp lạnh)." },
-      { id: 44, catId: 4, name: "Nước sâm", price: 11000, unit: "Chai", hot: true, img: "/images/thumb_trada.jpg", googleImg: "https://commons.wikimedia.org/wiki/Special:FilePath/Herbal_tea_bottle.jpg", desc: "Nước sâm bông cúc mía lau nhà nấu thanh nhiệt (11.000đ/chai)." }
-    ];
+    let MENU_ITEMS = [];
 
     // Hàm tạo nội dung Email chuẩn xác theo đề bài
     function buildConfirmationEmailBody(customerName, paymentMethod) {
@@ -154,12 +101,10 @@
     // =========================================================================
     // 2. STATE ỨNG DỤNG (GIỎ HÀNG, BỘ LỌC, TÀI KHOẢN ĐANG ĐĂNG NHẬP)
     // =========================================================================
-    let cart = {
-      2: 1, // Mặc định có 1 phần Cơm tấm sườn bì chả (69.000đ) để khách dễ trải nghiệm ngay
-      25: 1 // 1 tô Canh khổ qua (20.000đ)
-    };
+    let cart = {};
     let activeCategory = "ALL";
     let searchQuery = "";
+    let menuLoadState = "loading";
     let currentUser = null;
     let authRequestInProgress = false;
     let registrationChallengeId = null;
@@ -256,10 +201,110 @@
     }
 
     // =========================================================================
-    // 4. RENDER THỰC ĐƠN 44 MÓN ĂN
+    // 4. TẢI VÀ RENDER THỰC ĐƠN MÓN CHÍNH
     // =========================================================================
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, character => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[character]);
+    }
+
+    function renderCategoryFilters() {
+      const filterBar = document.getElementById("categoryFilterBar");
+      const categories = [...new Set(MENU_ITEMS.map(item => item.catId))]
+        .sort((left, right) => left.localeCompare(right, "vi"));
+      const totalCount = MENU_ITEMS.length;
+
+      document.getElementById("menuItemCount").textContent =
+        `${totalCount} món chính đang phục vụ`;
+      const allSelectedClass = activeCategory === "ALL"
+        ? "font-extrabold bg-plt-brown text-plt-gold shadow-sm"
+        : "font-bold bg-stone-100 text-stone-700 hover:bg-amber-100";
+      filterBar.innerHTML = `
+        <button type="button" data-cat="ALL" class="cat-filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm ${allSelectedClass} transition">
+          Tất cả (${totalCount})
+        </button>
+        ${categories.map(category => {
+          const count = MENU_ITEMS.filter(item => item.catId === category).length;
+          const selectedClass = activeCategory === category
+            ? "font-extrabold bg-plt-brown text-plt-gold shadow-sm"
+            : "font-bold bg-stone-100 text-stone-700 hover:bg-amber-100";
+          return `
+            <button type="button" data-cat="${escapeHtml(category)}" class="cat-filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm ${selectedClass} transition">
+              ${escapeHtml(category)} (${count})
+            </button>
+          `;
+        }).join("")}
+      `;
+    }
+
+    async function loadMenuItems() {
+      menuLoadState = "loading";
+      renderMenuGrid();
+
+      try {
+        const response = await fetch("/api/menu", {
+          headers: { Accept: "application/json" },
+          cache: "no-store"
+        });
+        if (!response.ok) {
+          throw new Error(`Tải thực đơn thất bại (HTTP ${response.status}).`);
+        }
+
+        const dishes = await response.json();
+        if (!Array.isArray(dishes)) {
+          throw new Error("Dữ liệu thực đơn không hợp lệ.");
+        }
+
+        MENU_ITEMS = dishes.map(dish => ({
+          id: Number(dish.id),
+          catId: String(dish.category || "Khác"),
+          name: String(dish.name || ""),
+          desc: String(dish.description || ""),
+          img: String(dish.imageUrl || ""),
+          price: Number(dish.price),
+          totalOrdered: Number(dish.totalOrdered || 0),
+          popularRank: Number(dish.popularRank) || null,
+          unit: "Phần"
+        }));
+        menuLoadState = "loaded";
+        renderCategoryFilters();
+        renderMenuGrid();
+      } catch (error) {
+        console.error("Không thể tải thực đơn món chính từ database:", error);
+        menuLoadState = "error";
+        document.getElementById("menuItemCount").textContent = "Không tải được thực đơn";
+        document.getElementById("categoryFilterBar").innerHTML =
+          '<span class="text-sm text-red-700" role="status">Không tải được danh mục món chính.</span>';
+        renderMenuGrid();
+      }
+    }
+
     function renderMenuGrid() {
       const container = document.getElementById("menuGridContainer");
+      if (menuLoadState === "loading") {
+        container.innerHTML = `
+          <div class="col-span-full bg-white rounded-2xl p-10 text-center border border-stone-200" role="status">
+            <div class="font-brand font-bold text-lg text-plt-brown">Đang tải thực đơn món chính...</div>
+          </div>
+        `;
+        return;
+      }
+      if (menuLoadState === "error") {
+        container.innerHTML = `
+          <div class="col-span-full bg-white rounded-2xl p-10 text-center border border-stone-200" role="alert">
+            <div class="font-brand font-bold text-lg text-plt-brown">Không thể tải thực đơn</div>
+            <p class="text-sm text-stone-600 mt-2">Vui lòng thử lại sau.</p>
+            <button type="button" class="btn-retry-menu mt-4 px-4 py-2 rounded-xl bg-plt-brown text-plt-gold font-bold">Thử lại</button>
+          </div>
+        `;
+        return;
+      }
+
       const q = searchQuery.trim().toLowerCase();
 
       const filtered = MENU_ITEMS.filter(item => {
@@ -269,11 +314,12 @@
       });
 
       if (filtered.length === 0) {
+        const isEmptyMenu = MENU_ITEMS.length === 0;
         container.innerHTML = `
           <div class="col-span-full bg-white rounded-2xl p-10 text-center border border-stone-200">
             <div class="text-4xl mb-2">🍚</div>
-            <div class="font-brand font-bold text-lg text-plt-brown">Không tìm thấy món ăn phù hợp</div>
-            <p class="text-xs text-stone-500 mt-1">Hãy thử từ khóa khác hoặc bấm xem “Tất cả (44 món)”.</p>
+            <div class="font-brand font-bold text-lg text-plt-brown">${isEmptyMenu ? "Hiện chưa có món chính nào đang phục vụ" : "Không tìm thấy món chính phù hợp"}</div>
+            <p class="text-xs text-stone-500 mt-1">${isEmptyMenu ? "Vui lòng quay lại sau." : "Hãy thử từ khóa khác hoặc chọn tất cả món chính."}</p>
           </div>
         `;
         return;
@@ -281,30 +327,36 @@
 
       container.innerHTML = filtered.map(item => {
         const inCartQty = cart[item.id] || 0;
+        const fallbackImage = "/images/card_menu.jpg";
         return `
           <div class="dish-card bg-white rounded-2xl overflow-hidden border border-stone-200/90 shadow-sm flex flex-col justify-between">
             <div>
               <div class="relative h-44 bg-stone-100 overflow-hidden">
-                <img src="${item.img}"
-                     data-google-src="${item.googleImg}"
-                     alt="${item.name}"
+                <img src="${escapeHtml(item.img || fallbackImage)}"
+                     data-fallback="${escapeHtml(fallbackImage)}"
+                     alt="${escapeHtml(item.name)}"
+                     onerror="this.onerror=null;this.src=this.dataset.fallback"
                      class="w-full h-full object-cover" />
                 <div class="absolute top-2.5 left-2.5 flex items-center gap-1.5">
                   <span class="px-2.5 py-0.5 rounded-full bg-plt-brown/90 text-plt-gold font-extrabold text-[11px] shadow">
                     #${item.id}
                   </span>
-                  ${item.hot ? `<span class="px-2.5 py-0.5 rounded-full bg-red-600 text-white font-extrabold text-[11px] shadow">🔥 Bán chạy</span>` : ``}
+                  ${item.popularRank ? `
+                    <span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-950 font-extrabold text-[11px] shadow" title="Đã đặt ${item.totalOrdered} phần">
+                      🔥 Bán chạy #${item.popularRank}
+                    </span>
+                  ` : ""}
                 </div>
                 <div class="absolute bottom-2 right-2 px-3 py-1 rounded-xl bg-plt-gold text-amber-950 font-brand font-black text-sm shadow-md border border-amber-950/15">
                   ${formatVND(item.price)}${item.unit === 'Viên' ? '/viên' : item.unit === 'Chai' ? '/chai' : ''}
                 </div>
               </div>
               <div class="p-4 space-y-1.5">
-                <h3 class="font-brand font-extrabold text-sm sm:text-base text-plt-brown leading-snug line-clamp-2" title="${item.name}">
-                  ${item.name}
+                <h3 class="font-brand font-extrabold text-sm sm:text-base text-plt-brown leading-snug line-clamp-2" title="${escapeHtml(item.name)}">
+                  ${escapeHtml(item.name)}
                 </h3>
                 <p class="text-xs text-stone-500 line-clamp-2 leading-relaxed">
-                  ${item.desc}
+                  ${escapeHtml(item.desc)}
                 </p>
               </div>
             </div>
@@ -527,6 +579,7 @@
     window.addEventListener("DOMContentLoaded", () => {
       // Render thực đơn & giỏ hàng ban đầu
       renderMenuGrid();
+      loadMenuItems();
       updateCartAndCheckoutUI();
 
       // Điền sẵn thông tin mẫu thuận tiện để người dùng test ngay hoặc sửa tùy ý
@@ -565,7 +618,7 @@
       // 2. Giỏ hàng trên Header: "khi bấm vào trỏ tới menu của quán"
       document.getElementById("btnHeaderCart").addEventListener("click", () => {
         switchView("menu", true);
-        showToast("🍚 Đã chuyển tới Thực đơn 44 món của Cơm Trưa Anh Béo!");
+        showToast("🍚 Đã chuyển tới thực đơn món chính của Cơm Trưa Anh Béo!");
       });
 
       document.getElementById("btnHeroWatchMenu").addEventListener("click", () => {
@@ -573,15 +626,13 @@
       });
 
       // 3. Lọc danh mục & Tìm kiếm món ăn
-      document.querySelectorAll(".cat-filter-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          activeCategory = btn.getAttribute("data-cat");
-          document.querySelectorAll(".cat-filter-btn").forEach(b => {
-            b.className = "cat-filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-stone-100 text-stone-700 hover:bg-amber-100 transition";
-          });
-          btn.className = "cat-filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold bg-plt-brown text-plt-gold shadow-sm transition";
-          renderMenuGrid();
-        });
+      document.getElementById("categoryFilterBar").addEventListener("click", event => {
+        const filterButton = event.target.closest(".cat-filter-btn");
+        if (!filterButton) return;
+
+        activeCategory = filterButton.getAttribute("data-cat");
+        renderCategoryFilters();
+        renderMenuGrid();
       });
 
       document.getElementById("inputSearchMenu").addEventListener("input", (e) => {
@@ -591,6 +642,11 @@
 
       // 4. Sự kiện bấm vào nút Đặt hàng hoặc + Giỏ trên từng món ăn (Event Delegation)
       document.getElementById("menuGridContainer").addEventListener("click", (e) => {
+        if (e.target.closest(".btn-retry-menu")) {
+          loadMenuItems();
+          return;
+        }
+
         const orderBtn = e.target.closest(".btn-order-now");
         if (orderBtn) {
           const dishId = Number(orderBtn.getAttribute("data-order-now"));
@@ -644,17 +700,6 @@
           renderMenuGrid();
           updateCartAndCheckoutUI();
         }
-      });
-
-      document.querySelectorAll(".quick-add-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const dishId = Number(btn.getAttribute("data-quick-add"));
-          cart[dishId] = (cart[dishId] || 0) + 1;
-          renderMenuGrid();
-          updateCartAndCheckoutUI();
-          const dish = MENU_ITEMS.find(m => m.id === dishId);
-          showToast(`+ Đã thêm ${dish ? dish.name : 'món phụ'} vào đơn hàng!`);
-        });
       });
 
       document.getElementById("btnClearCart").addEventListener("click", () => {

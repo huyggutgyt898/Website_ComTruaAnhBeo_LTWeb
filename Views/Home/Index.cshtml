@@ -137,7 +137,7 @@
         </div>
       </div>
 
-      <!-- ================= KHU VỰC MENU QUÁN (44 MÓN ĐẦY ĐỦ) ================= -->
+      <!-- ================= KHU VỰC MENU MÓN CHÍNH ================= -->
       <div id="menuSectionAnchor" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-2 space-y-6">
         <!-- Tiêu đề Menu & Thanh tìm kiếm / Lọc danh mục -->
         <div class="bg-plt-brown text-white rounded-2xl p-6 sm:p-8 shadow-lg flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
@@ -146,10 +146,12 @@
               <span>🍚</span> THỰC ĐƠN CHÍNH THỨC • CƠM TRƯA ANH BÉO
             </div>
             <h2 class="font-brand font-black text-2xl sm:text-3xl uppercase">
-              MENU 44 MÓN NÓNG HỔI MỖI NGÀY
+              THỰC ĐƠN MÓN CHÍNH
             </h2>
             <p class="text-amber-100/90 text-xs sm:text-sm">
-              Bấm <strong class="text-plt-gold">“Đặt hàng ngay”</strong> trên bất kỳ món nào để chuyển thẳng tới giao diện Đặt hàng, hoặc bấm <strong class="text-plt-gold">“+ Thêm vào giỏ”</strong> để chọn nhiều món cùng lúc.
+              <span id="menuItemCount" aria-live="polite">Đang tải thực đơn...</span>
+              <span> · </span>
+              Bấm <strong class="text-plt-gold">“Đặt hàng”</strong> để chuyển tới giao diện đặt hàng, hoặc bấm <strong class="text-plt-gold">“+ Giỏ”</strong> để chọn nhiều món.
             </p>
           </div>
 
@@ -157,7 +159,7 @@
           <div class="w-full lg:w-80">
             <div class="relative">
               <input id="inputSearchMenu" type="text"
-                     placeholder="Tìm món: sườn bì chả, heo quay, canh..."
+                     placeholder="Tìm món chính..."
                      class="w-full pl-10 pr-4 py-3 rounded-xl bg-white text-stone-900 placeholder-stone-400 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-plt-gold shadow-inner" />
               <span class="absolute left-3.5 top-3 text-stone-400">🔍</span>
             </div>
@@ -167,21 +169,7 @@
         <!-- Bộ lọc Danh mục + Tóm tắt Giỏ hàng nhanh -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-4 rounded-2xl shadow-sm border border-stone-200 sticky top-20 z-30">
           <div class="flex flex-wrap items-center gap-2" id="categoryFilterBar">
-            <button type="button" data-cat="ALL" class="cat-filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-extrabold bg-plt-brown text-plt-gold shadow-sm transition">
-              Tất cả (44 món)
-            </button>
-            <button type="button" data-cat="1" class="cat-filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-stone-100 text-stone-700 hover:bg-amber-100 transition">
-              🍛 Cơm Trưa Đặc Sản (24)
-            </button>
-            <button type="button" data-cat="2" class="cat-filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-stone-100 text-stone-700 hover:bg-amber-100 transition">
-              🥣 Canh &amp; Rau Kho Quẹt (8)
-            </button>
-            <button type="button" data-cat="3" class="cat-filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-stone-100 text-stone-700 hover:bg-amber-100 transition">
-              🍗 Món Thêm / Topping (8)
-            </button>
-            <button type="button" data-cat="4" class="cat-filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-stone-100 text-stone-700 hover:bg-amber-100 transition">
-              🥤 Nước Uống &amp; Khăn Lạnh (4)
-            </button>
+            <span class="text-xs text-stone-500" aria-live="polite">Đang tải danh mục...</span>
           </div>
 
           <div class="flex items-center justify-between md:justify-end gap-3 border-t md:border-t-0 pt-3 md:pt-0 border-stone-200">
@@ -199,7 +187,7 @@
           </div>
         </div>
 
-        <!-- Lưới hiển thị 44 món ăn -->
+        <!-- Lưới món chính đang còn món -->
         <div id="menuGridContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           <!-- Render tự động bằng JS từ dữ liệu SQL Server MonAn -->
         </div>
@@ -524,18 +512,6 @@
             <!-- Danh sách các món đã chọn kèm nút +/- số lượng -->
             <div id="checkoutCartItemsList" class="space-y-3 max-h-[380px] overflow-y-auto pr-1">
               <!-- Render bằng JS -->
-            </div>
-
-            <!-- Thêm nhanh món phụ / nước uống ngay tại trang đặt hàng -->
-            <div class="bg-amber-50/60 rounded-xl p-3 border border-amber-200/80">
-              <div class="text-xs font-extrabold text-plt-brown uppercase mb-2">⚡ Gợi ý gọi thêm kèm bữa trưa:</div>
-              <div class="flex flex-wrap gap-1.5">
-                <button type="button" data-quick-add="25" class="quick-add-btn px-2.5 py-1.5 rounded-lg bg-white border border-amber-300 hover:bg-plt-gold text-xs font-semibold transition">+ Canh khổ qua (20k)</button>
-                <button type="button" data-quick-add="32" class="quick-add-btn px-2.5 py-1.5 rounded-lg bg-white border border-amber-300 hover:bg-plt-gold text-xs font-semibold transition">+ Rau luộc kho quẹt (25k)</button>
-                <button type="button" data-quick-add="36" class="quick-add-btn px-2.5 py-1.5 rounded-lg bg-white border border-amber-300 hover:bg-plt-gold text-xs font-semibold transition">+ Trà đá (4k)</button>
-                <button type="button" data-quick-add="44" class="quick-add-btn px-2.5 py-1.5 rounded-lg bg-white border border-amber-300 hover:bg-plt-gold text-xs font-semibold transition">+ Nước sâm (11k)</button>
-                <button type="button" data-quick-add="39" class="quick-add-btn px-2.5 py-1.5 rounded-lg bg-white border border-amber-300 hover:bg-plt-gold text-xs font-semibold transition">+ Cơm trắng thêm (3k)</button>
-              </div>
             </div>
 
             <!-- Bảng tính Tổng tiền món + Phí ship + Tổng thanh toán -->

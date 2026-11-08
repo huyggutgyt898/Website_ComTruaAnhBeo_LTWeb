@@ -1303,10 +1303,6 @@
           }
 
           const result = await response.json();
-          if (result.user?.role === "Admin") {
-            window.location.assign("/admin");
-            return;
-          }
           currentUser = result.user?.role === "KhachHang" ? result.user : null;
           updateAuthHeaderState();
         } catch (error) {

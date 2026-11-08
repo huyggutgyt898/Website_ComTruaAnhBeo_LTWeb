@@ -247,7 +247,6 @@ D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\ComTruaAnhBeo
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\ComTruaAnhBeo.genruntimeconfig.cache
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\ref\ComTruaAnhBeo.dll
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\udf4nsjn5i-{0}-r9rq29veiy-r9rq29veiy.gz
-D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\45g7q2e8jt-{0}-ftr7cwcs5n-ftr7cwcs5n.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\3gh6wk9f4x-{0}-9acbgihrq7-9acbgihrq7.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\verify\appsettings.Development.json
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\verify\appsettings.json
@@ -394,4 +393,15 @@ D:\Subject\Web development\Project\ComTruaAnhBeo\obj\verify\runtimes\win-x64\nat
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\verify\runtimes\win-x86\native\msalruntime_x86.dll
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\verify\runtimes\win\lib\net10.0\System.Security.Cryptography.Pkcs.dll
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\z2lgvmvpbf-{0}-zk6f9tnuds-zk6f9tnuds.gz
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-validation\appsettings.Development.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-validation\appsettings.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-validation\efpt.config.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-validation\ComTruaAnhBeo.staticwebassets.runtime.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-validation\ComTruaAnhBeo.staticwebassets.endpoints.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-validation\ComTruaAnhBeo.exe
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-validation\ComTruaAnhBeo.deps.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-validation\ComTruaAnhBeo.runtimeconfig.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-validation\ComTruaAnhBeo.dll
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-validation\ComTruaAnhBeo.pdb
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\45g7q2e8jt-{0}-r1qzsyxdmm-r1qzsyxdmm.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt

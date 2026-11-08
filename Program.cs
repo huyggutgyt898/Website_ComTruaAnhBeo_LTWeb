@@ -2,10 +2,7 @@ using ComTruaAnhBeo.Models;
 using ComTruaAnhBeo.Models.Auth;
 using ComTruaAnhBeo.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
-<<<<<<< HEAD
-=======
 using Microsoft.AspNetCore.DataProtection;
->>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.RateLimiting;
@@ -13,15 +10,13 @@ using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
-<<<<<<< HEAD
-=======
 // DataProtection key storage
 var dataProtectionFolder = Path.Combine(builder.Environment.ContentRootPath, "App_Data", "DataProtection-Keys");
+Directory.CreateDirectory(dataProtectionFolder);
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionFolder))
     .SetApplicationName("ComTruaAnhBeo");
 
->>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
 // 1. Đăng ký DbContext kết nối tới SQL Server sử dụng chuỗi kết nối "DefaultConnection"
 builder.Services.AddDbContext<ComTruaAnhBeoContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

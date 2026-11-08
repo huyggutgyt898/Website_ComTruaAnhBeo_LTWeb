@@ -240,7 +240,7 @@ public sealed class AuthController : Controller
             return Conflict(new { message = "Email này đã được đăng ký." });
         }
 
-        await SignInCustomerAsync(account);
+        await SignInAccountAsync(account);
         return Ok(new { message = "Đăng ký tài khoản thành công.", user = ToClientUser(account) });
     }
 
@@ -258,7 +258,7 @@ public sealed class AuthController : Controller
         var accounts = await _db.TaiKhoans
             .Where(account =>
                 account.HoatDong &&
-                account.VaiTro == CustomerRole &&
+                (account.VaiTro == CustomerRole || account.VaiTro == AdminController.AdminRole) &&
                 (account.Email == identifier || account.Sdt == identifier))
             .OrderBy(account => account.MaTk)
             .Take(2)
@@ -266,18 +266,6 @@ public sealed class AuthController : Controller
 
         if (accounts.Count != 1 || string.IsNullOrEmpty(accounts[0].MatKhauHash))
         {
-            var adminAccountExists = await _db.TaiKhoans.AnyAsync(account =>
-                account.HoatDong &&
-                account.VaiTro == AdminController.AdminRole &&
-                (account.Email == identifier || account.Sdt == identifier));
-            if (adminAccountExists)
-            {
-                return StatusCode(StatusCodes.Status403Forbidden, new
-                {
-                    message = "Đây là tài khoản quản trị. Vui lòng đăng nhập tại trang quản trị /admin/login."
-                });
-            }
-
             return InvalidCredentials();
         }
 
@@ -293,7 +281,7 @@ public sealed class AuthController : Controller
             await _db.SaveChangesAsync();
         }
 
-        await SignInCustomerAsync(account);
+        await SignInAccountAsync(account);
         return Ok(new { message = "Đăng nhập thành công.", user = ToClientUser(account) });
     }
 
@@ -318,7 +306,7 @@ public sealed class AuthController : Controller
     private IActionResult InvalidCredentials() =>
         Unauthorized(new { message = "Email/SĐT hoặc mật khẩu không chính xác." });
 
-    private async Task SignInCustomerAsync(TaiKhoan account)
+    private async Task SignInAccountAsync(TaiKhoan account)
     {
         var claims = new List<Claim>
         {

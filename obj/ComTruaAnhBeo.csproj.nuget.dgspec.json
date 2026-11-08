@@ -1,7 +1,6 @@
 {
   "format": 1,
   "restore": {
-<<<<<<< HEAD
     "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\ComTruaAnhBeo.csproj": {}
   },
   "projects": {
@@ -13,29 +12,12 @@
         "projectPath": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\ComTruaAnhBeo.csproj",
         "packagesPath": "C:\\Users\\ASUS\\.nuget\\packages\\",
         "outputPath": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\obj\\",
-=======
-    "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\ComTruaAnhBeo.csproj": {}
-  },
-  "projects": {
-    "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\ComTruaAnhBeo.csproj": {
-      "version": "1.0.0",
-      "restore": {
-        "projectUniqueName": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\ComTruaAnhBeo.csproj",
-        "projectName": "ComTruaAnhBeo",
-        "projectPath": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\ComTruaAnhBeo.csproj",
-        "packagesPath": "C:\\Users\\Admin\\.nuget\\packages\\",
-        "outputPath": "D:\\Website_ComTruaAnhBeo_LTWeb-develop\\Website_ComTruaAnhBeo_LTWeb-develop\\obj\\",
->>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-<<<<<<< HEAD
           "C:\\Users\\ASUS\\AppData\\Roaming\\NuGet\\NuGet.Config",
-=======
-          "C:\\Users\\Admin\\AppData\\Roaming\\NuGet\\NuGet.Config",
->>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -64,11 +46,7 @@
           "auditLevel": "low",
           "auditMode": "all"
         },
-<<<<<<< HEAD
         "SdkAnalysisLevel": "10.0.400"
-=======
-        "SdkAnalysisLevel": "11.0.100"
->>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
       },
       "frameworks": {
         "net10.0": {
@@ -113,11 +91,7 @@
               "privateAssets": "all"
             }
           },
-<<<<<<< HEAD
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.401/PortableRuntimeIdentifierGraph.json",
-=======
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\11.0.100-rc.3.26522.148/PortableRuntimeIdentifierGraph.json",
->>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
           "packagesToPrune": {
             "Microsoft.AspNetCore": "(,10.0.32767]",
             "Microsoft.AspNetCore.Antiforgery": "(,10.0.32767]",

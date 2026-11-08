@@ -965,19 +965,11 @@ function handleNavClick(module) {
   if (module === 'don-hang') {
     showToast("Bạn đang ở trang Quản lý đơn hàng", "info");
   } else if (module === 'mon-an') {
-<<<<<<< HEAD
-    window.location.href = "adminpage.html";
-  } else if (module === 'khuyen-mai') {
-    window.location.href = "Promotions.html";
-  } else if (module === 'tai-khoan' || module === 'quan-ly-khac') {
-    window.location.href = "accounts.html";
-=======
     window.location.href = "/admin/products";
   } else if (module === 'khuyen-mai') {
     window.location.href = "/admin/promotions";
   } else if (module === 'tai-khoan' || module === 'quan-ly-khac') {
     window.location.href = "/admin/accounts";
->>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
   }
 }
 

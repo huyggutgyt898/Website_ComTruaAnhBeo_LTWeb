@@ -913,8 +913,6 @@
           document.getElementById("profilePhoneDisplay").textContent = currentUser.phone;
           document.getElementById("profileRoleDisplay").textContent = currentUser.role;
 
-<<<<<<< HEAD
-=======
           const adminLink = document.getElementById("btnGoToAdminPanel");
           if (adminLink) {
             if (currentUser.role === "Admin") {
@@ -924,7 +922,6 @@
             }
           }
 
->>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
           // Tự động điền thông tin khách vào form đặt hàng
           document.getElementById("orderFullName").value = currentUser.name;
           document.getElementById("orderPhone").value = currentUser.phone;
@@ -944,35 +941,26 @@
         return postAuthFormData(new FormData(form), url);
       }
 
-<<<<<<< HEAD
-      async function postAuthFormData(formData, url) {
-        const response = await fetch(url, {
-=======
       async function refreshFormTokens() {
-        try {
-          const res = await fetch("/auth/antiforgery", { cache: "no-store" });
-          if (res.ok) {
-            const data = await res.json();
-            if (data?.token) {
-              document.querySelectorAll('input[name="__RequestVerificationToken"]').forEach(el => {
-                el.value = data.token;
-              });
-              return data.token;
-            }
-          }
-        } catch (_) {}
-        return null;
+        const response = await fetch("/auth/antiforgery", {
+          cache: "no-store",
+          credentials: "same-origin"
+        });
+        const data = await response.json().catch(() => null);
+        if (!response.ok || !data?.token) return null;
+
+        document.querySelectorAll('input[name="__RequestVerificationToken"]').forEach(input => {
+          input.value = data.token;
+        });
+        return data.token;
       }
 
       async function postAuthFormData(formData, url) {
         let response = await fetch(url, {
->>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
           method: "POST",
           body: formData,
           credentials: "same-origin"
         });
-<<<<<<< HEAD
-=======
         if (!response.ok && response.status === 400) {
           const freshToken = await refreshFormTokens();
           if (freshToken) {
@@ -984,7 +972,6 @@
             });
           }
         }
->>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
         const result = await response.json().catch(() => null);
         if (!response.ok) {
           const validationMessage = result?.errors
@@ -1000,24 +987,6 @@
         return result;
       }
 
-      function submitAdminLoginForm(customerForm) {
-        const adminForm = document.createElement("form");
-        adminForm.method = "post";
-        adminForm.action = "/admin/login";
-        adminForm.classList.add("hidden");
-
-        for (const name of ["Identifier", "Password", "__RequestVerificationToken", "returnUrl"]) {
-          const input = document.createElement("input");
-          input.type = "hidden";
-          input.name = name;
-          input.value = name === "returnUrl" ? "/admin" : customerForm.elements[name]?.value ?? "";
-          adminForm.appendChild(input);
-        }
-
-        document.body.appendChild(adminForm);
-        adminForm.submit();
-      }
-
       async function submitAuthForm(event, url, successMessage) {
         event.preventDefault();
         if (authRequestInProgress) return;
@@ -1027,16 +996,17 @@
         form.setAttribute("aria-busy", "true");
         try {
           const result = await postAuthForm(form, url);
+          if (result.user?.role === "Admin") {
+            window.location.assign("/admin");
+            return;
+          }
+
           currentUser = result.user;
           updateAuthHeaderState();
           form.reset();
           modalAuth.classList.add("hidden");
           showToast(successMessage(currentUser));
         } catch (error) {
-          if (error.status === 403) {
-            submitAdminLoginForm(form);
-            return;
-          }
           showToast(`❌ ${error.message}`);
         } finally {
           authRequestInProgress = false;
@@ -1333,15 +1303,11 @@
           }
 
           const result = await response.json();
-<<<<<<< HEAD
           if (result.user?.role === "Admin") {
             window.location.assign("/admin");
             return;
           }
           currentUser = result.user?.role === "KhachHang" ? result.user : null;
-=======
-          currentUser = result.user || null;
->>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
           updateAuthHeaderState();
         } catch (error) {
           console.error("Không thể tải trạng thái tài khoản:", error);

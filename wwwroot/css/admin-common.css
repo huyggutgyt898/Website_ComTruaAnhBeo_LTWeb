@@ -600,11 +600,8 @@ svg {
   flex: 1;
   min-height: calc(100vh - var(--header-height));
   position: relative;
-<<<<<<< HEAD
-=======
   margin-left: var(--sidebar-width);
   width: calc(100% - var(--sidebar-width));
->>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
 }
 
 /* COLUMN 1: LEFT SIDEBAR (YELLOW #FFC400) */
@@ -619,15 +616,10 @@ svg {
   justify-content: space-between;
   padding: 16px 10px;
   box-shadow: 2px 0 10px rgba(74, 21, 17, 0.08);
-<<<<<<< HEAD
-  position: sticky;
-  top: var(--header-height);
-=======
   position: fixed;
   top: var(--header-height);
   left: 0;
   bottom: 0;
->>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
   height: calc(100vh - var(--header-height));
   overflow-y: auto;
   z-index: 900;
@@ -1478,11 +1470,8 @@ textarea.form-control {
 @media (max-width: 900px) {
   .admin-body-container {
     flex-direction: column;
-<<<<<<< HEAD
-=======
     margin-left: 0;
     width: 100%;
->>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
   }
   .admin-sidebar {
     width: 100%;

@@ -20,27 +20,24 @@ public sealed class AdminController : Controller
     private static readonly IReadOnlyDictionary<string, string> AdminPageFiles =
         new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
-            ["adminpage"] = "adminpage.html",
-            ["accounts"] = "accounts.html",
-            ["delivery"] = "delivery.html",
-            ["orders"] = "orders.html",
-            ["Promotions"] = "Promotions.html",
-            ["statistics"] = "statistics.html",
-            ["_shared-header"] = "_shared-header.html"
+            ["adminpage"] = "adminpage.cshtml",
+            ["accounts"] = "accounts.cshtml",
+            ["delivery"] = "delivery.cshtml",
+            ["orders"] = "orders.cshtml",
+            ["Promotions"] = "Promotions.cshtml",
+            ["statistics"] = "statistics.cshtml",
+            ["_shared-header"] = "_shared-header.cshtml"
         };
 
     private readonly ComTruaAnhBeoContext _db;
     private readonly IPasswordHasher<TaiKhoan> _passwordHasher;
-    private readonly IWebHostEnvironment _environment;
 
     public AdminController(
         ComTruaAnhBeoContext db,
-        IPasswordHasher<TaiKhoan> passwordHasher,
-        IWebHostEnvironment environment)
+        IPasswordHasher<TaiKhoan> passwordHasher)
     {
         _db = db;
         _passwordHasher = passwordHasher;
-        _environment = environment;
     }
 
     [HttpGet("")]
@@ -56,8 +53,7 @@ public sealed class AdminController : Controller
             return NotFound();
         }
 
-        var path = Path.Combine(_environment.ContentRootPath, "Views", "admin", fileName);
-        return PhysicalFile(path, "text/html; charset=utf-8");
+        return PartialView($"~/Views/Home/{fileName}");
     }
 
     [HttpGet("login")]
@@ -65,7 +61,7 @@ public sealed class AdminController : Controller
     public IActionResult Login(string? returnUrl = null)
     {
         ViewBag.ReturnUrl = GetSafeReturnUrl(returnUrl);
-        return View("~/Views/Admin/Login.cshtml", new LoginRequest());
+        return View("~/Views/Auth/Login.cshtml", new LoginRequest());
     }
 
     [HttpPost("login")]
@@ -78,7 +74,7 @@ public sealed class AdminController : Controller
         ViewBag.ReturnUrl = GetSafeReturnUrl(returnUrl);
         if (!ModelState.IsValid)
         {
-            return View("~/Views/Admin/Login.cshtml", request);
+            return View("~/Views/Auth/Login.cshtml", request);
         }
 
         var identifier = request.Identifier.Trim();
@@ -94,7 +90,7 @@ public sealed class AdminController : Controller
         if (accounts.Count != 1 || string.IsNullOrEmpty(accounts[0].MatKhauHash))
         {
             ModelState.AddModelError(string.Empty, "Email/SĐT hoặc mật khẩu không chính xác.");
-            return View("~/Views/Admin/Login.cshtml", request);
+            return View("~/Views/Auth/Login.cshtml", request);
         }
 
         var account = accounts[0];
@@ -102,7 +98,7 @@ public sealed class AdminController : Controller
         if (!AccountPasswordVerifier.VerifyAndUpgrade(account, request.Password, _passwordHasher))
         {
             ModelState.AddModelError(string.Empty, "Email/SĐT hoặc mật khẩu không chính xác.");
-            return View("~/Views/Admin/Login.cshtml", request);
+            return View("~/Views/Auth/Login.cshtml", request);
         }
 
         if (!string.Equals(account.MatKhauHash, previousHash, StringComparison.Ordinal))

@@ -514,4 +514,14 @@ C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-admin-session\ComTruaAnhBeo.runti
 C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-admin-session\ComTruaAnhBeo.dll
 C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-admin-session\ComTruaAnhBeo.pdb
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\45g7q2e8jt-{0}-r2xa9qb939-r2xa9qb939.gz
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build-check-b5119240\appsettings.Development.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build-check-b5119240\appsettings.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build-check-b5119240\efpt.config.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build-check-b5119240\ComTruaAnhBeo.staticwebassets.runtime.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build-check-b5119240\ComTruaAnhBeo.staticwebassets.endpoints.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build-check-b5119240\ComTruaAnhBeo.exe
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build-check-b5119240\ComTruaAnhBeo.deps.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build-check-b5119240\ComTruaAnhBeo.runtimeconfig.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build-check-b5119240\ComTruaAnhBeo.dll
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build-check-b5119240\ComTruaAnhBeo.pdb
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt

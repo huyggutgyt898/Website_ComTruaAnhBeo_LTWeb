@@ -624,6 +624,10 @@
   margin-bottom: 8px;
 }
 
+.order-load-error .order-empty-title {
+  color: var(--danger);
+}
+
 .order-empty-desc {
   font-size: 13.5px;
   color: var(--text-secondary);
@@ -649,6 +653,11 @@
 
 .btn-refresh-orders:hover {
   background: var(--brand-burgundy-light);
+}
+
+.btn-refresh-orders:disabled {
+  cursor: wait;
+  opacity: 0.65;
 }
 
 /* ==========================================================================

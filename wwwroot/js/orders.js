@@ -1,7 +1,7 @@
 /**
  * Cơm Trưa Anh Béo - Order Management Module (Quản lý đơn hàng)
  * File: wwwroot/js/orders.js
- * Frontend UI & Interaction Skeleton
+ * Frontend UI & database-backed order listing
  */
 
 /* ==========================================================================
@@ -20,11 +20,13 @@ const ORDER_STATUS = {
   FAILED: { key: "FAILED", label: "Giao thất bại", css: "status-failed" }
 };
 
-// Data Store (Starts EMPTY per AGENTS.md rule 4 & 24)
+// Loaded from the authenticated admin orders API.
 let orders = [];
 let selectedOrderId = null;
 let checkedOrderIds = new Set();
 let soundEnabled = true;
+let isLoadingOrders = false;
+let orderLoadError = "";
 
 // Filters State
 let currentSearch = "";
@@ -86,12 +88,13 @@ function playNotificationChime() {
    ========================================================================== */
 document.addEventListener("DOMContentLoaded", () => {
   initEventListeners();
-  renderKPIs();
-  renderOrderTable();
-  renderRightPanel();
+  loadOrders();
 });
 
 function initEventListeners() {
+  const refreshButton = document.getElementById("btnRefreshOrders");
+  if (refreshButton) refreshButton.addEventListener("click", loadOrders);
+
   // Search input
   const searchInput = document.getElementById("searchOrderInput");
   if (searchInput) {
@@ -211,6 +214,50 @@ function initEventListeners() {
   }, { once: true });
 }
 
+async function loadOrders() {
+  if (isLoadingOrders) return;
+
+  isLoadingOrders = true;
+  orderLoadError = "";
+  renderKPIs();
+  renderOrderTable();
+
+  try {
+    const response = await fetch("/admin/api/orders", {
+      headers: { Accept: "application/json" },
+      cache: "no-store"
+    });
+    const contentType = response.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) {
+      throw new Error(response.redirected
+        ? "Phiên đăng nhập quản trị đã hết hạn. Vui lòng đăng nhập lại."
+        : "Máy chủ trả về dữ liệu không đúng định dạng.");
+    }
+
+    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result?.message || `Không thể tải đơn hàng (HTTP ${response.status}).`);
+    }
+    if (!Array.isArray(result)) {
+      throw new Error("Dữ liệu đơn hàng từ máy chủ không hợp lệ.");
+    }
+
+    orders = result.map(order => ({ ...order, id: String(order.id) }));
+    checkedOrderIds.clear();
+    if (!orders.some(order => order.id === selectedOrderId)) selectedOrderId = null;
+  } catch (error) {
+    orderLoadError = error instanceof Error ? error.message : "Không thể tải dữ liệu đơn hàng.";
+    if (orders.length > 0) {
+      showToast(`Không thể làm mới danh sách. Dữ liệu đang hiển thị có thể đã cũ. ${orderLoadError}`, "warning");
+    }
+  } finally {
+    isLoadingOrders = false;
+    renderKPIs();
+    renderOrderTable();
+    renderRightPanel();
+  }
+}
+
 function syncQuickStatusPills(statusKey) {
   document.querySelectorAll(".status-tab-btn").forEach(btn => {
     if (btn.getAttribute("data-status") === statusKey) {
@@ -252,7 +299,7 @@ function getFilteredOrders() {
   return orders.filter(order => {
     // Search text (ID, Customer name, Phone)
     if (currentSearch) {
-      const matchId = order.id.toLowerCase().includes(currentSearch);
+      const matchId = String(order.trackingCode || order.id).toLowerCase().includes(currentSearch);
       const matchName = order.customerName.toLowerCase().includes(currentSearch);
       const matchPhone = order.customerPhone.toLowerCase().includes(currentSearch);
       if (!matchId && !matchName && !matchPhone) return false;
@@ -271,11 +318,11 @@ function getFilteredOrders() {
 
     // Date filters
     if (currentStartDate) {
-      const orderDate = new Date(order.createdAt).toISOString().slice(0, 10);
+      const orderDate = toLocalDateKey(order.createdAt);
       if (orderDate < currentStartDate) return false;
     }
     if (currentEndDate) {
-      const orderDate = new Date(order.createdAt).toISOString().slice(0, 10);
+      const orderDate = toLocalDateKey(order.createdAt);
       if (orderDate > currentEndDate) return false;
     }
 
@@ -284,6 +331,15 @@ function getFilteredOrders() {
 }
 
 function renderKPIs() {
+  if ((isLoadingOrders || orderLoadError) && orders.length === 0) {
+    ["kpiTotalOrders", "kpiPendingOrders", "kpiPrepOrders", "kpiDeliveringOrders", "kpiCompletedOrders", "kpiCanceledOrders",
+      "tabCountPending", "tabCountDelivering", "tabCountCompleted"].forEach(id => {
+      const element = document.getElementById(id);
+      if (element) element.textContent = "—";
+    });
+    return;
+  }
+
   const total = orders.length;
   const pending = orders.filter(o => o.status === "PENDING").length;
   const prep = orders.filter(o => o.status === "PREPARING" || o.status === "CONFIRMED").length;
@@ -319,16 +375,53 @@ function renderOrderTable() {
   if (!tableBody) return;
 
   const filtered = getFilteredOrders();
+  const emptyTitle = document.getElementById("orderEmptyTitle");
+  const emptyDescription = document.getElementById("orderEmptyDescription");
+  const emptyRefreshButton = document.getElementById("btnRefreshEmpty");
+  const refreshButton = document.getElementById("btnRefreshOrders");
+  if (refreshButton) refreshButton.disabled = isLoadingOrders;
+  if (emptyRefreshButton) emptyRefreshButton.disabled = isLoadingOrders;
 
-  // If no orders match or list is empty
-  if (filtered.length === 0) {
+  if (((isLoadingOrders || orderLoadError) && orders.length === 0) || filtered.length === 0) {
     tableBody.innerHTML = "";
     if (emptyState) emptyState.style.display = "flex";
     if (paginationWrap) paginationWrap.style.display = "none";
+    if (emptyState) emptyState.classList.remove("order-load-error");
+    if (emptyTitle && emptyDescription) {
+      if (isLoadingOrders) {
+        emptyTitle.textContent = "Đang tải đơn hàng...";
+        emptyDescription.textContent = "Đang lấy dữ liệu mới nhất từ cơ sở dữ liệu.";
+      } else if (orderLoadError) {
+        emptyTitle.textContent = "Không tải được dữ liệu đơn hàng";
+        emptyDescription.textContent = orderLoadError;
+        if (emptyRefreshButton) {
+          emptyRefreshButton.querySelector("span:last-child").textContent = "Thử lại";
+          emptyRefreshButton.onclick = loadOrders;
+        }
+        emptyState.classList.add("order-load-error");
+      } else if (orders.length === 0) {
+        emptyTitle.textContent = "Chưa có đơn hàng";
+        emptyDescription.textContent = "Đơn hàng từ cơ sở dữ liệu sẽ xuất hiện tại đây sau khi được tạo.";
+        if (emptyRefreshButton) {
+          emptyRefreshButton.querySelector("span:last-child").textContent = "Làm mới danh sách";
+          emptyRefreshButton.onclick = loadOrders;
+        }
+        emptyState.classList.remove("order-load-error");
+      } else {
+        emptyTitle.textContent = "Không tìm thấy đơn hàng";
+        emptyDescription.textContent = "Thử đổi từ khóa hoặc bộ lọc để xem thêm đơn hàng.";
+        if (emptyRefreshButton) {
+          emptyRefreshButton.querySelector("span:last-child").textContent = "Đặt lại bộ lọc";
+          emptyRefreshButton.onclick = resetAllFilters;
+        }
+        emptyState.classList.remove("order-load-error");
+      }
+    }
     updateBulkActionBar();
     return;
   }
 
+  if (emptyState) emptyState.classList.remove("order-load-error");
   if (emptyState) emptyState.style.display = "none";
   if (paginationWrap) paginationWrap.style.display = "flex";
 
@@ -343,7 +436,7 @@ function renderOrderTable() {
   tableBody.innerHTML = pagedOrders.map(order => {
     const isChecked = checkedOrderIds.has(order.id);
     const isSelected = selectedOrderId === order.id;
-    const statusDef = ORDER_STATUS[order.status] || { label: order.status, css: "status-pending" };
+    const statusDef = ORDER_STATUS[order.status] || { label: order.statusLabel || "Không rõ trạng thái", css: "status-pending" };
 
     // Format item summary
     const itemSummary = order.items.map(it => `${it.qty}x ${it.name}`).join(", ");
@@ -358,7 +451,7 @@ function renderOrderTable() {
           <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleOrderCheck('${order.id}', this.checked)">
         </td>
         <td class="col-order-id">
-          <span class="order-id-code">#${order.id}</span>
+          <span class="order-id-code">#${escapeHtml(order.trackingCode || order.id)}</span>
         </td>
         <td>
           <div class="customer-cell">
@@ -385,7 +478,7 @@ function renderOrderTable() {
         <td>
           <span class="status-pill ${statusDef.css}">
             <span class="status-dot"></span>
-            <span>${statusDef.label}</span>
+            <span>${escapeHtml(statusDef.label)}</span>
           </span>
         </td>
         <td style="font-size: 11.5px; color: var(--text-secondary); white-space: nowrap;">
@@ -520,10 +613,10 @@ function renderRightPanel() {
   const statusDef = ORDER_STATUS[order.status] || { label: order.status, css: "status-pending" };
 
   // Set Top Badge & Order ID
-  document.getElementById("panelOrderIdCode").textContent = `#${order.id}`;
+  document.getElementById("panelOrderIdCode").textContent = `#${order.trackingCode || order.id}`;
   const statusBadge = document.getElementById("panelOrderStatusBadge");
   statusBadge.className = `status-pill ${statusDef.css}`;
-  statusBadge.innerHTML = `<span class="status-dot"></span><span>${statusDef.label}</span>`;
+  statusBadge.innerHTML = `<span class="status-dot"></span><span>${escapeHtml(statusDef.label)}</span>`;
 
   // Customer info
   document.getElementById("panelCustomerName").textContent = order.customerName;
@@ -597,7 +690,9 @@ function renderLalamoveSection(order) {
     driverBox.style.display = "flex";
     document.getElementById("driverNameText").textContent = order.driver.name;
     document.getElementById("driverPhoneText").textContent = order.driver.phone;
-    document.getElementById("driverPlateText").textContent = order.driver.licensePlate;
+    const driverPlate = document.getElementById("driverPlateText");
+    driverPlate.textContent = order.driver.licensePlate;
+    driverPlate.style.display = order.driver.licensePlate ? "" : "none";
     statusText.textContent = "Tài xế đang giao chuyến";
     statusText.style.color = "var(--success)";
   } else if (order.status === "FINDING_DRIVER") {
@@ -794,7 +889,7 @@ function transitionOrderStatus(nextStatus) {
   renderOrderTable();
   renderRightPanel();
 
-  showToast(`Đã cập nhật trạng thái đơn #${order.id} sang "${nextLabel}"`, "success");
+  showToast(`Đã cập nhật trạng thái đơn #${order.trackingCode || order.id} sang "${nextLabel}"`, "success");
 
   // TODO: Call Backend Status API (e.g. PUT /api/orders/{id}/status)
 }
@@ -814,7 +909,7 @@ function confirmPayment() {
 
   renderOrderTable();
   renderRightPanel();
-  showToast(`Đã xác nhận thanh toán đơn #${order.id}`, "success");
+  showToast(`Đã xác nhận thanh toán đơn #${order.trackingCode || order.id}`, "success");
 
   // TODO: Call Backend Payment Confirmation API
 }
@@ -832,7 +927,8 @@ function openCancelOrderModal() {
   const modal = document.getElementById("cancelOrderModal");
   if (!modal) return;
 
-  document.getElementById("cancelOrderIdTarget").textContent = `#${selectedOrderId}`;
+  const order = orders.find(item => item.id === selectedOrderId);
+  document.getElementById("cancelOrderIdTarget").textContent = `#${order?.trackingCode || selectedOrderId}`;
   document.getElementById("cancelReasonSelect").value = "";
   document.getElementById("cancelReasonDetails").value = "";
 
@@ -873,7 +969,7 @@ function submitCancelOrder() {
   renderOrderTable();
   renderRightPanel();
 
-  showToast(`Đã hủy đơn hàng #${selectedOrderId}`, "danger");
+  showToast(`Đã hủy đơn hàng #${order?.trackingCode || selectedOrderId}`, "danger");
 
   // TODO: Call Backend Cancel API
 }
@@ -887,7 +983,7 @@ function openPrintTicketModal() {
   const modal = document.getElementById("printTicketModal");
   if (!modal) return;
 
-  document.getElementById("ticketOrderId").textContent = `#${order.id}`;
+  document.getElementById("ticketOrderId").textContent = `#${order.trackingCode || order.id}`;
   document.getElementById("ticketCustomerName").textContent = order.customerName;
   document.getElementById("ticketCustomerPhone").textContent = order.customerPhone;
   document.getElementById("ticketCustomerAddress").textContent = order.deliveryAddress;
@@ -974,132 +1070,16 @@ function handleNavClick(module) {
 }
 
 /* ==========================================================================
-   10. OPTIONAL TESTING HELPER (LOAD DEMO DATA FOR UI VERIFICATION IN LIVE SERVER)
-   ========================================================================== */
-/**
- * Developer helper: Allows testing all table interactions, checkboxes,
- * right panel rendering, timeline, and modals without backend.
- */
-function loadDemoOrdersForTesting() {
-  orders = [
-    {
-      id: "DH-1025",
-      customerName: "Nguyễn Văn An",
-      customerPhone: "0908 123 456",
-      deliveryAddress: "Tòa nhà Bitexco, 2 Hải Triều, P. Bến Nghé, Quận 1, TP.HCM",
-      customerNote: "Ít cơm, nhiều mỡ hành, nước mắm để riêng giùm em.",
-      status: "PENDING",
-      paymentMethod: "Chuyển khoản VietQR",
-      isPaid: true,
-      shippingFee: 18000,
-      discount: 10000,
-      subtotal: 90000,
-      grandTotal: 98000,
-      createdAt: new Date().toISOString(),
-      items: [
-        { name: "Cơm sườn bì chả", size: "Lớn", qty: 2, price: 45000, toppings: ["Trứng ốp la", "Canh chua"] }
-      ],
-      history: [
-        { time: "11:45", text: "Khách đặt hàng qua website và thanh toán VietQR thành công" }
-      ]
-    },
-    {
-      id: "DH-1024",
-      customerName: "Trần Thị Bích Ngọc",
-      customerPhone: "0912 888 999",
-      deliveryAddress: "123 Lê Lợi, Phường Bến Thành, Quận 1, TP.HCM",
-      customerNote: "Giao trước 12h trưa nhé quán ơi.",
-      status: "PREPARING",
-      paymentMethod: "Tiền mặt khi nhận (COD)",
-      isPaid: false,
-      shippingFee: 20000,
-      discount: 0,
-      subtotal: 103000,
-      grandTotal: 123000,
-      createdAt: new Date(Date.now() - 25 * 60 * 1000).toISOString(),
-      items: [
-        { name: "Cơm gà xối mỡ đùi góc tư", size: "Tiêu chuẩn", qty: 1, price: 48000, toppings: ["Trứng ốp la"] },
-        { name: "Cơm bò lúc lắc khoai tây", size: "Tiêu chuẩn", qty: 1, price: 55000, toppings: [] }
-      ],
-      history: [
-        { time: "11:20", text: "Đơn hàng được tiếp nhận" },
-        { time: "11:22", text: "Quán xác nhận đơn & chuyển vào bếp chế biến" }
-      ]
-    },
-    {
-      id: "DH-1023",
-      customerName: "Lê Hoàng Long",
-      customerPhone: "0934 555 777",
-      deliveryAddress: "45 Nguyễn Huệ, Phường Bến Nghé, Quận 1, TP.HCM",
-      customerNote: "Gọi trước khi tới 5 phút.",
-      status: "DELIVERING",
-      paymentMethod: "Ví MoMo",
-      isPaid: true,
-      shippingFee: 16000,
-      discount: 15000,
-      subtotal: 87000,
-      grandTotal: 88000,
-      createdAt: new Date(Date.now() - 50 * 60 * 1000).toISOString(),
-      items: [
-        { name: "Cơm thịt kho tàu trứng cút", size: "Tiêu chuẩn", qty: 1, price: 38000, toppings: ["Canh rong biển"] },
-        { name: "Cơm sườn non ram mặn ngọt", size: "Lớn", qty: 1, price: 49000, toppings: [] }
-      ],
-      driver: {
-        name: "Phạm Quốc Tuấn",
-        phone: "0977 334 221",
-        licensePlate: "59-P1 688.22"
-      },
-      history: [
-        { time: "10:55", text: "Khách tạo đơn hàng" },
-        { time: "11:00", text: "Quán xác nhận đơn" },
-        { time: "11:15", text: "Tài xế Lalamove Phạm Quốc Tuấn nhận chuyến" },
-        { time: "11:30", text: "Tài xế lấy món và đang giao" }
-      ]
-    },
-    {
-      id: "DH-1022",
-      customerName: "Đỗ Minh Quân",
-      customerPhone: "0988 112 334",
-      deliveryAddress: "72 Nguyễn Thị Minh Khai, Quận 3, TP.HCM",
-      customerNote: "",
-      status: "COMPLETED",
-      paymentMethod: "Chuyển khoản VietQR",
-      isPaid: true,
-      shippingFee: 22000,
-      discount: 0,
-      subtotal: 55000,
-      grandTotal: 77000,
-      createdAt: new Date(Date.now() - 110 * 60 * 1000).toISOString(),
-      items: [
-        { name: "Cơm bò né trứng ốp pate", size: "Tiêu chuẩn", qty: 1, price: 55000, toppings: [] }
-      ],
-      driver: {
-        name: "Võ Văn Hùng",
-        phone: "0903 445 112",
-        licensePlate: "59-B2 432.19"
-      },
-      history: [
-        { time: "09:55", text: "Tạo đơn hàng" },
-        { time: "10:10", text: "Tài xế nhận đơn" },
-        { time: "10:35", text: "Khách đã nhận cơm và hoàn thành" }
-      ]
-    }
-  ];
-
-  selectedOrderId = orders[0].id;
-  renderKPIs();
-  renderOrderTable();
-  renderRightPanel();
-  playNotificationChime();
-  showToast("Đã nạp 4 đơn hàng mẫu để kiểm thử UI Live Server", "success");
-}
-
-/* ==========================================================================
-   11. UTILITIES
+   10. UTILITIES
    ========================================================================== */
 function formatVND(num) {
   if (isNaN(num)) return "0đ";
   return new Intl.NumberFormat('vi-VN').format(num) + "đ";
+}
+
+function toLocalDateKey(value) {
+  const date = new Date(value);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
 function escapeHtml(str) {

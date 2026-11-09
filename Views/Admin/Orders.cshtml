@@ -111,6 +111,10 @@
         <span>↺</span>
         <span>Đặt lại</span>
       </button>
+      <button class="btn-refresh-orders" id="btnRefreshOrders" type="button" title="Tải lại dữ liệu đơn hàng">
+        <span>↻</span>
+        <span>Tải lại</span>
+      </button>
     </div>
 
     <!-- Quick Status Filter Tabs -->
@@ -183,17 +187,14 @@
     </table>
 
     <!-- Dedicated Empty State (Mandatory Vietnamese per AGENTS.md) -->
-    <div class="order-empty-state-wrap" id="orderEmptyState">
+    <div class="order-empty-state-wrap" id="orderEmptyState" role="status" aria-live="polite">
       <div class="order-empty-icon">📦</div>
-      <h3 class="order-empty-title">Chưa có đơn hàng</h3>
-      <p class="order-empty-desc">Hiện chưa có dữ liệu đơn hàng nào phù hợp với bộ lọc hoặc hệ thống đang chờ kết nối dữ liệu từ máy chủ.</p>
+      <h3 class="order-empty-title" id="orderEmptyTitle">Chưa có đơn hàng</h3>
+      <p class="order-empty-desc" id="orderEmptyDescription">Đơn hàng từ cơ sở dữ liệu sẽ xuất hiện tại đây sau khi được tạo.</p>
       <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
-        <button class="btn-refresh-orders" onclick="resetAllFilters()">
-          <span>🔄</span>
+        <button class="btn-refresh-orders" id="btnRefreshEmpty" type="button" onclick="loadOrders()">
+          <span>↻</span>
           <span>Làm mới danh sách</span>
-        </button>
-        <button class="bulk-action-btn bulk-btn-print" onclick="loadDemoOrdersForTesting()" title="Chỉ dùng để kiểm thử UI và tương tác giao diện">
-          🧪 Nạp dữ liệu kiểm thử UI Live Server
         </button>
       </div>
     </div>

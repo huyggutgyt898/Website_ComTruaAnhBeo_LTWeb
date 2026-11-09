@@ -44,6 +44,76 @@ public sealed class AdminController : Controller
         return View();
     }
 
+    [HttpGet("api/orders")]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public async Task<IActionResult> OrderData(CancellationToken cancellationToken)
+    {
+        var orders = await _db.DonHangs
+            .AsNoTracking()
+            .OrderByDescending(order => order.NgayDat)
+            .Select(order => new
+            {
+                id = order.MaDon,
+                trackingCode = order.MaTraCuu,
+                customerName = order.TenNguoiNhan,
+                customerPhone = order.Sdt,
+                deliveryAddress = order.DiaChiGiao,
+                customerNote = order.GhiChu,
+                status = order.TrangThai,
+                subtotal = order.TienMon,
+                discount = order.TienGiam,
+                shippingFee = order.PhiGiaoKhach,
+                grandTotal = order.TongTien,
+                createdAt = order.NgayDat,
+                paymentMethod = order.ThanhToan == null ? null : order.ThanhToan.PhuongThuc,
+                paymentStatus = order.ThanhToan == null ? null : order.ThanhToan.TrangThai,
+                driverName = order.VanChuyen == null ? null : order.VanChuyen.TenTaiXe,
+                driverPhone = order.VanChuyen == null ? null : order.VanChuyen.SdttaiXe,
+                items = order.CtDonHangs
+                    .Where(item => item.MaCtcha == null)
+                    .Select(item => new
+                    {
+                        name = item.MaMonNavigation.TenMon,
+                        qty = item.SoLuong,
+                        price = item.DonGia,
+                        size = item.TenSize,
+                        toppings = item.InverseMaCtchaNavigation
+                            .Select(child => child.MaMonNavigation.TenMon)
+                            .ToList()
+                    })
+                    .ToList()
+            })
+            .ToListAsync(cancellationToken);
+
+        return Ok(orders.Select(order => new
+        {
+            order.id,
+            order.trackingCode,
+            order.customerName,
+            order.customerPhone,
+            order.deliveryAddress,
+            order.customerNote,
+            status = MapOrderStatus(order.status),
+            statusLabel = GetOrderStatusLabel(order.status),
+            order.subtotal,
+            order.discount,
+            order.shippingFee,
+            order.grandTotal,
+            order.createdAt,
+            paymentMethod = MapPaymentMethod(order.paymentMethod),
+            isPaid = order.paymentStatus == "DaTT",
+            driver = string.IsNullOrWhiteSpace(order.driverName) && string.IsNullOrWhiteSpace(order.driverPhone)
+                ? null
+                : new
+                {
+                    name = order.driverName ?? "",
+                    phone = order.driverPhone ?? "",
+                    licensePlate = ""
+                },
+            order.items
+        }));
+    }
+
     [HttpGet("promotions")]
     public IActionResult Promotions()
     {
@@ -172,4 +242,39 @@ public sealed class AdminController : Controller
 
     private string GetSafeReturnUrl(string? returnUrl) =>
         Url.IsLocalUrl(returnUrl) ? returnUrl! : "/admin";
+
+    private static string MapOrderStatus(string? status) => status switch
+    {
+        "ChoXacNhan" => "PENDING",
+        "DaXacNhan" => "CONFIRMED",
+        "DangChuanBi" or "DangNau" => "PREPARING",
+        "TimTaiXe" or "DangTimTaiXe" => "FINDING_DRIVER",
+        "DaCoTaiXe" => "DRIVER_ASSIGNED",
+        "DangGiao" => "DELIVERING",
+        "HoanThanh" => "COMPLETED",
+        "Huy" => "CANCELED",
+        "ThatBai" or "GiaoThatBai" => "FAILED",
+        _ => "UNKNOWN"
+    };
+
+    private static string GetOrderStatusLabel(string? status) => status switch
+    {
+        "ChoXacNhan" => "Chờ xác nhận",
+        "DaXacNhan" => "Đã xác nhận",
+        "DangChuanBi" or "DangNau" => "Đang chuẩn bị",
+        "TimTaiXe" or "DangTimTaiXe" => "Đang tìm tài xế",
+        "DaCoTaiXe" => "Đã có tài xế",
+        "DangGiao" => "Đang giao hàng",
+        "HoanThanh" => "Hoàn thành",
+        "Huy" => "Đã hủy",
+        "ThatBai" or "GiaoThatBai" => "Giao thất bại",
+        _ => string.IsNullOrWhiteSpace(status) ? "Không rõ trạng thái" : status
+    };
+
+    private static string MapPaymentMethod(string? paymentMethod) => paymentMethod switch
+    {
+        "BANK" => "Chuyển khoản ngân hàng",
+        "COD" => "Tiền mặt khi nhận (COD)",
+        _ => string.IsNullOrWhiteSpace(paymentMethod) ? "Chưa xác định" : paymentMethod
+    };
 }

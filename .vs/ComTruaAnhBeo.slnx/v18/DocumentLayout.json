@@ -1,0 +1,350 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|c:\\users\\admin\\documents\\laptrinhweb\\ng\u01B0\u1EDDi4\\website_comtruaanhbeo_ltweb-develop\\controllers\\reviewscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:controllers\\reviewscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|c:\\users\\admin\\documents\\laptrinhweb\\ng\u01B0\u1EDDi4\\website_comtruaanhbeo_ltweb-develop\\wwwroot\\css\\accounts.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:wwwroot\\css\\accounts.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|c:\\users\\admin\\documents\\laptrinhweb\\ng\u01B0\u1EDDi4\\website_comtruaanhbeo_ltweb-develop\\views\\home\\accounts.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:views\\home\\accounts.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|c:\\users\\admin\\documents\\laptrinhweb\\ng\u01B0\u1EDDi4\\website_comtruaanhbeo_ltweb-develop\\views\\admin\\accounts.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:views\\admin\\accounts.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|c:\\users\\admin\\documents\\laptrinhweb\\ng\u01B0\u1EDDi4\\website_comtruaanhbeo_ltweb-develop\\wwwroot\\js\\accounts.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:wwwroot\\js\\accounts.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|c:\\users\\admin\\documents\\laptrinhweb\\ng\u01B0\u1EDDi4\\website_comtruaanhbeo_ltweb-develop\\controllers\\adminaccountscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:controllers\\adminaccountscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|c:\\users\\admin\\documents\\laptrinhweb\\ng\u01B0\u1EDDi4\\website_comtruaanhbeo_ltweb-develop\\wwwroot\\js\\index.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:wwwroot\\js\\index.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|c:\\users\\admin\\documents\\laptrinhweb\\ng\u01B0\u1EDDi4\\website_comtruaanhbeo_ltweb-develop\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|c:\\users\\admin\\documents\\laptrinhweb\\ng\u01B0\u1EDDi4\\website_comtruaanhbeo_ltweb-develop\\views\\admin\\delivery.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:views\\admin\\delivery.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|c:\\users\\admin\\documents\\laptrinhweb\\ng\u01B0\u1EDDi4\\website_comtruaanhbeo_ltweb-develop\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|c:\\users\\admin\\documents\\laptrinhweb\\ng\u01B0\u1EDDi4\\website_comtruaanhbeo_ltweb-develop\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|c:\\users\\admin\\documents\\laptrinhweb\\ng\u01B0\u1EDDi4\\website_comtruaanhbeo_ltweb-develop\\services\\smtpemailsender.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:services\\smtpemailsender.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|c:\\users\\admin\\documents\\laptrinhweb\\ng\u01B0\u1EDDi4\\website_comtruaanhbeo_ltweb-develop\\services\\iemailsender.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:services\\iemailsender.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|c:\\users\\admin\\documents\\laptrinhweb\\ng\u01B0\u1EDDi4\\website_comtruaanhbeo_ltweb-develop\\models\\auth\\resetpasswordrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:models\\auth\\resetpasswordrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|c:\\users\\admin\\documents\\laptrinhweb\\ng\u01B0\u1EDDi4\\website_comtruaanhbeo_ltweb-develop\\models\\auth\\forgotpasswordrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:models\\auth\\forgotpasswordrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|c:\\users\\admin\\documents\\laptrinhweb\\ng\u01B0\u1EDDi4\\website_comtruaanhbeo_ltweb-develop\\models\\reviews\\createreviewrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:models\\reviews\\createreviewrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|c:\\users\\admin\\documents\\laptrinhweb\\ng\u01B0\u1EDDi4\\website_comtruaanhbeo_ltweb-develop\\models\\auth\\updateprofilerequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:models\\auth\\updateprofilerequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|c:\\users\\admin\\documents\\laptrinhweb\\ng\u01B0\u1EDDi4\\website_comtruaanhbeo_ltweb-develop\\wwwroot\\js\\statistics.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:wwwroot\\js\\statistics.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|c:\\users\\admin\\documents\\laptrinhweb\\ng\u01B0\u1EDDi4\\website_comtruaanhbeo_ltweb-develop\\controllers\\reportscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:controllers\\reportscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|c:\\users\\admin\\documents\\laptrinhweb\\ng\u01B0\u1EDDi4\\website_comtruaanhbeo_ltweb-develop\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{2EF394EA-47F4-C6F3-F750-2D02204CE9E7}|ComTruaAnhBeo.csproj|solutionrelative:appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 7,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{b1e99781-ab81-11d0-b683-00aa00a3ee26}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "accounts.css",
+              "DocumentMoniker": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\wwwroot\\css\\accounts.css",
+              "RelativeDocumentMoniker": "wwwroot\\css\\accounts.css",
+              "ToolTip": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\wwwroot\\css\\accounts.css",
+              "RelativeToolTip": "wwwroot\\css\\accounts.css",
+              "ViewState": "AgIAAN0BAAAAAAAAAAAiwPYBAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-11-09T16:53:34.537Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Accounts.cshtml",
+              "DocumentMoniker": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Views\\Admin\\Accounts.cshtml",
+              "RelativeDocumentMoniker": "Views\\Admin\\Accounts.cshtml",
+              "ToolTip": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Views\\Admin\\Accounts.cshtml",
+              "RelativeToolTip": "Views\\Admin\\Accounts.cshtml",
+              "ViewState": "AgIAAHwAAAAAAAAAAAAiwJYAAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-11-08T16:03:45.39Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "SmtpEmailSender.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Services\\SmtpEmailSender.cs",
+              "RelativeDocumentMoniker": "Services\\SmtpEmailSender.cs",
+              "ToolTip": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Services\\SmtpEmailSender.cs",
+              "RelativeToolTip": "Services\\SmtpEmailSender.cs",
+              "ViewState": "AgIAAFIAAAAAAAAAAAAwwG0AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-09T06:24:17.435Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAABYAAAAAAAAAAAAcwD0AAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-09T06:26:03.307Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "accounts.cshtml",
+              "DocumentMoniker": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Views\\Home\\accounts.cshtml",
+              "RelativeDocumentMoniker": "Views\\Home\\accounts.cshtml",
+              "ToolTip": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Views\\Home\\accounts.cshtml",
+              "RelativeToolTip": "Views\\Home\\accounts.cshtml",
+              "ViewState": "AgIAAIwAAAAAAAAAAAAcwKsAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-11-09T15:56:55.508Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ReviewsController.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Controllers\\ReviewsController.cs",
+              "RelativeDocumentMoniker": "Controllers\\ReviewsController.cs",
+              "ToolTip": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Controllers\\ReviewsController.cs",
+              "RelativeToolTip": "Controllers\\ReviewsController.cs",
+              "ViewState": "AgIAACQAAAAAAAAAAAAAwJUAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-09T05:11:10.005Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "AdminAccountsController.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Controllers\\AdminAccountsController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AdminAccountsController.cs",
+              "ToolTip": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Controllers\\AdminAccountsController.cs",
+              "RelativeToolTip": "Controllers\\AdminAccountsController.cs",
+              "ViewState": "AgIAAIcAAAAAAAAAAAAAAKcAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-08T16:00:17.891Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "accounts.js",
+              "DocumentMoniker": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\wwwroot\\js\\accounts.js",
+              "RelativeDocumentMoniker": "wwwroot\\js\\accounts.js",
+              "ToolTip": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\wwwroot\\js\\accounts.js",
+              "RelativeToolTip": "wwwroot\\js\\accounts.js",
+              "ViewState": "AgIAAKIBAAAAAAAAAAAcwHQBAABcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-11-08T16:02:58.834Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "IEmailSender.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Services\\IEmailSender.cs",
+              "RelativeDocumentMoniker": "Services\\IEmailSender.cs",
+              "ToolTip": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Services\\IEmailSender.cs",
+              "RelativeToolTip": "Services\\IEmailSender.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-09T06:23:56.384Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "index.js",
+              "DocumentMoniker": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\wwwroot\\js\\index.js",
+              "RelativeDocumentMoniker": "wwwroot\\js\\index.js",
+              "ToolTip": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\wwwroot\\js\\index.js",
+              "RelativeToolTip": "wwwroot\\js\\index.js",
+              "ViewState": "AgIAAC8HAAAAAAAAAAAwwD4HAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-11-09T04:09:44.325Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Views\\Home\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\Home\\Index.cshtml",
+              "ToolTip": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Views\\Home\\Index.cshtml",
+              "RelativeToolTip": "Views\\Home\\Index.cshtml",
+              "ViewState": "AgIAACgDAAAAAAAAAADwv1sDAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-11-09T04:07:32.968Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AuthController.cs",
+              "ToolTip": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "Controllers\\AuthController.cs",
+              "ViewState": "AgIAAGYBAAAAAAAAAAAAAIwCAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-09T04:06:33.752Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Delivery.cshtml",
+              "DocumentMoniker": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Views\\Admin\\Delivery.cshtml",
+              "RelativeDocumentMoniker": "Views\\Admin\\Delivery.cshtml",
+              "ToolTip": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Views\\Admin\\Delivery.cshtml",
+              "RelativeToolTip": "Views\\Admin\\Delivery.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-11-09T06:33:48.275Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "ResetPasswordRequest.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Models\\Auth\\ResetPasswordRequest.cs",
+              "RelativeDocumentMoniker": "Models\\Auth\\ResetPasswordRequest.cs",
+              "ToolTip": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Models\\Auth\\ResetPasswordRequest.cs",
+              "RelativeToolTip": "Models\\Auth\\ResetPasswordRequest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-09T06:23:33.003Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "ForgotPasswordRequest.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Models\\Auth\\ForgotPasswordRequest.cs",
+              "RelativeDocumentMoniker": "Models\\Auth\\ForgotPasswordRequest.cs",
+              "ToolTip": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Models\\Auth\\ForgotPasswordRequest.cs",
+              "RelativeToolTip": "Models\\Auth\\ForgotPasswordRequest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-09T06:22:41.167Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "CreateReviewRequest.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Models\\Reviews\\CreateReviewRequest.cs",
+              "RelativeDocumentMoniker": "Models\\Reviews\\CreateReviewRequest.cs",
+              "ToolTip": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Models\\Reviews\\CreateReviewRequest.cs",
+              "RelativeToolTip": "Models\\Reviews\\CreateReviewRequest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-09T05:10:31.184Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "UpdateProfileRequest.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Models\\Auth\\UpdateProfileRequest.cs",
+              "RelativeDocumentMoniker": "Models\\Auth\\UpdateProfileRequest.cs",
+              "ToolTip": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Models\\Auth\\UpdateProfileRequest.cs",
+              "RelativeToolTip": "Models\\Auth\\UpdateProfileRequest.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-09T04:06:09.185Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "statistics.js",
+              "DocumentMoniker": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\wwwroot\\js\\statistics.js",
+              "RelativeDocumentMoniker": "wwwroot\\js\\statistics.js",
+              "ToolTip": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\wwwroot\\js\\statistics.js",
+              "RelativeToolTip": "wwwroot\\js\\statistics.js",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAKoCAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-11-08T16:29:46.975Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "ReportsController.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Controllers\\ReportsController.cs",
+              "RelativeDocumentMoniker": "Controllers\\ReportsController.cs",
+              "ToolTip": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\Controllers\\ReportsController.cs",
+              "RelativeToolTip": "Controllers\\ReportsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAPEBAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-08T16:28:34.788Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "appsettings.Development.json",
+              "DocumentMoniker": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\appsettings.Development.json",
+              "RelativeDocumentMoniker": "appsettings.Development.json",
+              "ToolTip": "C:\\Users\\Admin\\Documents\\LapTrinhWeb\\Ng\u01B0\u1EDDi4\\Website_ComTruaAnhBeo_LTWeb-develop\\appsettings.Development.json",
+              "RelativeToolTip": "appsettings.Development.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-11-08T09:30:35.096Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

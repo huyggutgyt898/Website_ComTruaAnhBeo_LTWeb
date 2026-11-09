@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cơm Trưa Anh Béo - Thống Kê & Báo Cáo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Dual Stylesheets for Adminpage base and Statistics module -->
+  <link rel="stylesheet" href="../css/admin-common.css">
+  <link rel="stylesheet" href="../css/statistics.css">
+</head>
+<body data-active-nav="statistics">
+
+  <!-- SHARED ADMIN HEADER MOUNT TARGET -->
+  <div id="appHeader"></div>
+
+  <!-- =========================================================================
+       2. THREE-COLUMN BODY CONTAINER
+       ========================================================================= -->
+  <div class="admin-body-container">
+
+    <!-- SHARED SIDEBAR NAVIGATION MOUNT TARGET -->
+    <div id="appSidebar"></div>
+
+    <!-- =======================================================================
+         COLUMN 2: CENTRAL WORKSPACE (LARGEST AREA, WARM CREAM BACKGROUND)
+         ======================================================================= -->
+    <main class="center-workspace">
+      <!-- Title & Headline -->
+      <div class="workspace-top-bar">
+        <div class="page-heading-group">
+          <h1>THỐNG KÊ & BÁO CÁO</h1>
+          <p>Phân tích chuyên sâu doanh thu, món bán chạy, đánh giá khách hàng và chi phí vận chuyển Lalamove</p>
+        </div>
+      </div>
+
+      <!-- MAIN FEATURE TABS -->
+      <div class="stats-tab-bar">
+        <button type="button" class="stats-tab-btn active" id="tabBtn-revenue" onclick="switchStatsTab('revenue')">
+          <svg viewBox="0 0 24 24">
+            <path d="M5 6H19V8H5V6M5 10H19V12H5V10M5 14H19V16H5V14M5 18H19V20H5V18M3 2H21C21.55 2 22 2.45 22 3V21C22 21.55 21.55 22 21 22H3C2.45 22 2 21.55 2 21V3C2 2.45 2.45 2 3 2Z"/>
+          </svg>
+          <span>1. Doanh thu</span>
+        </button>
+        <button type="button" class="stats-tab-btn" id="tabBtn-top-dishes" onclick="switchStatsTab('top-dishes')">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+          </svg>
+          <span>2. Món bán chạy</span>
+        </button>
+        <button type="button" class="stats-tab-btn" id="tabBtn-reviews" onclick="switchStatsTab('reviews')">
+          <svg viewBox="0 0 24 24">
+            <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2M20 16H6L4 18V4H20V16Z"/>
+          </svg>
+          <span>3. Đánh giá của khách</span>
+        </button>
+        <button type="button" class="stats-tab-btn" id="tabBtn-lalamove" onclick="switchStatsTab('lalamove')">
+          <svg viewBox="0 0 24 24">
+            <path d="M18 18.5C18 19.33 17.33 20 16.5 20C15.67 20 15 19.33 15 18.5C15 17.67 15.67 17 16.5 17C17.33 17 18 17.67 18 18.5M19.5 9.5L21.46 12H17V9.5H19.5M6 18.5C6 19.33 5.33 20 4.5 20C3.67 20 3 19.33 3 18.5C3 17.67 3.67 17 4.5 17C5.33 17 6 17.67 6 18.5M20 8H17V4H3C1.89 4 1 4.89 1 6V17H3C3 18.66 4.34 20 6 20C7.66 20 9 18.66 9 17H15C15 18.66 16.34 20 18 20C19.66 20 21 18.66 21 17H23V12L20 8Z"/>
+          </svg>
+          <span>4. Chi phí Lalamove</span>
+        </button>
+      </div>
+
+      <!-- =====================================================================
+           TAB PANE 1: REVENUE STATISTICS
+           ===================================================================== -->
+      <div class="stats-tab-pane active" id="pane-revenue">
+        <!-- Revenue KPI Cards (3 Cards) -->
+        <div class="stats-kpi-grid">
+          <!-- KPI 1: Tổng doanh thu hoàn tất -->
+          <div class="stats-kpi-card kpi-revenue">
+            <div class="stats-kpi-icon-wrap">💰</div>
+            <div class="stats-kpi-info">
+              <span class="stats-kpi-label">Tổng doanh thu</span>
+              <span class="stats-kpi-value" id="kpiTotalRevenue">0đ</span>
+              <span class="stats-kpi-subtext">Đã hoàn tất (loại trừ đơn hủy)</span>
+            </div>
+          </div>
+
+          <!-- KPI 2: Số đơn hoàn tất -->
+          <div class="stats-kpi-card kpi-orders">
+            <div class="stats-kpi-icon-wrap">📦</div>
+            <div class="stats-kpi-info">
+              <span class="stats-kpi-label">Số đơn hoàn tất</span>
+              <span class="stats-kpi-value" id="kpiCompletedOrders">0</span>
+              <span class="stats-kpi-subtext">Đơn giao thành công</span>
+            </div>
+          </div>
+
+          <!-- KPI 3: Giá trị trung bình đơn (AOV) -->
+          <div class="stats-kpi-card kpi-aov">
+            <div class="stats-kpi-icon-wrap">📈</div>
+            <div class="stats-kpi-info">
+              <span class="stats-kpi-label">Giá trị trung bình đơn</span>
+              <span class="stats-kpi-value" id="kpiAOV">0đ</span>
+              <span class="stats-kpi-subtext">Doanh thu / Đơn hoàn tất</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Revenue Chart Card -->
+        <div class="chart-card-wrapper">
+          <div class="chart-card-header">
+            <div class="chart-card-title-group">
+              <h2>Biểu đồ biến động doanh thu</h2>
+              <span>Xu hướng doanh thu theo mốc thời gian lọc</span>
+            </div>
+            <div class="chart-period-switch">
+              <button type="button" class="btn-period-pill active" id="btnPeriodDay" onclick="switchChartPeriod('day')">Theo ngày</button>
+              <button type="button" class="btn-period-pill" id="btnPeriodMonth" onclick="switchChartPeriod('month')">Theo tháng</button>
+            </div>
+          </div>
+          <div class="chart-canvas-container" id="revenueChartCanvas">
+            <!-- Dynamic SVG chart coordinate or empty frame rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Detailed Revenue Table -->
+        <div class="ranking-table-card">
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 150px;">Thời gian</th>
+                  <th style="width: 140px;">Đơn hoàn tất</th>
+                  <th style="width: 150px;">Đã thu tiền</th>
+                  <th style="width: 150px;">Chờ thanh toán</th>
+                  <th style="text-align: right;">Doanh thu thực thu</th>
+                </tr>
+              </thead>
+              <tbody id="revenueTableBody">
+                <!-- Empty state rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- =====================================================================
+           TAB PANE 2: BEST SELLING FOOD RANKINGS
+           ===================================================================== -->
+      <div class="stats-tab-pane" id="pane-top-dishes">
+        <!-- Top Dishes Toolbar -->
+        <div class="search-filter-card" style="margin-bottom: 20px;">
+          <div style="font-size: 14px; font-weight: 700; color: var(--brand-burgundy);">
+            Xếp hạng theo sản lượng bán:
+          </div>
+          <div class="chart-period-switch" style="margin-left: auto;">
+            <button type="button" class="btn-period-pill active" id="btnTop5" onclick="setTopDishLimit(5)">Top 5 món</button>
+            <button type="button" class="btn-period-pill" id="btnTop10" onclick="setTopDishLimit(10)">Top 10 món</button>
+          </div>
+        </div>
+
+        <!-- Top Dishes Ranking Table -->
+        <div class="ranking-table-card">
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 70px; text-align: center;">Hạng</th>
+                  <th style="min-width: 240px;">Tên món ăn</th>
+                  <th style="width: 170px;">Nhóm thực đơn</th>
+                  <th style="width: 130px; text-align: center;">Số lượng bán</th>
+                  <th style="width: 170px; text-align: right;">Doanh thu món</th>
+                  <th style="width: 150px;">Tỷ trọng đóng góp</th>
+                </tr>
+              </thead>
+              <tbody id="topDishesTableBody">
+                <!-- Empty state rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="font-size: 12px; color: var(--text-muted); font-style: italic; margin-top: -12px; margin-bottom: 24px;">
+          * Thứ hạng được hệ thống tính toán tự động dựa trên số lượng phần ăn từ các đơn hàng có trạng thái "Hoàn tất".
+        </div>
+      </div>
+
+      <!-- =====================================================================
+           TAB PANE 3: CUSTOMER REVIEWS
+           ===================================================================== -->
+      <div class="stats-tab-pane" id="pane-reviews">
+        <!-- Review Rating Hero Card -->
+        <div class="review-rating-hero-card">
+          <div class="score-display-group">
+            <div class="score-huge-num" id="avgReviewScore">0.0</div>
+            <div class="score-stars-col">
+              <div class="stars-row">★★★★★</div>
+              <span class="score-total-count" id="totalReviewCount">Dựa trên 0 lượt đánh giá</span>
+            </div>
+          </div>
+
+          <!-- Star filter chips -->
+          <div class="stars-filter-row">
+            <button type="button" class="star-filter-chip active" id="starChip-ALL" onclick="filterReviewsByStar('ALL')">
+              Tất cả
+            </button>
+            <button type="button" class="star-filter-chip" id="starChip-5" onclick="filterReviewsByStar('5')">
+              <span class="star-icon">★</span> 5 sao
+            </button>
+            <button type="button" class="star-filter-chip" id="starChip-4" onclick="filterReviewsByStar('4')">
+              <span class="star-icon">★</span> 4 sao
+            </button>
+            <button type="button" class="star-filter-chip" id="starChip-3" onclick="filterReviewsByStar('3')">
+              <span class="star-icon">★</span> 3 sao
+            </button>
+            <button type="button" class="star-filter-chip" id="starChip-2" onclick="filterReviewsByStar('2')">
+              <span class="star-icon">★</span> 2 sao
+            </button>
+            <button type="button" class="star-filter-chip" id="starChip-1" onclick="filterReviewsByStar('1')">
+              <span class="star-icon">★</span> 1 sao
+            </button>
+          </div>
+        </div>
+
+        <!-- Customer Reviews List Table -->
+        <div class="ranking-table-card">
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 170px;">Khách hàng</th>
+                  <th style="width: 110px;">Số sao</th>
+                  <th style="min-width: 260px;">Nội dung nhận xét</th>
+                  <th style="width: 140px;">Ngày gửi</th>
+                  <th style="width: 130px; text-align: center;">Trạng thái</th>
+                </tr>
+              </thead>
+              <tbody id="reviewsTableBody">
+                <!-- Empty state rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- =====================================================================
+           TAB PANE 4: LALAMOVE DELIVERY COSTS
+           ===================================================================== -->
+      <div class="stats-tab-pane" id="pane-lalamove">
+        <!-- Safety Rule Notice Banner: Prevent Double Counting -->
+        <div class="lalamove-notice-banner">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12S6.48 22 12 22 22 17.52 22 12 17.52 2 12 2M13 17H11V15H13V17M13 13H11V7H13V13Z"/>
+          </svg>
+          <div>
+            <strong>Nguyên tắc kiểm soát chi phí:</strong> Hệ thống tách bạch tuyệt đối cước trợ giá vận chuyển của quán và phụ phí phát sinh (mưa, giờ cao điểm) để ngăn chặn việc cộng dồn trùng lặp.
+          </div>
+        </div>
+
+        <!-- 4 Lalamove Shipping Metric KPI Cards -->
+        <div class="stats-kpi-grid">
+          <!-- Card 1: Phí ship khách trả -->
+          <div class="stats-kpi-card kpi-orders">
+            <div class="stats-kpi-icon-wrap">🛵</div>
+            <div class="stats-kpi-info">
+              <span class="stats-kpi-label">Phí khách đã trả</span>
+              <span class="stats-kpi-value" id="kpiCustomerShip">0đ</span>
+              <span class="stats-kpi-subtext">Thu trực tiếp trên đơn cơm</span>
+            </div>
+          </div>
+
+          <!-- Card 2: Cước thực tế Lalamove -->
+          <div class="stats-kpi-card kpi-revenue">
+            <div class="stats-kpi-icon-wrap">🚚</div>
+            <div class="stats-kpi-info">
+              <span class="stats-kpi-label">Cước trả Lalamove</span>
+              <span class="stats-kpi-value" id="kpiActualLalamove">0đ</span>
+              <span class="stats-kpi-subtext">Phí tài xế theo app Lalamove</span>
+            </div>
+          </div>
+
+          <!-- Card 3: Quán tài trợ cước -->
+          <div class="stats-kpi-card kpi-subsidy">
+            <div class="stats-kpi-icon-wrap">🎁</div>
+            <div class="stats-kpi-info">
+              <span class="stats-kpi-label">Quán tài trợ cước</span>
+              <span class="stats-kpi-value" id="kpiStoreSubsidy">0đ</span>
+              <span class="stats-kpi-subtext">Ưu đãi giảm/miễn ship cho khách</span>
+            </div>
+          </div>
+
+          <!-- Card 4: Phụ phí phát sinh -->
+          <div class="stats-kpi-card kpi-extra">
+            <div class="stats-kpi-icon-wrap">⚡</div>
+            <div class="stats-kpi-info">
+              <span class="stats-kpi-label">Phụ phí phát sinh</span>
+              <span class="stats-kpi-value" id="kpiExtraFees">0đ</span>
+              <span class="stats-kpi-subtext">Phí thời tiết xấu, cao điểm</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Shipping Cost Detailed Audit Table -->
+        <div class="ranking-table-card">
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 120px;">Mã đơn</th>
+                  <th style="width: 130px;">Ngày giao</th>
+                  <th style="width: 160px;">Tài xế Lalamove</th>
+                  <th style="width: 130px; text-align: right;">Khách trả</th>
+                  <th style="width: 140px; text-align: right;">Cước Lalamove</th>
+                  <th style="width: 130px; text-align: right;">Quán trợ giá</th>
+                  <th style="width: 130px; text-align: right;">Phụ phí</th>
+                  <th style="width: 140px; text-align: right;">Chênh lệch</th>
+                </tr>
+              </thead>
+              <tbody id="lalamoveTableBody">
+                <!-- Empty state rendered by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- =======================================================================
+         COLUMN 3: RIGHT CONTEXTUAL ACTION & FILTER PANEL (~390px)
+         ======================================================================= -->
+    <aside class="right-action-panel">
+      <!-- Top Header of Right Panel -->
+      <div class="panel-header">
+        <div class="panel-header-title-group">
+          <h2>BỘ LỌC BÁO CÁO</h2>
+          <span>Tùy chỉnh thời gian & phân tích chi tiết</span>
+        </div>
+      </div>
+
+      <!-- Panel Body Container -->
+      <div class="panel-body">
+        
+        <!-- Section 1: Quick Date Presets & Date Range -->
+        <div class="report-filter-section">
+          <div class="section-label-header">
+            <span>📅</span> Khoảng thời gian thống kê
+          </div>
+
+          <!-- Quick Selector Buttons -->
+          <div class="quick-date-grid">
+            <button type="button" class="btn-quick-date" id="quickDate-today" onclick="setQuickDate('today')">Hôm nay</button>
+            <button type="button" class="btn-quick-date" id="quickDate-7days" onclick="setQuickDate('7days')">7 ngày qua</button>
+            <button type="button" class="btn-quick-date active" id="quickDate-this_month" onclick="setQuickDate('this_month')">Tháng này</button>
+            <button type="button" class="btn-quick-date" id="quickDate-last_month" onclick="setQuickDate('last_month')">Tháng trước</button>
+          </div>
+
+          <!-- Exact Date Range Inputs -->
+          <div class="date-input-group">
+            <label for="filterFromDate">Từ ngày</label>
+            <input type="date" id="filterFromDate" class="date-input-field">
+          </div>
+
+          <div class="date-input-group">
+            <label for="filterToDate">Đến ngày</label>
+            <input type="date" id="filterToDate" class="date-input-field">
+          </div>
+
+          <button type="button" class="btn-apply-filter" onclick="applyReportFilters()">
+            <svg viewBox="0 0 24 24">
+              <path d="M10 18H14V16H10V18M3 6V8H21V6H3M6 13H18V11H6V13Z"/>
+            </svg>
+            <span>Áp dụng bộ lọc</span>
+          </button>
+        </div>
+
+        <!-- Section 2: Report Calculation Toggles -->
+        <div class="report-toggles-card">
+          <div class="switch-row">
+            <div class="switch-text-group">
+              <span class="switch-title">Loại trừ đơn hàng hủy</span>
+              <span class="switch-desc">Không tính doanh thu từ đơn bị hủy</span>
+            </div>
+            <label class="switch-control">
+              <input type="checkbox" id="chkExcludeCanceled" checked>
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+
+          <div class="switch-row" style="margin-top: 6px;">
+            <div class="switch-text-group">
+              <span class="switch-title">Tách biệt trạng thái thu tiền</span>
+              <span class="switch-desc">Phân tách tiền đã thu và chờ thu</span>
+            </div>
+            <label class="switch-control">
+              <input type="checkbox" id="chkSeparatePayment" checked>
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Section 3: Contextual Customer Review Detail (Active when viewing reviews) -->
+        <div class="report-filter-section" id="reviewDetailSection" style="display: none;">
+          <div class="section-label-header">
+            <span>💬</span> Chi tiết phản hồi được chọn
+          </div>
+          <div id="reviewDetailContent">
+            <div style="font-size: 12.5px; color: var(--text-secondary); text-align: center; padding: 20px 10px; background: #FFFDF9; border-radius: var(--radius-sm); border: 1px dashed var(--border-light);">
+              Chọn một đánh giá từ bảng bên trái để xem đầy đủ nội dung và phản hồi khách hàng.
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Export & Print Actions -->
+        <div class="report-actions-btn-group">
+          <button type="button" class="btn-export-excel" onclick="exportReportExcel()">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <path d="M14 2H6C4.89 2 4 2.89 4 4V20C4 21.11 4.89 22 6 22H18C19.11 22 20 21.11 20 20V8L14 2M18 20H6V4H13V9H18V20M12.9 14.5L15.4 18H13.6L12 15.4L10.4 18H8.6L11.1 14.5L8.8 11H10.5L12 13.5L13.5 11H15.2L12.9 14.5Z"/>
+            </svg>
+            <span>Xuất báo cáo Excel / CSV</span>
+          </button>
+
+          <button type="button" class="btn-print-report" onclick="printReport()">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <path d="M18 3H6V7H18V3M19 12C18.45 12 18 11.55 18 11C18 10.45 18.45 10 19 10C19.55 10 20 10.45 20 11C20 11.55 19.55 12 19 12M16 19H8V14H16V19M19 8H5C3.34 8 2 9.34 2 11V17H6V21H18V17H22V11C22 9.34 20.66 8 19 8Z"/>
+            </svg>
+            <span>In báo cáo thống kê</span>
+          </button>
+        </div>
+
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Scripts -->
+  <script src="../js/admin-common.js"></script>
+  <script src="../js/statistics.js"></script>
+</body>
+</html>

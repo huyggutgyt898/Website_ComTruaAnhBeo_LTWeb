@@ -443,5 +443,34 @@ C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-final\ComTruaAnhBeo.deps.json
 C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-final\ComTruaAnhBeo.runtimeconfig.json
 C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-final\ComTruaAnhBeo.dll
 C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-final\ComTruaAnhBeo.pdb
-D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\45g7q2e8jt-{0}-itnifmh3a9-itnifmh3a9.gz
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\FluentValidation.dll
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\FluentValidation.DependencyInjectionExtensions.dll
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\Microsoft.Win32.SystemEvents.dll
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\QRCoder.dll
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\SkiaSharp.dll
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\System.Drawing.Common.dll
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\win\lib\net6.0\Microsoft.Win32.SystemEvents.dll
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\linux-arm\native\libSkiaSharp.so
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\linux-arm64\native\libSkiaSharp.so
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\linux-bionic-arm64\native\libSkiaSharp.so
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\linux-bionic-x64\native\libSkiaSharp.so
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\linux-loongarch64\native\libSkiaSharp.so
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\linux-musl-arm\native\libSkiaSharp.so
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\linux-musl-arm64\native\libSkiaSharp.so
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\linux-musl-loongarch64\native\libSkiaSharp.so
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\linux-musl-riscv64\native\libSkiaSharp.so
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\linux-musl-x64\native\libSkiaSharp.so
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\linux-riscv64\native\libSkiaSharp.so
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\linux-x64\native\libSkiaSharp.so
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\linux-x86\native\libSkiaSharp.so
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\osx\native\libSkiaSharp.dylib
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\win-arm64\native\libSkiaSharp.dll
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\win-arm64\native\libSkiaSharp.pdb
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\win-x64\native\libSkiaSharp.dll
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\win-x64\native\libSkiaSharp.pdb
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\win-x86\native\libSkiaSharp.dll
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\win-x86\native\libSkiaSharp.pdb
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\unix\lib\net6.0\System.Drawing.Common.dll
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\45g7q2e8jt-{0}-wdgorn7yr2-wdgorn7yr2.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt

@@ -289,26 +289,21 @@
           <section id="paymentStepPanel" class="hidden space-y-5 rounded-xl border border-stone-200 bg-white p-5 sm:p-6">
             <div class="border-b border-stone-200 pb-3">
               <h2 class="font-brand text-lg font-extrabold uppercase text-plt-brown">Phương thức thanh toán</h2>
-              <p class="mt-1 text-xs text-stone-500">Chọn cách thanh toán cho đơn hàng này. Không hỗ trợ VNPAY.</p>
+              <p class="mt-1 text-xs text-stone-500">Chọn thanh toán khi nhận hàng hoặc chuyển khoản ngân hàng.</p>
             </div>
             <div class="space-y-2" id="paymentMethodOptions">
               <label class="payment-method-card flex cursor-pointer items-center gap-3 rounded-lg border-2 border-stone-200 bg-white p-4">
-                <input type="radio" name="paymentMethod" value="MOMO" checked class="h-4 w-4 accent-plt-brown" />
-                <span class="min-w-0 flex-1"><strong class="block text-sm">Ví MoMo</strong><span class="text-xs text-stone-500">Chuyển khoản MoMo thủ công; quán xác nhận sau khi nhận được thanh toán.</span></span>
+                <input type="radio" name="paymentMethod" value="COD" checked class="h-4 w-4 accent-plt-brown" />
+                <span class="min-w-0 flex-1"><strong class="block text-sm">Thanh toán khi nhận hàng</strong><span class="text-xs text-stone-500">Thanh toán trực tiếp cho tài xế khi nhận món.</span></span>
               </label>
               <label class="payment-method-card flex cursor-pointer items-center gap-3 rounded-lg border-2 border-stone-200 bg-white p-4">
-                <input type="radio" name="paymentMethod" value="COD" class="h-4 w-4 accent-plt-brown" />
-                <span class="min-w-0 flex-1"><strong class="block text-sm">Tiền mặt khi nhận hàng</strong><span class="text-xs text-stone-500">Thanh toán trực tiếp cho tài xế khi nhận món.</span></span>
-              </label>
-              <label class="payment-method-card flex cursor-pointer items-center gap-3 rounded-lg border-2 border-stone-200 bg-white p-4">
-                <input type="radio" name="paymentMethod" value="WALLET" class="h-4 w-4 accent-plt-brown" />
-                <span class="min-w-0 flex-1"><strong class="block text-sm">Ví điện tử khác</strong><span class="text-xs text-stone-500">Quán sẽ liên hệ hướng dẫn thanh toán; chưa có cổng ví điện tử tích hợp.</span></span>
+                <input type="radio" name="paymentMethod" value="BANK" class="h-4 w-4 accent-plt-brown" />
+                <span class="min-w-0 flex-1"><strong class="block text-sm">Chuyển khoản ngân hàng</strong><span class="text-xs text-stone-500">MB Bank · 0961016972. Mã QR thanh toán sẽ hiển thị sau khi đặt hàng.</span></span>
               </label>
             </div>
             <div id="paymentInstructionBox" class="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm" aria-live="polite">
-              <strong>Thanh toán qua MoMo</strong>
-              <p class="mt-1">Chuyển khoản đến số 0775058143 – Mr. Khoa. Ghi nội dung chuyển khoản là số điện thoại đặt hàng.</p>
-              <p class="mt-2 text-xs text-stone-600">Đơn hàng sẽ chờ quán xác nhận thanh toán. Trang này chưa kết nối cổng thanh toán trực tuyến.</p>
+              <strong>Thanh toán khi nhận hàng</strong>
+              <p class="mt-1">Vui lòng thanh toán trực tiếp cho tài xế khi nhận món.</p>
             </div>
             <p id="paymentError" class="min-h-5 text-sm text-red-700" aria-live="polite"></p>
             <div class="flex justify-between gap-3 border-t border-stone-200 pt-4">
@@ -327,6 +322,7 @@
             <p id="orderPlacedPaymentStatus" class="mt-3 text-sm font-bold"></p>
             <p id="orderPlacedPaymentNote" class="mt-2 text-sm text-stone-600"></p>
             <p class="mt-3 text-sm">Tổng đơn hàng: <strong id="orderPlacedTotal" class="text-plt-brown"></strong></p>
+            <img id="orderPlacedPaymentQr" class="mx-auto mt-4 hidden h-56 w-56 rounded-lg border border-stone-200 bg-white p-2" alt="Mã QR thanh toán MB Bank" />
             <button id="btnContinueShopping" type="button" class="mt-5 rounded-md bg-plt-brown px-6 py-3 font-brand text-sm font-extrabold uppercase text-white hover:bg-amber-900">Tiếp tục mua món</button>
           </section>
         </div>

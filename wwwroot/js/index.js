@@ -884,15 +884,12 @@
           radio.closest(".payment-method-card").classList.remove("border-stone-200", "bg-white");
 
           const box = document.getElementById("paymentInstructionBox");
-          box.innerHTML = radio.value === "MOMO"
-            ? `<strong>Thanh toán qua MoMo</strong>
-               <p class="mt-1">Chuyển khoản đến số 0775058143 – Mr. Khoa. Ghi nội dung chuyển khoản là số điện thoại đặt hàng.</p>
-               <p class="mt-2 text-xs text-stone-600">Đơn hàng sẽ chờ quán xác nhận thanh toán. Trang này chưa kết nối cổng thanh toán trực tuyến.</p>`
-            : radio.value === "COD"
-              ? `<strong>Thanh toán khi nhận hàng</strong>
-                 <p class="mt-1">Vui lòng thanh toán ${formatVND(getCartSummary().subtotal + SHIPPING_FEE - calculateCouponDiscount(getCartSummary().subtotal))} trực tiếp cho tài xế khi nhận món.</p>`
-              : `<strong>Ví điện tử khác</strong>
-                 <p class="mt-1">Quán sẽ liên hệ để hướng dẫn thanh toán và xác nhận giao dịch. Phương thức này chưa được tự động tích hợp.</p>`;
+          box.innerHTML = radio.value === "BANK"
+            ? `<strong>Chuyển khoản ngân hàng</strong>
+               <p class="mt-1">MB Bank · Số tài khoản: <strong>0961016972</strong>.</p>
+               <p class="mt-1">Đặt đơn xong, mã QR kèm số tiền và nội dung chuyển khoản sẽ hiện để bạn thanh toán ngay.</p>`
+            : `<strong>Thanh toán khi nhận hàng</strong>
+               <p class="mt-1">Vui lòng thanh toán ${formatVND(getCartSummary().subtotal + SHIPPING_FEE - calculateCouponDiscount(getCartSummary().subtotal))} trực tiếp cho tài xế khi nhận món.</p>`;
         });
       });
       document.querySelector('input[name="paymentMethod"]:checked')?.dispatchEvent(new Event("change"));
@@ -916,7 +913,7 @@
             email: document.getElementById("orderEmail").value.trim() || null,
             address: document.getElementById("orderAddress").value.trim(),
             note: document.getElementById("orderNote").value.trim() || null,
-            paymentMethod: document.querySelector('input[name="paymentMethod"]:checked')?.value || "MOMO",
+            paymentMethod: document.querySelector('input[name="paymentMethod"]:checked')?.value || "COD",
             couponCode: appliedCoupon?.code || null,
             latitude: selectedDeliveryLocation?.latitude ?? null,
             longitude: selectedDeliveryLocation?.longitude ?? null,
@@ -937,12 +934,16 @@
           document.getElementById("orderPlacedTotal").textContent = formatVND(result.total);
           document.getElementById("orderPlacedPaymentStatus").textContent = result.paymentMethod === "COD"
             ? "Đã chọn thanh toán khi nhận hàng"
-            : "Đơn hàng đã ghi nhận · chờ xác nhận thanh toán";
-          document.getElementById("orderPlacedPaymentNote").textContent = result.paymentMethod === "MOMO"
-            ? "Hãy chuyển khoản MoMo với nội dung là số điện thoại đặt hàng. Quán sẽ xác nhận sau khi nhận được thanh toán."
-            : result.paymentMethod === "WALLET"
-              ? "Quán sẽ liên hệ để hướng dẫn thanh toán bằng ví điện tử và xác nhận giao dịch."
-              : "Vui lòng thanh toán tiền mặt cho tài xế khi nhận món.";
+            : "Đơn hàng đã ghi nhận · vui lòng thanh toán ngay bằng mã QR";
+          document.getElementById("orderPlacedPaymentNote").textContent = result.paymentMethod === "BANK"
+            ? `Quét mã QR MB Bank bên dưới để chuyển ${formatVND(result.total)}. Nội dung chuyển khoản: ${result.trackingCode}. Quán sẽ đối soát giao dịch sau khi nhận tiền.`
+            : "Vui lòng thanh toán tiền mặt cho tài xế khi nhận món.";
+          const paymentQr = document.getElementById("orderPlacedPaymentQr");
+          paymentQr.classList.toggle("hidden", result.paymentMethod !== "BANK");
+          paymentQr.removeAttribute("src");
+          if (result.paymentMethod === "BANK" && result.paymentQrCode) {
+            paymentQr.src = result.paymentQrCode;
+          }
 
           document.getElementById("customerStepPanel").classList.add("hidden");
           document.getElementById("orderDetailsStepPanel").classList.add("hidden");

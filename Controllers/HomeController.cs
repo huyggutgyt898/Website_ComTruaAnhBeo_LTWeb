@@ -1,8 +1,10 @@
 using ComTruaAnhBeo.Models;
+using ComTruaAnhBeo.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Security.Cryptography;
 
 namespace ComTruaAnhBeo.Controllers
@@ -197,9 +199,11 @@ namespace ComTruaAnhBeo.Controllers
                 discount = promotionResult.Discount;
             }
 
+            var orderedAt = DateTime.Now;
             var order = new DonHang
             {
-                MaTraCuu = Convert.ToHexString(RandomNumberGenerator.GetBytes(6)),
+                MaTraCuu = $"CM{string.Concat(Enumerable.Range(0, 10).Select(
+                    _ => RandomNumberGenerator.GetInt32(10).ToString(CultureInfo.InvariantCulture)))}",
                 MaTk = null,
                 MaCode = promotion?.MaCode,
                 TenNguoiNhan = customerName,
@@ -214,8 +218,13 @@ namespace ComTruaAnhBeo.Controllers
                 PhiGiaoKhach = shippingFee,
                 TongTien = subtotal + shippingFee - discount,
                 TrangThai = "ChoXacNhan",
-                NgayDat = DateTime.Now
+                NgayDat = orderedAt
             };
+
+            var paymentQrCode = paymentMethod == "BANK"
+                ? $"data:image/png;base64,{Convert.ToBase64String(Utils.GenerateQRCodeImageBytes(
+                    Utils.GenerateQRCode("MB", "0961016972", order.TongTien.ToString("0", CultureInfo.InvariantCulture), order.MaTraCuu)))}"
+                : null;
 
             await using var transaction = await _db.Database.BeginTransactionAsync(cancellationToken);
             _db.DonHangs.Add(order);
@@ -237,7 +246,8 @@ namespace ComTruaAnhBeo.Controllers
                 MaDonNavigation = order,
                 PhuongThuc = paymentMethod,
                 SoTien = order.TongTien,
-                TrangThai = "ChuaTT"
+                TrangThai = "ChuaTT",
+                HanThanhToan = paymentMethod == "COD" ? null : orderedAt.AddMinutes(30)
             });
 
             await _db.SaveChangesAsync(cancellationToken);
@@ -252,7 +262,8 @@ namespace ComTruaAnhBeo.Controllers
                 shippingFee,
                 discount,
                 total = order.TongTien,
-                paymentStatus = "ChuaTT"
+                paymentStatus = "ChuaTT",
+                paymentQrCode
             });
         }
 
@@ -377,7 +388,7 @@ public sealed class CreateOrderRequest
     [StringLength(500)]
     public string? Note { get; init; }
 
-    [Required, RegularExpression("^(MOMO|COD|WALLET)$")]
+    [Required, RegularExpression("^(BANK|COD)$")]
     public string? PaymentMethod { get; init; }
 
     [MinLength(1)]

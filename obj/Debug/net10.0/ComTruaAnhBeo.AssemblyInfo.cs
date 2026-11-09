@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ComTruaAnhBeo")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+88ee2b6aef79b86c9d12ed2645fdf03c9746a78e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+41ba86a9e31edfb72e30ea0c4fa75891530e1ae6")]
 [assembly: System.Reflection.AssemblyProductAttribute("ComTruaAnhBeo")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ComTruaAnhBeo")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

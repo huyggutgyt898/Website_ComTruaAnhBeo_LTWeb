@@ -49,7 +49,7 @@
         </button>
       </nav>
 
-      <!-- Right Action Icons: User Auth, Shopping Cart (Click jumps to Menu) -->
+      <!-- Right Action Icons: User Auth, Shopping Cart -->
       <div class="shrink-0 flex items-center gap-1.5 sm:gap-3">
         <!-- Auth Button (Đăng nhập / Đăng xuất) -->
         <button id="btnHeaderAuth" type="button"
@@ -58,9 +58,9 @@
           <span id="headerAuthLabel" class="hidden sm:inline">Đăng nhập</span>
         </button>
 
-        <!-- Cart Button: Khi bấm vào trỏ tới menu của quán + mở thanh giỏ hàng nhanh -->
         <button id="btnHeaderCart" type="button"
-                title="Bấm vào để xem Thực đơn của quán và Giỏ hàng"
+                aria-label="Mở giỏ hàng và đặt hàng"
+                title="Mở giỏ hàng và đặt hàng"
                 class="relative w-11 h-11 shrink-0 rounded-full bg-amber-950/80 border-2 border-plt-gold flex items-center justify-center text-plt-gold hover:bg-plt-gold hover:text-amber-950 transition pulse-gold">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 29m12-29l2 29m-6-23a1 1 0 11-2 0 1 1 0 012 0zm8 0a1 1 0 11-2 0 1 1 0 012 0z" />
@@ -151,7 +151,7 @@
             <p class="text-amber-100/90 text-xs sm:text-sm">
               <span id="menuItemCount" aria-live="polite">Đang tải thực đơn...</span>
               <span> · </span>
-              Bấm <strong class="text-plt-gold">“Đặt hàng”</strong> để chuyển tới giao diện đặt hàng, hoặc bấm <strong class="text-plt-gold">“+ Giỏ”</strong> để chọn nhiều món.
+              Bấm vào ảnh để xem chi tiết và món ăn kèm; thêm món vào giỏ để thanh toán.
             </p>
           </div>
 
@@ -194,350 +194,170 @@
       </div>
     </section>
 
-    <!-- ================= VIEW 2: GIAO DIỆN ĐẶT HÀNG & THANH TOÁN (THEO ĐÚNG QUY TRÌNH) ================= -->
-    <section id="view-checkout" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      <!-- Thanh điều hướng bước Đặt hàng -> Thanh toán -> Hoàn tất -->
-      <div class="bg-white rounded-2xl p-5 shadow-sm border border-stone-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <section id="view-product-detail" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div id="productDetailContent"></div>
+    </section>
+
+    <section id="view-checkout" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <header class="mb-6 flex flex-col gap-4 border-b border-stone-200 pb-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <button id="btnBackToMenuFromCheckout" type="button" class="text-xs sm:text-sm font-bold text-plt-brown hover:underline flex items-center gap-1">
-            <span>← Quay lại Thực đơn chọn thêm món</span>
+          <button id="btnBackToMenuFromCheckout" type="button" class="text-sm font-bold text-plt-brown hover:underline">
+            ← Tiếp tục chọn món
           </button>
-          <h2 class="font-brand font-black text-xl sm:text-2xl text-plt-brown uppercase mt-1">
-            QUÁ TRÌNH ĐẶT HÀNG &amp; TÍNH PHÍ SHIP TỰ ĐỘNG
-          </h2>
+          <h1 class="mt-2 font-brand text-2xl font-black uppercase text-plt-brown">Đặt hàng</h1>
         </div>
-        <div class="flex items-center gap-2 text-xs font-extrabold uppercase">
-          <span id="stepBadge1" class="px-3 py-1.5 rounded-full bg-plt-brown text-plt-gold">1. Thông tin &amp; Giỏ hàng</span>
-          <span class="text-stone-400">→</span>
-          <span id="stepBadge2" class="px-3 py-1.5 rounded-full bg-stone-200 text-stone-600">2. Tính Ship &amp; Thanh toán</span>
-          <span class="text-stone-400">→</span>
-          <span id="stepBadge3" class="px-3 py-1.5 rounded-full bg-stone-200 text-stone-600">3. Gửi Email Xác Nhận</span>
-        </div>
-      </div>
+        <ol class="grid w-full grid-cols-3 gap-1 rounded-lg bg-stone-100 p-1 text-center text-[11px] font-extrabold uppercase sm:w-auto sm:min-w-[520px] sm:text-xs">
+          <li id="stepBadge1" class="rounded-md bg-plt-brown px-2 py-2 text-plt-gold">1. Khách hàng</li>
+          <li id="stepBadge2" class="rounded-md px-2 py-2 text-stone-600">2. Đơn hàng</li>
+          <li id="stepBadge3" class="rounded-md px-2 py-2 text-stone-600">3. Thanh toán</li>
+        </ol>
+      </header>
 
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <!-- CỘT TRÁI (7 CỘT): THÔNG TIN KHÁCH HÀNG + GOOGLE MAPS API TÍNH SHIP -->
-        <div class="lg:col-span-7 space-y-6">
-
-          <!-- BƯỚC 1: FORM THÔNG TIN ĐẶT HÀNG (HỌ TÊN, SĐT, ĐỊA CHỈ, EMAIL) -->
-          <div class="bg-white rounded-2xl p-6 shadow-md border border-stone-200 space-y-5">
-            <div class="flex items-center justify-between border-b border-stone-200 pb-3">
-              <div class="flex items-center gap-2.5">
-                <span class="w-8 h-8 rounded-lg bg-plt-brown text-plt-gold font-brand font-black flex items-center justify-center text-sm">1</span>
-                <h3 class="font-brand font-extrabold text-lg text-plt-brown uppercase">
-                  THÔNG TIN KHÁCH ĐẶT HÀNG
-                </h3>
-              </div>
-              <span class="text-xs text-stone-500 font-medium">* Bắt buộc nhập đầy đủ</span>
+      <div class="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
+        <div class="space-y-5 lg:col-span-7">
+          <section id="customerStepPanel" class="space-y-5 rounded-xl border border-stone-200 bg-white p-5 sm:p-6">
+            <div class="border-b border-stone-200 pb-3">
+              <h2 class="font-brand text-lg font-extrabold uppercase text-plt-brown">Thông tin khách hàng</h2>
+              <p class="mt-1 text-xs text-stone-500">Các mục có dấu * là bắt buộc. Không cần đăng nhập để đặt hàng.</p>
             </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label for="orderFullName" class="block text-xs font-bold uppercase text-stone-700 mb-1">
-                  Họ và tên khách hàng *
-                </label>
-                <input id="orderFullName" type="text" required
-                       placeholder="VD: Nguyễn Minh Tuấn"
-                       class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-plt-brown" />
+                <label for="orderFullName" class="mb-1 block text-xs font-bold uppercase text-stone-700">Họ và tên *</label>
+                <input id="orderFullName" type="text" required maxlength="100" autocomplete="name"
+                       placeholder="Nhập họ và tên"
+                       class="w-full rounded-lg border border-stone-300 bg-white px-3.5 py-2.5 text-base focus:border-plt-brown focus:outline-none focus:ring-2 focus:ring-amber-300 sm:text-sm" />
               </div>
               <div>
-                <label for="orderPhone" class="block text-xs font-bold uppercase text-stone-700 mb-1">
-                  Số điện thoại nhận hàng *
-                </label>
-                <input id="orderPhone" type="tel" required
-                       placeholder="VD: 0909123456"
-                       class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-plt-brown" />
+                <label for="orderPhone" class="mb-1 block text-xs font-bold uppercase text-stone-700">Số điện thoại *</label>
+                <input id="orderPhone" type="tel" required maxlength="10" inputmode="numeric" autocomplete="tel"
+                       placeholder="0909123456"
+                       class="w-full rounded-lg border border-stone-300 bg-white px-3.5 py-2.5 text-base focus:border-plt-brown focus:outline-none focus:ring-2 focus:ring-amber-300 sm:text-sm" />
+              </div>
+              <div class="sm:col-span-2">
+                <label for="orderEmail" class="mb-1 block text-xs font-bold uppercase text-stone-700">Email <span class="font-normal normal-case text-stone-500">(không bắt buộc)</span></label>
+                <input id="orderEmail" type="email" maxlength="150" autocomplete="email"
+                       placeholder="ban@email.com"
+                       class="w-full rounded-lg border border-stone-300 bg-white px-3.5 py-2.5 text-base focus:border-plt-brown focus:outline-none focus:ring-2 focus:ring-amber-300 sm:text-sm" />
+              </div>
+              <div class="sm:col-span-2">
+                <label for="orderAddress" class="mb-1 block text-xs font-bold uppercase text-stone-700">Địa chỉ giao hàng *</label>
+                <input id="orderAddress" type="text" required maxlength="255" autocomplete="street-address"
+                       placeholder="Số nhà, tên đường, phường/xã..."
+                       class="w-full rounded-lg border border-stone-300 bg-white px-3.5 py-2.5 text-base focus:border-plt-brown focus:outline-none focus:ring-2 focus:ring-amber-300 sm:text-sm" />
+                <button id="btnUseCurrentLocation" type="button" class="mt-2 text-xs font-bold text-plt-brown underline">
+                  Dùng vị trí hiện tại
+                </button>
+                <p id="deliveryLocationStatus" class="mt-1 text-xs text-stone-500" aria-live="polite">Bạn cũng có thể tự nhập địa chỉ giao hàng.</p>
+              </div>
+              <div class="sm:col-span-2">
+                <label for="orderNote" class="mb-1 block text-xs font-bold uppercase text-stone-700">Ghi chú đơn hàng <span class="font-normal normal-case text-stone-500">(không bắt buộc)</span></label>
+                <textarea id="orderNote" maxlength="500" rows="3" placeholder="Ghi chú cho quán hoặc tài xế"
+                          class="w-full rounded-lg border border-stone-300 bg-white px-3.5 py-2.5 text-base focus:border-plt-brown focus:outline-none focus:ring-2 focus:ring-amber-300 sm:text-sm"></textarea>
               </div>
             </div>
-
-            <div>
-              <label for="orderEmail" class="block text-xs font-bold uppercase text-stone-700 mb-1">
-                Địa chỉ Email (Để nhận thông báo xác nhận đơn hàng) *
-              </label>
-              <input id="orderEmail" type="email" required
-                     placeholder="VD: khachhang@gmail.com"
-                     class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-plt-brown" />
-            </div>
-
-            <!-- KHU VỰC ĐỊA CHỈ & TÍNH PHÍ SHIP GOOGLE MAPS TỪ 450 LÊ VĂN VIỆT -->
-            <div class="bg-amber-50/70 rounded-2xl p-4 sm:p-5 border border-amber-200 space-y-4">
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div>
-                  <div class="text-xs font-extrabold uppercase text-plt-brown flex items-center gap-1.5">
-                    <span>🗺️</span> ĐỊNH TUYẾN GOOGLE MAPS &amp; TÍNH PHÍ SHIP TỰ ĐỘNG
-                  </div>
-                  <p class="text-xs text-stone-600 mt-0.5">
-                    Điểm bắt đầu cố định: <strong>450 Lê Văn Việt, Phường Tăng Nhơn Phú, TP.HCM</strong>
-                  </p>
-                </div>
-                <span class="px-2.5 py-1 rounded-full bg-red-100 text-red-800 font-bold text-[11px] w-fit">
-                  ⚠️ Chỉ ship nội thành TP.HCM
-                </span>
-              </div>
-
-              <!-- Chọn nhanh khu vực / Quận Huyện để hỗ trợ định vị hoặc kiểm tra ngoại tỉnh -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label for="orderProvinceSelect" class="block text-xs font-bold text-stone-700 mb-1">
-                    Tỉnh / Thành phố giao đến *
-                  </label>
-                  <select id="orderProvinceSelect"
-                          class="w-full px-3 py-2.5 rounded-xl border border-stone-300 bg-white text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-plt-brown">
-                    <option value="HCM" selected>Thành phố Hồ Chí Minh (Nội thành)</option>
-                    <option value="BINH_DUONG">Tỉnh Bình Dương (Ngoại tỉnh - Không giao)</option>
-                    <option value="DONG_NAI">Tỉnh Đồng Nai (Ngoại tỉnh - Không giao)</option>
-                    <option value="LONG_AN">Tỉnh Long An (Ngoại tỉnh - Không giao)</option>
-                    <option value="VUNG_TAU">Bà Rịa - Vũng Tàu (Ngoại tỉnh - Không giao)</option>
-                    <option value="HA_NOI">Thành phố Hà Nội (Ngoại tỉnh - Không giao)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label for="orderQuickLandmark" class="block text-xs font-bold text-stone-700 mb-1">
-                    Gợi ý tuyến đường thực tế từ 450 Lê Văn Việt
-                  </label>
-                  <select id="orderQuickLandmark"
-                          class="w-full px-3 py-2.5 rounded-xl border border-stone-300 bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-plt-brown">
-                    <option value="">-- Hoặc tự nhập địa chỉ bên dưới --</option>
-                    <option value="380 Lê Văn Việt, Phường Tăng Nhơn Phú, TP.HCM|0.8">380 Lê Văn Việt, P. Tăng Nhơn Phú (~0.8 km)</option>
-                    <option value="120 Man Thiện, Phường Tăng Nhơn Phú A, TP. Thủ Đức, TP.HCM|1.5">120 Man Thiện, P. Tăng Nhơn Phú A (~1.5 km)</option>
-                    <option value="50 Võ Văn Ngân, Phường Bình Thọ, TP. Thủ Đức, TP.HCM|3.2">50 Võ Văn Ngân, P. Bình Thọ, Thủ Đức (~3.2 km)</option>
-                    <option value="215 Đỗ Xuân Hợp, Phường Phước Long B, TP. Thủ Đức, TP.HCM|4.5">215 Đỗ Xuân Hợp, P. Phước Long B (~4.5 km)</option>
-                    <option value="Khu Công Nghệ Cao Quận 9, Xa Lộ Hà Nội, TP.HCM|2.8">Khu Công Nghệ Cao Q.9, TP.HCM (~2.8 km)</option>
-                    <option value="720A Điện Biên Phủ, Vinhomes Central Park, Bình Thạnh, TP.HCM|11.5">Vinhomes Central Park, Q. Bình Thạnh (~11.5 km)</option>
-                    <option value="25 Nguyễn Thị Minh Khai, Phường Bến Nghé, Quận 1, TP.HCM|14.0">25 Nguyễn Thị Minh Khai, Quận 1 (~14.0 km)</option>
-                    <option value="10 Đại lộ Bình Dương, TP. Thuận An, Tỉnh Bình Dương|18.5">10 Đại lộ Bình Dương, Tỉnh Bình Dương (Thử nghiệm chặn ngoại tỉnh)</option>
-                  </select>
-                </div>
-              </div>
-
-              <!-- Ô nhập địa chỉ khách hàng + Nút Tính Phí Ship kế bên -->
-              <div>
-                <label for="orderAddress" class="block text-xs font-bold uppercase text-stone-700 mb-1">
-                  Địa chỉ nhận hàng cụ thể (Điểm đến) *
-                </label>
-                <div class="flex flex-col sm:flex-row gap-2.5">
-                  <input id="orderAddress" type="text" required
-                         placeholder="Nhập số nhà, tên đường, phường/quận tại TP.HCM..."
-                         class="flex-grow px-3.5 py-2.5 rounded-xl border border-stone-300 bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-plt-brown" />
-                  <button id="btnCalculateShipFee" type="button"
-                          class="px-5 py-2.5 rounded-xl bg-plt-brown hover:bg-amber-900 text-plt-gold font-brand font-extrabold text-xs sm:text-sm uppercase tracking-wide shadow transition shrink-0 flex items-center justify-center gap-1.5">
-                    <span>📍 TÍNH PHÍ SHIP</span>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Chỉnh khoảng cách km hoặc xem kết quả định tuyến Google Maps -->
-              <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center pt-1">
-                <div class="sm:col-span-5 flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-stone-300">
-                  <label for="orderDistanceKm" class="text-xs font-bold text-stone-700 shrink-0">Khoảng cách (km):</label>
-                  <input id="orderDistanceKm" type="number" step="0.1" min="0.1" max="50" value="1.5"
-                         class="w-full text-right font-extrabold text-plt-brown text-sm focus:outline-none" />
-                </div>
-                <div id="shippingRuleResultBox" class="sm:col-span-7 text-xs font-semibold text-stone-700 bg-white px-3.5 py-2.5 rounded-xl border border-stone-200">
-                  Bấm <strong>“Tính phí ship”</strong> để đo quãng đường từ 450 Lê Văn Việt và cộng vào tổng bill.
-                </div>
-              </div>
-
-              <!-- Cảnh báo Đỏ nếu khách cố tình đặt ngoài nội thành TP.HCM -->
-              <div id="outOfHcmWarningBox" class="hidden p-4 rounded-xl bg-red-600 text-white font-bold text-xs sm:text-sm shadow-md space-y-1">
-                <div class="text-base font-black uppercase flex items-center gap-2">
-                  <span>🚫 CHÚ Ý: KHÔNG ĐƯỢC ĐẶT HÀNG NGOÀI NỘI THÀNH TP.HCM!</span>
-                </div>
-                <p id="outOfHcmWarningText" class="font-medium text-red-100">
-                  Quy định của CƠM TRƯA ANH BÉO: Chỉ giao hàng trong nội thành Thành phố Hồ Chí Minh, không giao qua tỉnh thành khác. Vui lòng nhập lại địa chỉ thuộc TP.HCM để tiếp tục đặt món.
-                </p>
-              </div>
-
-              <!-- Khung Bản đồ Google Maps trực quan lộ trình từ 450 Lê Văn Việt -->
-              <div class="rounded-xl overflow-hidden border border-stone-300 bg-stone-100">
-                <div class="bg-stone-800 text-white px-3.5 py-2 text-xs flex flex-wrap items-center justify-between gap-2">
-                  <span class="font-semibold">🗺️ Lộ trình Google Maps: <strong>450 Lê Văn Việt, Tăng Nhơn Phú</strong> → <strong id="mapDestLabel" class="text-plt-gold">Khách hàng</strong></span>
-                  <a id="linkOpenGoogleMapsRoute"
-                     href="https://www.google.com/maps/dir/450+L%C3%AA+V%C4%83n+Vi%E1%BB%87t,+T%C4%83ng+Nh%C6%A1n+Ph%C3%BA+A,+Qu%E1%BA%ADn+9,+Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh/"
-                     target="_blank" rel="noopener noreferrer"
-                     class="text-plt-gold hover:underline font-bold">
-                    Mở Google Maps chỉ đường ↗
-                  </a>
-                </div>
-                <iframe id="googleMapEmbedFrame"
-                        title="Bản đồ Cơm Trưa Anh Béo 450 Lê Văn Việt"
-                        src="https://maps.google.com/maps?q=450%20L%C3%AA%20V%C4%83n%20Vi%E1%BB%87t,%20T%C4%83ng%20Nh%C6%A1n%20Ph%C3%BA,%20Th%C3%A0nh%20ph%E1%BB%91%20H%E1%BB%93%20Ch%C3%AD%20Minh&t=&z=15&ie=UTF8&iwloc=&output=embed"
-                        class="w-full h-48 border-0" loading="lazy"></iframe>
-              </div>
-
-              <!-- Bảng quy định phí ship minh bạch -->
-              <div class="bg-white/90 rounded-xl p-3 border border-amber-200/80 text-[11px] sm:text-xs text-stone-700 space-y-1">
-                <div class="font-extrabold text-plt-brown uppercase">📋 Bảng quy định tính phí ship (Từ 450 Lê Văn Việt, Tăng Nhơn Phú, TP.HCM):</div>
-                <ul class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 list-disc list-inside">
-                  <li><strong>&lt; 2km</strong> &amp; đơn từ <strong>100k trở lên</strong>: <span class="text-emerald-700 font-bold">MIỄN PHÍ SHIP (0đ)</span></li>
-                  <li><strong>&lt; 2km</strong> &amp; đơn từ <strong>100k trở xuống</strong>: <span class="text-plt-brown font-bold">10.000đ phí ship</span></li>
-                  <li><strong>Từ 2km – 5km</strong> &amp; đơn từ <strong>100k trở lên</strong>: <span class="text-plt-brown font-bold">15.000đ phí ship</span></li>
-                  <li><strong>Từ 2km – 5km</strong> &amp; đơn từ <strong>100k trở xuống</strong>: <span class="text-plt-brown font-bold">20.000đ phí ship</span></li>
-                  <li class="sm:col-span-2"><strong>Trên 5km</strong> (mọi giá trị đơn hàng): <span class="text-red-700 font-bold">6.000đ / km</span> (cộng trực tiếp vào tổng bill)</li>
-                </ul>
-              </div>
-            </div>
-
-            <div>
-              <label for="orderNote" class="block text-xs font-bold uppercase text-stone-700 mb-1">
-                Ghi chú món ăn / Giao hàng (Tùy chọn)
-              </label>
-              <input id="orderNote" type="text"
-                     placeholder="VD: Lấy Coca-Cola, nhiều mỡ hành, giao trước 11h45..."
-                     class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-plt-brown" />
-            </div>
-
-            <!-- Nút Xác nhận Đặt hàng để mở Giao diện Thanh toán -->
-            <div class="pt-2">
-              <button id="btnConfirmOrderStep1" type="button"
-                      class="w-full py-3.5 px-6 rounded-xl bg-plt-brown hover:bg-amber-900 text-plt-gold font-brand font-black text-sm sm:text-base uppercase tracking-wider shadow-lg transition flex items-center justify-center gap-2">
-                <span>✅ XÁC NHẬN ĐẶT HÀNG &amp; CHUYỂN TỚI THANH TOÁN</span>
+            <p id="checkoutFormError" class="min-h-5 text-sm text-red-700" aria-live="polite"></p>
+            <div class="flex justify-end border-t border-stone-200 pt-4">
+              <button id="btnConfirmOrderStep1" type="button" class="rounded-md bg-plt-brown px-6 py-3 font-brand text-sm font-extrabold uppercase text-white hover:bg-amber-900 disabled:cursor-not-allowed disabled:opacity-50">
+                Tiếp theo
               </button>
             </div>
-          </div>
+          </section>
 
-          <!-- BƯỚC 2: GIAO DIỆN THANH TOÁN (HIỆN RA KHI BẤM NÚT XÁC NHẬN ĐẶT HÀNG) -->
-          <div id="paymentStepPanel" class="hidden bg-white rounded-2xl p-6 shadow-xl border-2 border-plt-gold space-y-5">
-            <div class="flex items-center justify-between border-b border-stone-200 pb-3">
-              <div class="flex items-center gap-2.5">
-                <span class="w-8 h-8 rounded-lg bg-plt-gold text-amber-950 font-brand font-black flex items-center justify-center text-sm">2</span>
-                <div>
-                  <h3 class="font-brand font-black text-lg text-plt-brown uppercase">
-                    GIAO DIỆN THANH TOÁN ĐƠN HÀNG
-                  </h3>
-                  <p class="text-xs text-stone-500">Kiểm tra thông tin đặt hàng, phí ship và chọn phương thức thanh toán bên dưới</p>
-                </div>
-              </div>
-              <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 font-extrabold text-xs">Sẵn sàng thanh toán</span>
-            </div>
-
-            <!-- Tóm tắt Thông tin đặt hàng & Tổng bill trên giao diện thanh toán -->
-            <div class="bg-stone-50 rounded-xl p-4 border border-stone-200 space-y-2 text-xs sm:text-sm">
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <div><span class="text-stone-500">Khách hàng:</span> <strong id="paySumName" class="text-stone-900">--</strong></div>
-                <div><span class="text-stone-500">Điện thoại:</span> <strong id="paySumPhone" class="text-stone-900">--</strong></div>
-                <div class="sm:col-span-2"><span class="text-stone-500">Email nhận thông báo:</span> <strong id="paySumEmail" class="text-plt-brown">--</strong></div>
-                <div class="sm:col-span-2"><span class="text-stone-500">Địa chỉ nhận hàng:</span> <strong id="paySumAddress" class="text-stone-900">--</strong></div>
-              </div>
-              <div class="border-t border-stone-200 pt-2.5 mt-2 flex flex-wrap items-center justify-between gap-2">
-                <div>Tiền món ăn: <strong id="paySumSubtotal" class="text-stone-900">0đ</strong></div>
-                <div>Phí ship (<span id="paySumKm">0</span> km): <strong id="paySumShip" class="text-plt-brown">0đ</strong></div>
-                <div class="text-base font-black text-red-600">TỔNG BILL: <span id="paySumTotal">0đ</span></div>
-              </div>
-            </div>
-
-            <!-- Chọn Phương thức thanh toán: MoMo, VNPAY, Thanh toán khi nhận hàng (Đưa tiền cho Shipper) -->
-            <div class="space-y-3">
-              <div class="text-xs font-extrabold uppercase text-stone-700">
-                Chọn phương thức thanh toán *
-              </div>
-
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="paymentMethodOptions">
-                <!-- MoMo -->
-                <label class="payment-method-card cursor-pointer rounded-xl border-2 border-pink-600 bg-pink-50/50 p-3.5 flex flex-col justify-between transition">
-                  <div class="flex items-center justify-between">
-                    <span class="px-2 py-0.5 rounded bg-pink-600 text-white font-extrabold text-xs">MoMo</span>
-                    <input type="radio" name="paymentMethod" value="MoMo" checked class="w-4 h-4 accent-pink-600" />
-                  </div>
-                  <div class="mt-2">
-                    <div class="font-bold text-sm text-stone-900">Ví điện tử MoMo</div>
-                    <div class="text-[11px] text-stone-600">Quét mã QR MoMo siêu tốc</div>
-                  </div>
-                </label>
-
-                <!-- VNPAY -->
-                <label class="payment-method-card cursor-pointer rounded-xl border-2 border-stone-200 hover:border-blue-600 bg-white p-3.5 flex flex-col justify-between transition">
-                  <div class="flex items-center justify-between">
-                    <span class="px-2 py-0.5 rounded bg-blue-600 text-white font-extrabold text-xs">VNPAY</span>
-                    <input type="radio" name="paymentMethod" value="VNPAY" class="w-4 h-4 accent-blue-600" />
-                  </div>
-                  <div class="mt-2">
-                    <div class="font-bold text-sm text-stone-900">VNPAY-QR / Ngân hàng</div>
-                    <div class="text-[11px] text-stone-600">Thẻ ATM / App Ngân hàng</div>
-                  </div>
-                </label>
-
-                <!-- COD -->
-                <label class="payment-method-card cursor-pointer rounded-xl border-2 border-stone-200 hover:border-amber-600 bg-white p-3.5 flex flex-col justify-between transition">
-                  <div class="flex items-center justify-between">
-                    <span class="px-2 py-0.5 rounded bg-amber-600 text-white font-extrabold text-xs">COD</span>
-                    <input type="radio" name="paymentMethod" value="Thanh toán khi nhận hàng (Đưa tiền cho Shipper)" class="w-4 h-4 accent-amber-600" />
-                  </div>
-                  <div class="mt-2">
-                    <div class="font-bold text-sm text-stone-900">Thanh toán khi nhận hàng</div>
-                    <div class="text-[11px] text-stone-600">Đưa tiền cho Shipper</div>
-                  </div>
-                </label>
-              </div>
-
-              <!-- Khung hướng dẫn chi tiết theo phương thức đã chọn -->
-              <div id="paymentInstructionBox" class="rounded-xl p-4 bg-pink-50 border border-pink-200 text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div class="space-y-1">
-                  <div class="font-extrabold text-pink-800 uppercase">📱 Thanh toán bằng Ví MoMo</div>
-                  <p class="text-stone-700">Chuyển khoản hoặc quét QR MoMo tới SĐT: <strong>0775058143 – Mr. Khoa (Cơm Trưa Anh Béo)</strong></p>
-                  <p class="text-xs text-stone-500">Nội dung: SĐT khách hàng + Com Trua Anh Beo</p>
-                </div>
-                <div class="w-24 h-24 rounded-xl bg-white border-2 border-pink-500 flex flex-col items-center justify-center p-2 shrink-0 shadow-sm">
-                  <div class="text-2xl">📲</div>
-                  <div class="text-[10px] font-black text-pink-700 uppercase mt-1">QR MoMo</div>
-                  <div class="text-[9px] font-bold text-stone-500">0775058143</div>
-                </div>
-              </div>
-            </div>
-
-            <button id="btnCompletePaymentFinal" type="button"
-                    class="w-full py-4 px-6 rounded-xl bg-plt-gold hover:bg-amber-400 text-amber-950 font-brand font-black text-base uppercase tracking-wider shadow-lg transition flex items-center justify-center gap-2">
-              <span>🎉 THANH TOÁN &amp; HOÀN TẤT ĐẶT HÀNG</span>
-            </button>
-          </div>
-
-        </div>
-
-        <!-- CỘT PHẢI (5 CỘT): CHI TIẾT MÓN ĂN, SỐ LƯỢNG & TỔNG HÓA ĐƠN -->
-        <div class="lg:col-span-5">
-          <div class="bg-white rounded-2xl p-6 shadow-md border border-stone-200 sticky top-24 space-y-5">
-            <div class="flex items-center justify-between border-b border-stone-200 pb-3">
+          <section id="orderDetailsStepPanel" class="hidden space-y-5 rounded-xl border border-stone-200 bg-white p-5 sm:p-6">
+            <div class="flex items-start justify-between gap-3 border-b border-stone-200 pb-3">
               <div>
-                <h3 class="font-brand font-black text-lg text-plt-brown uppercase">
-                  MÓN ĂN TRONG ĐƠN HÀNG
-                </h3>
-                <p class="text-xs text-stone-500">Thể hiện rõ tên món, đơn giá, số lượng cho khách xem</p>
+                <h2 class="font-brand text-lg font-extrabold uppercase text-plt-brown">Thông tin đơn hàng</h2>
+                <p class="mt-1 text-xs text-stone-500">Kiểm tra người nhận và địa chỉ trước khi chọn thanh toán.</p>
               </div>
-              <button id="btnClearCart" type="button" class="text-xs font-bold text-red-600 hover:underline">
-                Xóa hết
+              <button id="btnBackToCustomer" type="button" class="shrink-0 text-xs font-bold text-plt-brown underline">Chỉnh sửa</button>
+            </div>
+            <dl class="space-y-3 text-sm">
+              <div class="flex justify-between gap-4"><dt class="text-stone-500">Người nhận</dt><dd id="reviewName" class="text-right font-bold"></dd></div>
+              <div class="flex justify-between gap-4"><dt class="text-stone-500">Số điện thoại</dt><dd id="reviewPhone" class="text-right font-bold"></dd></div>
+              <div class="flex justify-between gap-4"><dt class="text-stone-500">Email</dt><dd id="reviewEmail" class="text-right font-bold"></dd></div>
+              <div class="flex justify-between gap-4"><dt class="text-stone-500">Địa chỉ giao</dt><dd id="reviewAddress" class="max-w-[70%] text-right font-bold"></dd></div>
+              <div class="flex justify-between gap-4"><dt class="text-stone-500">Ghi chú</dt><dd id="reviewNote" class="max-w-[70%] text-right"></dd></div>
+              <div class="flex justify-between gap-4 border-t border-stone-200 pt-3"><dt class="text-stone-500">Phương thức giao</dt><dd class="text-right font-bold">Giao hàng tận nơi</dd></div>
+            </dl>
+            <p id="orderStepError" class="min-h-5 text-sm text-red-700" aria-live="polite"></p>
+            <div class="flex justify-between gap-3 border-t border-stone-200 pt-4">
+              <button id="btnBackToCustomerFromReview" type="button" class="rounded-md border border-stone-400 px-5 py-3 font-bold text-stone-800 hover:bg-stone-100">Quay lại</button>
+              <button id="btnProceedToPayment" type="button" class="rounded-md bg-plt-brown px-6 py-3 font-brand text-sm font-extrabold uppercase text-white hover:bg-amber-900 disabled:cursor-not-allowed disabled:opacity-50">Tiếp theo</button>
+            </div>
+          </section>
+
+          <section id="paymentStepPanel" class="hidden space-y-5 rounded-xl border border-stone-200 bg-white p-5 sm:p-6">
+            <div class="border-b border-stone-200 pb-3">
+              <h2 class="font-brand text-lg font-extrabold uppercase text-plt-brown">Phương thức thanh toán</h2>
+              <p class="mt-1 text-xs text-stone-500">Chọn cách thanh toán cho đơn hàng này. Không hỗ trợ VNPAY.</p>
+            </div>
+            <div class="space-y-2" id="paymentMethodOptions">
+              <label class="payment-method-card flex cursor-pointer items-center gap-3 rounded-lg border-2 border-stone-200 bg-white p-4">
+                <input type="radio" name="paymentMethod" value="MOMO" checked class="h-4 w-4 accent-plt-brown" />
+                <span class="min-w-0 flex-1"><strong class="block text-sm">Ví MoMo</strong><span class="text-xs text-stone-500">Chuyển khoản MoMo thủ công; quán xác nhận sau khi nhận được thanh toán.</span></span>
+              </label>
+              <label class="payment-method-card flex cursor-pointer items-center gap-3 rounded-lg border-2 border-stone-200 bg-white p-4">
+                <input type="radio" name="paymentMethod" value="COD" class="h-4 w-4 accent-plt-brown" />
+                <span class="min-w-0 flex-1"><strong class="block text-sm">Tiền mặt khi nhận hàng</strong><span class="text-xs text-stone-500">Thanh toán trực tiếp cho tài xế khi nhận món.</span></span>
+              </label>
+              <label class="payment-method-card flex cursor-pointer items-center gap-3 rounded-lg border-2 border-stone-200 bg-white p-4">
+                <input type="radio" name="paymentMethod" value="WALLET" class="h-4 w-4 accent-plt-brown" />
+                <span class="min-w-0 flex-1"><strong class="block text-sm">Ví điện tử khác</strong><span class="text-xs text-stone-500">Quán sẽ liên hệ hướng dẫn thanh toán; chưa có cổng ví điện tử tích hợp.</span></span>
+              </label>
+            </div>
+            <div id="paymentInstructionBox" class="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm" aria-live="polite">
+              <strong>Thanh toán qua MoMo</strong>
+              <p class="mt-1">Chuyển khoản đến số 0775058143 – Mr. Khoa. Ghi nội dung chuyển khoản là số điện thoại đặt hàng.</p>
+              <p class="mt-2 text-xs text-stone-600">Đơn hàng sẽ chờ quán xác nhận thanh toán. Trang này chưa kết nối cổng thanh toán trực tuyến.</p>
+            </div>
+            <p id="paymentError" class="min-h-5 text-sm text-red-700" aria-live="polite"></p>
+            <div class="flex justify-between gap-3 border-t border-stone-200 pt-4">
+              <button id="btnBackToOrderDetails" type="button" class="rounded-md border border-stone-400 px-5 py-3 font-bold text-stone-800 hover:bg-stone-100">Quay lại</button>
+              <button id="btnCompletePaymentFinal" type="button" class="rounded-md bg-plt-brown px-6 py-3 font-brand text-sm font-extrabold uppercase text-white hover:bg-amber-900 disabled:cursor-not-allowed disabled:opacity-50">
+                Đặt hàng
               </button>
             </div>
+          </section>
 
-            <!-- Danh sách các món đã chọn kèm nút +/- số lượng -->
-            <div id="checkoutCartItemsList" class="space-y-3 max-h-[380px] overflow-y-auto pr-1">
-              <!-- Render bằng JS -->
+          <section id="orderPlacedPanel" class="hidden rounded-xl border border-stone-200 bg-white p-6 text-center">
+            <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-2xl text-emerald-700" aria-hidden="true">✓</div>
+            <h2 class="font-brand text-xl font-black uppercase text-plt-brown">Đặt hàng thành công</h2>
+            <p class="mt-2 text-sm text-stone-600">Mã tra cứu đơn hàng</p>
+            <p id="orderPlacedTrackingCode" class="mt-1 font-mono text-lg font-extrabold tracking-wider text-plt-brown"></p>
+            <p id="orderPlacedPaymentStatus" class="mt-3 text-sm font-bold"></p>
+            <p id="orderPlacedPaymentNote" class="mt-2 text-sm text-stone-600"></p>
+            <p class="mt-3 text-sm">Tổng đơn hàng: <strong id="orderPlacedTotal" class="text-plt-brown"></strong></p>
+            <button id="btnContinueShopping" type="button" class="mt-5 rounded-md bg-plt-brown px-6 py-3 font-brand text-sm font-extrabold uppercase text-white hover:bg-amber-900">Tiếp tục mua món</button>
+          </section>
+        </div>
+
+        <aside id="checkoutSummary" class="lg:col-span-5">
+          <div class="space-y-5 border border-stone-200 bg-[#f5f0e5] p-5 sm:p-6 lg:sticky lg:top-24">
+            <div class="flex items-start justify-between gap-3 border-b border-stone-300 pb-3">
+              <div>
+                <h2 class="font-brand text-lg font-black uppercase text-plt-brown">Chi tiết đơn hàng</h2>
+                <p id="checkoutItemCount" class="mt-1 text-xs text-stone-500">0 món</p>
+              </div>
+              <button id="btnClearCart" type="button" class="text-xs font-bold text-plt-brown underline">Xóa hết</button>
             </div>
-
-            <!-- Bảng tính Tổng tiền món + Phí ship + Tổng thanh toán -->
-            <div class="border-t border-stone-200 pt-4 space-y-2.5 text-sm">
-              <div class="flex justify-between text-stone-700">
-                <span>Tổng số lượng món:</span>
-                <strong id="summaryTotalQty" class="font-bold">0 phần</strong>
+            <div id="checkoutCartItemsList" class="max-h-[380px] space-y-3 overflow-y-auto pr-1"></div>
+            <div class="space-y-2 border-t border-stone-300 pt-4 text-sm">
+              <div class="flex justify-between text-stone-700"><span>Tạm tính</span><strong id="summarySubtotal">0đ</strong></div>
+              <div class="flex justify-between text-stone-700"><span>Phí giao hàng</span><strong id="summaryShippingFee">0đ</strong></div>
+              <div class="flex justify-between text-stone-700"><span>Giảm giá</span><strong id="summaryDiscount" class="text-emerald-700">0đ</strong></div>
+              <div class="flex justify-between border-t border-stone-300 pt-3 text-base font-black text-plt-brown"><span>Tổng cộng</span><strong id="summaryGrandTotal">0đ</strong></div>
+            </div>
+            <div class="rounded-lg border border-stone-300 bg-white p-4">
+              <label for="couponCodeInput" class="mb-2 block text-xs font-extrabold uppercase text-stone-700">Mã khuyến mãi</label>
+              <div class="flex gap-2">
+                <input id="couponCodeInput" type="text" maxlength="30" autocomplete="off" placeholder="Nhập mã giảm giá"
+                       class="min-w-0 flex-1 rounded-md border border-stone-300 bg-white px-3 py-2.5 text-base uppercase focus:border-plt-brown focus:outline-none focus:ring-2 focus:ring-amber-300 sm:text-sm" />
+                <button id="btnApplyCoupon" type="button" class="rounded-md bg-plt-brown px-4 py-2.5 text-xs font-extrabold text-white hover:bg-amber-900">Áp dụng</button>
               </div>
-              <div class="flex justify-between text-stone-700">
-                <span>Tạm tính tiền món ăn:</span>
-                <strong id="summarySubtotal" class="font-bold">0đ</strong>
-              </div>
-              <div class="flex justify-between text-stone-700 items-center">
-                <span>Phí giao hàng (<span id="summaryDistanceLabel">1.5 km</span>):</span>
-                <strong id="summaryShippingFee" class="font-extrabold text-plt-brown">10.000đ</strong>
-              </div>
-              <div id="summaryFreeShipHint" class="text-xs text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg font-medium">
-                💡 Đơn &lt;2km từ 100.000đ trở lên được MIỄN PHÍ SHIP!
-              </div>
-              <div class="border-t-2 border-dashed border-stone-300 pt-3 flex justify-between items-baseline">
-                <span class="font-brand font-extrabold text-base uppercase text-plt-brown">TỔNG BILL THANH TOÁN:</span>
-                <span id="summaryGrandTotal" class="font-brand font-black text-2xl text-red-600">0đ</span>
-              </div>
+              <p id="couponStatus" class="mt-2 min-h-4 text-xs text-stone-500" aria-live="polite">Nhập mã rồi bấm Áp dụng.</p>
             </div>
           </div>
-        </div>
+        </aside>
       </div>
     </section>
 
@@ -594,55 +414,6 @@
     </section>
 
   </main>
-
-  <!-- ================= MODAL 1: THÔNG BÁO EMAIL XÁC NHẬN ĐẶT HÀNG THÀNH CÔNG ================= -->
-  <div id="modalOrderSuccessEmail" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white rounded-2xl max-w-xl w-full p-6 sm:p-7 shadow-2xl border-2 border-plt-gold space-y-5 my-8">
-      <div class="flex items-start justify-between gap-3 border-b border-stone-200 pb-4">
-        <div class="flex items-center gap-3">
-          <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl font-bold shrink-0">
-            ✉️
-          </div>
-          <div>
-            <span class="px-2.5 py-0.5 rounded-full bg-emerald-600 text-white text-[11px] font-extrabold uppercase">
-              Đã thanh toán &amp; Gửi Email thành công
-            </span>
-            <h3 class="font-brand font-black text-lg sm:text-xl text-plt-brown uppercase mt-1">
-              THÔNG BÁO ĐÃ GỬI VỀ EMAIL KHÁCH HÀNG
-            </h3>
-          </div>
-        </div>
-        <button id="btnCloseSuccessModalTop" type="button" class="text-stone-400 hover:text-stone-700 text-xl font-bold">✕</button>
-      </div>
-
-      <!-- Khung mô phỏng hộp thư Gmail khách nhận được -->
-      <div class="bg-amber-50/70 rounded-xl p-4 sm:p-5 border border-amber-300 space-y-3">
-        <div class="text-xs text-stone-600 border-b border-amber-200 pb-2 space-y-1">
-          <div><strong>Từ:</strong> CƠM TRƯA ANH BÉO &lt;cskh.comtruaanhbeo@gmail.com&gt;</div>
-          <div><strong>Tới Email khách:</strong> <span id="emailModalRecipient" class="font-bold text-plt-brown">--</span></div>
-          <div><strong>Tiêu đề:</strong> <span id="emailModalSubject" class="font-semibold text-stone-800">--</span></div>
-        </div>
-
-        <!-- Nội dung đúng từng chữ theo yêu cầu của khách -->
-        <blockquote id="emailModalBodyText" class="bg-white p-4 rounded-xl border border-amber-200 text-stone-900 text-sm sm:text-base leading-relaxed font-medium whitespace-pre-line shadow-inner">
-        </blockquote>
-      </div>
-
-      <!-- Tóm tắt nhanh mã đơn & tổng tiền -->
-      <div class="bg-stone-100 rounded-xl p-3.5 text-xs sm:text-sm flex flex-wrap items-center justify-between gap-2">
-        <div>Mã đơn: <strong id="emailModalOrderId" class="text-plt-brown">#1004</strong></div>
-        <div>Phương thức: <strong id="emailModalMethod" class="text-stone-900">MoMo</strong></div>
-        <div>Tổng thanh toán: <strong id="emailModalTotal" class="text-red-600 font-black">0đ</strong></div>
-      </div>
-
-      <div class="flex flex-col sm:flex-row gap-3 pt-1">
-        <button id="btnCloseSuccessModalBottom" type="button"
-                class="w-full py-3 px-4 rounded-xl bg-plt-gold hover:bg-amber-400 text-amber-950 font-brand font-extrabold text-xs sm:text-sm uppercase transition">
-          🍚 Tiếp tục mua sắm
-        </button>
-      </div>
-    </div>
-  </div>
 
   <!-- ================= MODAL 2: ĐĂNG NHẬP / ĐĂNG KÝ / QUÊN MẬT KHẨU ================= -->
   <div id="modalAuth" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
@@ -799,7 +570,7 @@
   </div>
 
   <!-- ================= FLOATING ACTION BUTTONS (ZALO, HOTLINE, TIKTOK GIỐNG PHÚC LỘC THỌ) ================= -->
-  <div class="fixed right-4 bottom-5 z-40 flex flex-col items-center gap-3">
+  <div id="floatingContactLinks" class="fixed right-4 bottom-5 z-40 flex flex-col items-center gap-3">
     <!-- Zalo 0775058143 -->
     <a href="https://zalo.me/0775058143" target="_blank" rel="noopener noreferrer"
        title="Chat Zalo với Mr. Khoa: 0775058143"

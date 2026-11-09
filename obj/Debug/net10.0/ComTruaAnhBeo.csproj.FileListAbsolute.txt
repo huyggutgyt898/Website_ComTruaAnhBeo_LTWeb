@@ -413,7 +413,6 @@ C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-food-badge-build\ComTruaAnhBeo.de
 C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-food-badge-build\ComTruaAnhBeo.runtimeconfig.json
 C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-food-badge-build\ComTruaAnhBeo.dll
 C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-food-badge-build\ComTruaAnhBeo.pdb
-D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\45g7q2e8jt-{0}-sh7p4a9gcs-sh7p4a9gcs.gz
 C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-dbimage-build\appsettings.Development.json
 C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-dbimage-build\appsettings.json
 C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-dbimage-build\efpt.config.json
@@ -424,4 +423,25 @@ C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-dbimage-build\ComTruaAnhBeo.deps.
 C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-dbimage-build\ComTruaAnhBeo.runtimeconfig.json
 C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-dbimage-build\ComTruaAnhBeo.dll
 C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-dbimage-build\ComTruaAnhBeo.pdb
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build\appsettings.Development.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build\appsettings.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build\efpt.config.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build\ComTruaAnhBeo.staticwebassets.runtime.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build\ComTruaAnhBeo.staticwebassets.endpoints.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build\ComTruaAnhBeo.exe
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build\ComTruaAnhBeo.deps.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build\ComTruaAnhBeo.runtimeconfig.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build\ComTruaAnhBeo.dll
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-build\ComTruaAnhBeo.pdb
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-final\appsettings.Development.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-final\appsettings.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-final\efpt.config.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-final\ComTruaAnhBeo.staticwebassets.runtime.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-final\ComTruaAnhBeo.staticwebassets.endpoints.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-final\ComTruaAnhBeo.exe
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-final\ComTruaAnhBeo.deps.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-final\ComTruaAnhBeo.runtimeconfig.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-final\ComTruaAnhBeo.dll
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-final\ComTruaAnhBeo.pdb
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\45g7q2e8jt-{0}-itnifmh3a9-itnifmh3a9.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt

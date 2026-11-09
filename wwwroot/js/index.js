@@ -15,93 +15,19 @@
     };
 
     let MENU_ITEMS = [];
-
-    // Hàm tạo nội dung Email chuẩn xác theo đề bài
-    function buildConfirmationEmailBody(customerName, paymentMethod) {
-      return `CƠM TRƯA ANH BÉO xin chào,\nCảm ơn ${customerName} đã đặt hàng và thanh toán thành công bằng phương thức ${paymentMethod}. Chúng tôi đã nhận được đơn đặt hàng của bạn. Đơn hàng của bạn đang được chuẩn bị và sẽ tiến hành giao hàng trong vòng 1 tiếng. Chúc ${customerName} 1 bữa trưa ngon miệng!\nTrân trọng,\nCơm trưa Anh Béo.`;
-    }
-
-    // Bảng Đơn hàng mẫu trong SQL Server
-    let sqlOrders = [
-      {
-        id: 1001,
-        customerName: "Nguyễn Minh Tuấn",
-        phone: "0909123456",
-        email: "minhtuan.sgn@gmail.com",
-        address: "384 Lê Văn Việt, Phường Tăng Nhơn Phú, TP.HCM",
-        km: 1.2,
-        subtotal: 118000,
-        shipFee: 0,
-        total: 118000,
-        method: "MoMo",
-        status: "Đang chuẩn bị (Giao trong 1 tiếng)",
-        createdAt: "2026-10-24 09:30:12",
-        items: "1x Cơm tấm sườn bì chả (69.000đ), 1x Cơm tấm sườn (49.000đ)"
-      },
-      {
-        id: 1002,
-        customerName: "Trần Ngọc Lan",
-        phone: "0918234567",
-        email: "ngoclan.tran@gmail.com",
-        address: "120 Võ Văn Ngân, Phường Bình Thọ, TP. Thủ Đức, TP.HCM",
-        km: 3.5,
-        subtotal: 84000,
-        shipFee: 20000,
-        total: 104000,
-        method: "VNPAY",
-        status: "Đang chuẩn bị (Giao trong 1 tiếng)",
-        createdAt: "2026-10-24 09:48:05",
-        items: "1x Cơm heo quay cải chua (59.000đ), 1x Rau luộc kho quẹt (25.000đ)"
-      },
-      {
-        id: 1003,
-        customerName: "Lê Hoàng Phúc",
-        phone: "0987654321",
-        email: "hoangphuc.le@gmail.com",
-        address: "25 Nguyễn Thị Minh Khai, Quận 1, TP.HCM",
-        km: 14.0,
-        subtotal: 179000,
-        shipFee: 84000,
-        total: 263000,
-        method: "Thanh toán khi nhận hàng (Đưa tiền cho Shipper)",
-        status: "Đang chuẩn bị (Giao trong 1 tiếng)",
-        createdAt: "2026-10-24 10:05:40",
-        items: "1x Cơm thập cẩm đặc biệt (179.000đ)"
-      }
-    ];
-
-    // Bảng Lịch sử gửi Email trong SQL Server
-    let sqlEmails = [
-      {
-        id: 1,
-        orderId: 1001,
-        to: "minhtuan.sgn@gmail.com",
-        subject: "[CƠM TRƯA ANH BÉO] Xác nhận đơn hàng #1001 thành công",
-        body: buildConfirmationEmailBody("Nguyễn Minh Tuấn", "MoMo"),
-        sentAt: "2026-10-24 09:30:13"
-      },
-      {
-        id: 2,
-        orderId: 1002,
-        to: "ngoclan.tran@gmail.com",
-        subject: "[CƠM TRƯA ANH BÉO] Xác nhận đơn hàng #1002 thành công",
-        body: buildConfirmationEmailBody("Trần Ngọc Lan", "VNPAY"),
-        sentAt: "2026-10-24 09:48:06"
-      },
-      {
-        id: 3,
-        orderId: 1003,
-        to: "hoangphuc.le@gmail.com",
-        subject: "[CƠM TRƯA ANH BÉO] Xác nhận đơn hàng #1003 thành công",
-        body: buildConfirmationEmailBody("Lê Hoàng Phúc", "Thanh toán khi nhận hàng (Đưa tiền cho Shipper)"),
-        sentAt: "2026-10-24 10:05:41"
-      }
-    ];
+    let SIDE_ITEMS = [];
+    let sideMenuLoadState = "idle";
+    let sideMenuLoadPromise = null;
+    let currentProductId = null;
+    let appliedCoupon = null;
+    let selectedDeliveryLocation = null;
+    const SHIPPING_FEE = 20000;
 
     // =========================================================================
     // 2. STATE ỨNG DỤNG (GIỎ HÀNG, BỘ LỌC, TÀI KHOẢN ĐANG ĐĂNG NHẬP)
     // =========================================================================
     let cart = {};
+    let checkoutStep = 1;
     let activeCategory = "ALL";
     let searchQuery = "";
     let menuLoadState = "loading";
@@ -126,78 +52,6 @@
       toastTimer = setTimeout(() => {
         toast.classList.add("hidden");
       }, 3200);
-    }
-
-    // =========================================================================
-    // 3. LOGIC TÍNH PHÍ SHIP TỪ 450 LÊ VĂN VIỆT & KIỂM TRA NỘI THÀNH TP.HCM
-    // =========================================================================
-    const NON_HCM_KEYWORDS = [
-      "bình dương", "binh duong", "thuận an", "thuan an", "dĩ an", "di an", "thủ dầu một",
-      "đồng nai", "dong nai", "biên hòa", "bien hoa", "long khánh",
-      "long an", "tân an", "bến lức", "đức hòa",
-      "vũng tàu", "vung tau", "bà rịa", "ba ria",
-      "hà nội", "ha noi", "đà nẵng", "da nang", "cần thơ", "can tho",
-      "hải phòng", "nha trang", "đà lạt", "bình phước", "tây ninh", "tiền giang", "bến tre", "vĩnh long"
-    ];
-
-    // Ước lượng khoảng cách thực tế từ 450 Lê Văn Việt, Tăng Nhơn Phú, TP.HCM
-    function estimateDistanceFrom450LeVanViet(addressText) {
-      const lower = (addressText || "").toLowerCase();
-      if (!lower.trim()) return 1.5;
-      if (lower.includes("450 lê văn việt") || lower.includes("450 le van viet")) return 0.2;
-      if (lower.includes("lê văn việt") || lower.includes("le van viet") || lower.includes("tăng nhơn phú")) return 1.2;
-      if (lower.includes("man thiện") || lower.includes("man thien") || lower.includes("đình phong phú") || lower.includes("lã xuân oai")) return 1.6;
-      if (lower.includes("võ văn ngân") || lower.includes("vo van ngan") || lower.includes("bình thọ") || lower.includes("khu công nghệ cao")) return 3.2;
-      if (lower.includes("đỗ xuân hợp") || lower.includes("do xuan hop") || lower.includes("phước long") || lower.includes("linh trung") || lower.includes("linh chiểu")) return 4.4;
-      if (lower.includes("thủ đức") || lower.includes("thu duc") || lower.includes("quận 9") || lower.includes("quan 9") || lower.includes("hiệp phú")) return 2.8;
-      if (lower.includes("quận 2") || lower.includes("quan 2") || lower.includes("thảo điền") || lower.includes("an phú")) return 8.5;
-      if (lower.includes("bình thạnh") || lower.includes("binh thanh") || lower.includes("điện biên phủ")) return 11.5;
-      if (lower.includes("quận 1") || lower.includes("quan 1") || lower.includes("bến nghé") || lower.includes("nguyễn thị minh khai")) return 14.0;
-      if (lower.includes("quận 3") || lower.includes("quan 3") || lower.includes("phú nhuận") || lower.includes("gò vấp")) return 15.0;
-      if (lower.includes("quận 7") || lower.includes("quan 7") || lower.includes("tân bình") || lower.includes("quận 10")) return 17.0;
-      if (lower.includes("quận 12") || lower.includes("bình tân") || lower.includes("tân phú")) return 19.5;
-      return null; // Giữ nguyên số km đang nhập nếu địa chỉ bất kỳ
-    }
-
-    function checkIsOutOfHCM() {
-      const prov = document.getElementById("orderProvinceSelect").value;
-      const addr = (document.getElementById("orderAddress").value || "").toLowerCase();
-      if (prov !== "HCM") return true;
-      for (const kw of NON_HCM_KEYWORDS) {
-        if (addr.includes(kw)) return true;
-      }
-      return false;
-    }
-
-    // Áp dụng đúng 100% công thức phí ship đề bài yêu cầu
-    function calculateShippingFee(distanceKm, orderSubtotal) {
-      const km = Math.max(0, parseFloat(distanceKm) || 0);
-      const subtotal = Math.max(0, parseFloat(orderSubtotal) || 0);
-
-      // + <2km mà đơn hàng có giá trị từ 100k trở lên: MIỄN PHÍ SHIP
-      // + <2km mà đơn hàng có giá trị từ 100k trở xuống: 10k phí ship
-      if (km < 2) {
-        if (subtotal >= 100000) {
-          return { fee: 0, ruleText: `< 2km (${km}km) & Đơn ≥ 100k: MIỄN PHÍ SHIP (0đ)` };
-        } else {
-          return { fee: 10000, ruleText: `< 2km (${km}km) & Đơn ≤ 100k: Phí ship 10.000đ` };
-        }
-      }
-      // + Từ 2km đến 5km mà có giá trị đơn từ 100k trở lên: 15k phí ship
-      // + Từ 2-5km mà có giá trị đơn từ 100k trở xuống: 20k phí ship
-      if (km >= 2 && km <= 5) {
-        if (subtotal >= 100000) {
-          return { fee: 15000, ruleText: `Từ 2km - 5km (${km}km) & Đơn ≥ 100k: Phí ship 15.000đ` };
-        } else {
-          return { fee: 20000, ruleText: `Từ 2km - 5km (${km}km) & Đơn ≤ 100k: Phí ship 20.000đ` };
-        }
-      }
-      // + 5km trở lên (phát sinh đơn hàng nào cũng tính ship không ràng buộc giá trị đơn hàng): 6k/km
-      const fee = Math.round(km * 6000);
-      return {
-        fee,
-        ruleText: `Trên 5km (${km}km) × 6.000đ/km = ${formatVND(fee)} (Không ràng buộc giá trị đơn)`
-      };
     }
 
     // =========================================================================
@@ -284,6 +138,138 @@
       }
     }
 
+    async function loadSideItems() {
+      if (sideMenuLoadState === "loaded") return;
+      if (sideMenuLoadPromise) return sideMenuLoadPromise;
+
+      sideMenuLoadState = "loading";
+      renderProductDetail();
+      sideMenuLoadPromise = (async () => {
+        try {
+          const response = await fetch("/api/menu/extras", {
+            headers: { Accept: "application/json" },
+            cache: "no-store"
+          });
+          if (!response.ok) {
+            throw new Error(`Tải món ăn kèm thất bại (HTTP ${response.status}).`);
+          }
+
+          const dishes = await response.json();
+          if (!Array.isArray(dishes)) {
+            throw new Error("Dữ liệu món ăn kèm không hợp lệ.");
+          }
+
+          SIDE_ITEMS = dishes.map(dish => ({
+            id: Number(dish.id),
+            catId: String(dish.category || "Món ăn kèm"),
+            name: String(dish.name || ""),
+            desc: String(dish.description || ""),
+            img: String(dish.imageUrl || ""),
+            price: Number(dish.price),
+            unit: "Phần"
+          }));
+          sideMenuLoadState = "loaded";
+        } catch (error) {
+          console.error("Không thể tải món ăn kèm từ database:", error);
+          sideMenuLoadState = "error";
+          throw error;
+        } finally {
+          sideMenuLoadPromise = null;
+          renderProductDetail();
+        }
+      })();
+
+      return sideMenuLoadPromise;
+    }
+
+    function findDishById(id) {
+      return MENU_ITEMS.find(item => item.id === id) || SIDE_ITEMS.find(item => item.id === id);
+    }
+
+    function addDishToCart(id) {
+      const dish = findDishById(id);
+      if (!dish) return;
+
+      cart[id] = (cart[id] || 0) + 1;
+      renderMenuGrid();
+      updateCartAndCheckoutUI();
+      renderProductDetail();
+      showToast(`Đã thêm "${dish.name}" vào giỏ hàng.`);
+    }
+
+    function renderProductDetail() {
+      const container = document.getElementById("productDetailContent");
+      const dish = MENU_ITEMS.find(item => item.id === currentProductId);
+      if (!container || !dish) return;
+
+      const fallbackImage = "/images/card_menu.jpg";
+      const sideContent = sideMenuLoadState === "loading" || sideMenuLoadState === "idle"
+        ? `<p class="sm:col-span-2 lg:col-span-3 rounded-xl bg-stone-50 p-5 text-center text-sm text-stone-600" role="status">Đang tải món ăn kèm...</p>`
+        : sideMenuLoadState === "error"
+          ? `<div class="sm:col-span-2 lg:col-span-3 rounded-xl border border-red-200 bg-red-50 p-5 text-center text-sm text-red-700" role="alert">
+              Không tải được món ăn kèm. <button type="button" class="btn-retry-side-menu font-bold underline">Thử lại</button>
+            </div>`
+          : SIDE_ITEMS.length === 0
+            ? `<p class="sm:col-span-2 lg:col-span-3 rounded-xl bg-stone-50 p-5 text-center text-sm text-stone-600">Hiện chưa có món ăn kèm.</p>`
+            : SIDE_ITEMS.map(item => `
+                <article class="overflow-hidden rounded-xl border border-stone-200 bg-white">
+                  <img src="${escapeHtml(item.img || fallbackImage)}" alt="${escapeHtml(item.name)}"
+                       onerror="this.onerror=null;this.src='${fallbackImage}'"
+                       class="h-36 w-full bg-stone-100 object-cover" />
+                  <div class="space-y-2 p-3.5">
+                    <h4 class="font-brand font-extrabold text-sm text-plt-brown">${escapeHtml(item.name)}</h4>
+                    <p class="line-clamp-2 min-h-8 text-xs text-stone-500">${escapeHtml(item.desc)}</p>
+                    <div class="flex items-center justify-between gap-2">
+                      <strong class="text-sm text-plt-brown">${formatVND(item.price)}</strong>
+                      <button type="button" data-add-side="${item.id}"
+                              class="rounded-lg bg-plt-brown px-3 py-2 text-xs font-bold text-plt-gold hover:bg-amber-900">
+                        + Thêm món
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              `).join("");
+
+      container.innerHTML = `
+        <div class="mb-5">
+          <button type="button" id="btnBackToMenuFromProduct" class="text-sm font-bold text-plt-brown hover:underline">← Quay lại thực đơn</button>
+        </div>
+        <article class="grid grid-cols-1 gap-6 rounded-2xl border border-stone-200 bg-white p-4 shadow-sm sm:p-6 lg:grid-cols-2 lg:gap-8">
+          <img src="${escapeHtml(dish.img || fallbackImage)}" alt="${escapeHtml(dish.name)}"
+               onerror="this.onerror=null;this.src='${fallbackImage}'"
+               class="aspect-[4/3] w-full rounded-xl bg-stone-100 object-cover" />
+          <div class="flex flex-col justify-center">
+            <p class="text-xs font-extrabold uppercase tracking-widest text-amber-700">${escapeHtml(dish.catId)}</p>
+            <h1 class="mt-2 font-brand text-2xl font-black text-plt-brown sm:text-3xl">${escapeHtml(dish.name)}</h1>
+            <p class="mt-4 whitespace-pre-line text-sm leading-7 text-stone-600">${escapeHtml(dish.desc || "Món ăn được chuẩn bị tươi ngon mỗi ngày.")}</p>
+            <strong class="mt-5 text-2xl font-black text-plt-brown">${formatVND(dish.price)}</strong>
+            <button type="button" data-add-detail="${dish.id}"
+                    class="mt-5 w-full rounded-xl bg-plt-brown px-5 py-3.5 font-brand text-sm font-extrabold uppercase text-plt-gold shadow hover:bg-amber-900 sm:w-fit">
+              + Thêm vào giỏ
+            </button>
+          </div>
+        </article>
+        <section class="mt-8">
+          <div class="mb-4">
+            <h2 class="font-brand text-xl font-black uppercase text-plt-brown">Món ăn kèm</h2>
+            <p class="mt-1 text-sm text-stone-600">Chọn thêm món phụ để dùng cùng món chính.</p>
+          </div>
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">${sideContent}</div>
+        </section>
+      `;
+    }
+
+    async function openProductDetail(id) {
+      currentProductId = id;
+      renderProductDetail();
+      switchView("product-detail");
+      try {
+        await loadSideItems();
+      } catch {
+        showToast("Không thể tải danh sách món ăn kèm. Vui lòng thử lại.");
+      }
+    }
+
     function renderMenuGrid() {
       const container = document.getElementById("menuGridContainer");
       if (menuLoadState === "loading") {
@@ -331,13 +317,14 @@
         return `
           <div class="dish-card bg-white rounded-2xl overflow-hidden border border-stone-200/90 shadow-sm flex flex-col justify-between">
             <div>
-              <div class="relative h-44 bg-stone-100 overflow-hidden">
+              <button type="button" data-open-product="${item.id}" aria-label="Xem chi tiết ${escapeHtml(item.name)}"
+                      class="group relative block h-44 w-full overflow-hidden bg-stone-100 text-left focus:outline-none focus:ring-2 focus:ring-inset focus:ring-plt-brown">
                 <img src="${escapeHtml(item.img || fallbackImage)}"
                      data-fallback="${escapeHtml(fallbackImage)}"
                      alt="${escapeHtml(item.name)}"
                      onerror="this.onerror=null;this.src=this.dataset.fallback"
-                     class="w-full h-full object-cover" />
-                <div class="absolute top-2.5 left-2.5 flex items-center gap-1.5">
+                     class="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
+                <span class="absolute top-2.5 left-2.5 flex items-center gap-1.5">
                   <span class="px-2.5 py-0.5 rounded-full bg-plt-brown/90 text-plt-gold font-extrabold text-[11px] shadow">
                     #${item.id}
                   </span>
@@ -346,11 +333,11 @@
                       🔥 Bán chạy #${item.popularRank}
                     </span>
                   ` : ""}
-                </div>
-                <div class="absolute bottom-2 right-2 px-3 py-1 rounded-xl bg-plt-gold text-amber-950 font-brand font-black text-sm shadow-md border border-amber-950/15">
+                </span>
+                <span class="absolute bottom-2 right-2 px-3 py-1 rounded-xl bg-plt-gold text-amber-950 font-brand font-black text-sm shadow-md border border-amber-950/15">
                   ${formatVND(item.price)}${item.unit === 'Viên' ? '/viên' : item.unit === 'Chai' ? '/chai' : ''}
-                </div>
-              </div>
+                </span>
+              </button>
               <div class="p-4 space-y-1.5">
                 <h3 class="font-brand font-extrabold text-sm sm:text-base text-plt-brown leading-snug line-clamp-2" title="${escapeHtml(item.name)}">
                   ${escapeHtml(item.name)}
@@ -361,19 +348,11 @@
               </div>
             </div>
 
-            <div class="px-4 pb-4 pt-1 space-y-2">
-              <div class="flex items-center gap-2">
-                <!-- Nút Đặt hàng: bấm vào trỏ thẳng đến giao diện đặt hàng -->
-                <button type="button" data-order-now="${item.id}"
-                        class="btn-order-now flex-1 py-2.5 px-3 rounded-xl bg-plt-brown hover:bg-amber-900 text-plt-gold font-brand font-extrabold text-xs uppercase tracking-wide transition shadow-sm flex items-center justify-center gap-1">
-                  <span>🛵 Đặt hàng</span>
-                </button>
-                <!-- Nút cộng thêm vào giỏ -->
-                <button type="button" data-add-cart="${item.id}"
-                        class="btn-add-cart py-2.5 px-3 rounded-xl bg-amber-100 hover:bg-plt-gold text-plt-brown font-extrabold text-xs transition border border-amber-300">
-                  + Giỏ ${inCartQty > 0 ? `(${inCartQty})` : ``}
-                </button>
-              </div>
+            <div class="px-4 pb-4 pt-1">
+              <button type="button" data-add-cart="${item.id}"
+                      class="btn-add-cart w-full rounded-xl bg-amber-100 px-3 py-2.5 text-xs font-extrabold text-plt-brown transition hover:bg-plt-gold border border-amber-300">
+                + Thêm vào giỏ ${inCartQty > 0 ? `(${inCartQty})` : ``}
+              </button>
             </div>
           </div>
         `;
@@ -383,6 +362,65 @@
     // =========================================================================
     // 5. CẬP NHẬT GIỎ HÀNG & BẢNG TÍNH TỔNG BILL
     // =========================================================================
+    function calculateCouponDiscount(subtotal, shippingFee = SHIPPING_FEE) {
+      if (!appliedCoupon || subtotal < Number(appliedCoupon.minOrderValue || 0)) return 0;
+
+      const discountBase = appliedCoupon.appliesToShipping ? shippingFee : subtotal;
+      const rawDiscount = appliedCoupon.discountType === "PERCENT"
+        ? Math.floor(discountBase * Number(appliedCoupon.discountValue) / 100)
+        : Number(appliedCoupon.discountValue);
+      const cappedDiscount = Number(appliedCoupon.maxDiscount) > 0
+        ? Math.min(rawDiscount, Number(appliedCoupon.maxDiscount))
+        : rawDiscount;
+      return Math.max(0, Math.min(discountBase, cappedDiscount));
+    }
+
+    async function applyCoupon() {
+      const code = document.getElementById("couponCodeInput").value.trim().toUpperCase();
+      const phone = document.getElementById("orderPhone").value.trim();
+      const { subtotal } = getCartSummary();
+      if (!code) throw new Error("Vui lòng nhập mã giảm giá.");
+
+      const response = await fetch("/api/promotions/validate", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ code, phone, subtotal }),
+        cache: "no-store"
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok) {
+        throw new Error(result?.message || `Không thể kiểm tra mã giảm giá (HTTP ${response.status}).`);
+      }
+
+      appliedCoupon = result;
+      document.getElementById("couponCodeInput").value = result.code;
+      document.getElementById("couponStatus").textContent = `Đã áp dụng mã ${result.code}.`;
+      updateCartAndCheckoutUI();
+      return result;
+    }
+
+    async function refreshAppliedCoupon() {
+      const code = document.getElementById("couponCodeInput").value.trim();
+      if (!code) {
+        appliedCoupon = null;
+        return null;
+      }
+      if (!appliedCoupon || code.toUpperCase() !== appliedCoupon.code.toUpperCase()) {
+        throw new Error("Vui lòng bấm Áp dụng để kiểm tra mã giảm giá.");
+      }
+      try {
+        return await applyCoupon();
+      } catch (error) {
+        appliedCoupon = null;
+        document.getElementById("couponStatus").textContent = error.message;
+        updateCartAndCheckoutUI();
+        throw error;
+      }
+    }
+
     function getCartSummary() {
       let totalQty = 0;
       let subtotal = 0;
@@ -391,7 +429,7 @@
       Object.keys(cart).forEach(idStr => {
         const qty = cart[idStr];
         if (qty > 0) {
-          const dish = MENU_ITEMS.find(m => m.id === Number(idStr));
+          const dish = findDishById(Number(idStr));
           if (dish) {
             totalQty += qty;
             const lineTotal = dish.price * qty;
@@ -404,6 +442,22 @@
       return { totalQty, subtotal, detailedItems };
     }
 
+    function setCheckoutStep(step) {
+      checkoutStep = step;
+      document.getElementById("customerStepPanel").classList.toggle("hidden", step !== 1);
+      document.getElementById("orderDetailsStepPanel").classList.toggle("hidden", step !== 2);
+      document.getElementById("paymentStepPanel").classList.toggle("hidden", step !== 3);
+
+      [1, 2, 3].forEach(number => {
+        const badge = document.getElementById(`stepBadge${number}`);
+        badge.className = number === step
+          ? "rounded-md bg-plt-brown px-2 py-2 text-plt-gold"
+          : number < step
+            ? "rounded-md bg-amber-100 px-2 py-2 text-amber-900"
+            : "rounded-md px-2 py-2 text-stone-600";
+      });
+    }
+
     function updateCartAndCheckoutUI() {
       const { totalQty, subtotal, detailedItems } = getCartSummary();
 
@@ -411,26 +465,18 @@
       document.getElementById("cartCountBadge").textContent = totalQty;
       document.getElementById("stickyCartCount").textContent = `${totalQty} món`;
       document.getElementById("stickyCartTotal").textContent = formatVND(subtotal);
-
-      // Kiểm tra khoảng cách & nội thành TP.HCM
-      const distanceInput = document.getElementById("orderDistanceKm");
-      const km = parseFloat(distanceInput.value) || 1.5;
-      const isOut = checkIsOutOfHCM();
-      const warningBox = document.getElementById("outOfHcmWarningBox");
-      const ruleBox = document.getElementById("shippingRuleResultBox");
-
-      if (isOut) {
-        warningBox.classList.remove("hidden");
-        ruleBox.innerHTML = `<span class="text-red-600 font-extrabold">🚫 Địa chỉ ngoài nội thành TP.HCM: Chú ý không được đặt hàng!</span>`;
-      } else {
-        warningBox.classList.add("hidden");
-      }
-
-      const shipCalc = calculateShippingFee(km, subtotal);
-      const grandTotal = subtotal + shipCalc.fee;
-
-      if (!isOut) {
-        ruleBox.innerHTML = `✅ <strong>${shipCalc.ruleText}</strong> → Tổng cộng vào bill: <strong class="text-red-600">${formatVND(grandTotal)}</strong>`;
+      document.getElementById("checkoutItemCount").textContent = `${totalQty} món`;
+      document.getElementById("cartCountBadge").setAttribute("aria-label", `${totalQty} món trong giỏ`);
+      const shippingFee = totalQty > 0 ? SHIPPING_FEE : 0;
+      const discount = calculateCouponDiscount(subtotal, shippingFee);
+      const grandTotal = subtotal + shippingFee - discount;
+      if (appliedCoupon) {
+        const couponStatus = document.getElementById("couponStatus");
+        couponStatus.textContent = totalQty === 0
+          ? "Thêm món vào giỏ để tiếp tục áp dụng mã."
+          : subtotal < Number(appliedCoupon.minOrderValue || 0)
+            ? `Đơn hàng cần đạt tối thiểu ${formatVND(appliedCoupon.minOrderValue)} để dùng mã này.`
+            : `Đã áp dụng mã ${appliedCoupon.code}.`;
       }
 
       // Danh sách món ăn trong giao diện Đặt hàng
@@ -448,9 +494,9 @@
       } else {
         listEl.innerHTML = detailedItems.map(item => `
           <div class="flex items-center justify-between gap-3 p-3 rounded-xl bg-stone-50 border border-stone-200">
-            <img src="${item.img}" alt="${item.name}" class="w-14 h-14 rounded-lg object-cover shrink-0 border border-stone-200" />
+            <img src="${escapeHtml(item.img || "/images/card_menu.jpg")}" alt="${escapeHtml(item.name)}" class="w-14 h-14 rounded-lg object-cover shrink-0 border border-stone-200" />
             <div class="flex-grow min-w-0">
-              <div class="font-bold text-xs sm:text-sm text-stone-900 truncate" title="${item.name}">${item.name}</div>
+              <div class="font-bold text-xs sm:text-sm text-stone-900 truncate" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</div>
               <div class="text-xs text-stone-500">${formatVND(item.price)} × ${item.qty} = <strong class="text-plt-brown">${formatVND(item.lineTotal)}</strong></div>
             </div>
             <div class="flex items-center gap-1.5 shrink-0">
@@ -463,32 +509,24 @@
       }
 
       // Cập nhật bảng tổng kết bên phải
-      document.getElementById("summaryTotalQty").textContent = `${totalQty} phần`;
       document.getElementById("summarySubtotal").textContent = formatVND(subtotal);
-      document.getElementById("summaryDistanceLabel").textContent = `${km} km`;
-      document.getElementById("summaryShippingFee").textContent = shipCalc.fee === 0 ? "0đ (MIỄN PHÍ SHIP)" : formatVND(shipCalc.fee);
+      document.getElementById("summaryShippingFee").textContent = formatVND(shippingFee);
+      document.getElementById("summaryDiscount").textContent = discount > 0 ? `-${formatVND(discount)}` : "0đ";
       document.getElementById("summaryGrandTotal").textContent = formatVND(grandTotal);
 
-      const hintEl = document.getElementById("summaryFreeShipHint");
-      if (km < 2 && subtotal > 0 && subtotal < 100000) {
-        hintEl.textContent = `💡 Mua thêm ${formatVND(100000 - subtotal)} nữa để đạt 100k và được MIỄN PHÍ SHIP (<2km)!`;
-      } else if (km < 2 && subtotal >= 100000) {
-        hintEl.textContent = `🎉 Đơn hàng <2km từ 100k trở lên: Bạn được MIỄN PHÍ SHIP!`;
-      } else if (km >= 2 && km <= 5 && subtotal < 100000) {
-        hintEl.textContent = `💡 Mua thêm ${formatVND(100000 - subtotal)} để giảm phí ship từ 20.000đ xuống 15.000đ (2-5km)!`;
-      } else {
-        hintEl.textContent = `🛵 Áp dụng đúng quy định phí ship từ 450 Lê Văn Việt (${shipCalc.ruleText}).`;
-      }
-
-      // Cập nhật luôn bảng tóm tắt ở Bước 2 (Giao diện thanh toán) nếu đang mở
-      document.getElementById("paySumName").textContent = document.getElementById("orderFullName").value || "Khách hàng";
-      document.getElementById("paySumPhone").textContent = document.getElementById("orderPhone").value || "--";
-      document.getElementById("paySumEmail").textContent = document.getElementById("orderEmail").value || "--";
-      document.getElementById("paySumAddress").textContent = document.getElementById("orderAddress").value || "--";
-      document.getElementById("paySumSubtotal").textContent = formatVND(subtotal);
-      document.getElementById("paySumKm").textContent = km;
-      document.getElementById("paySumShip").textContent = shipCalc.fee === 0 ? "MIỄN PHÍ (0đ)" : formatVND(shipCalc.fee);
-      document.getElementById("paySumTotal").textContent = formatVND(grandTotal);
+      document.getElementById("reviewName").textContent =
+        document.getElementById("orderFullName").value.trim() || "--";
+      document.getElementById("reviewPhone").textContent =
+        document.getElementById("orderPhone").value.trim() || "--";
+      document.getElementById("reviewEmail").textContent =
+        document.getElementById("orderEmail").value.trim() || "Không cung cấp";
+      document.getElementById("reviewAddress").textContent =
+        document.getElementById("orderAddress").value.trim() || "--";
+      document.getElementById("reviewNote").textContent =
+        document.getElementById("orderNote").value.trim() || "Không có";
+      document.getElementById("btnConfirmOrderStep1").disabled = totalQty === 0;
+      document.getElementById("btnProceedToPayment").disabled = totalQty === 0;
+      document.getElementById("btnCompletePaymentFinal").disabled = totalQty === 0;
     }
 
     // =========================================================================
@@ -496,7 +534,8 @@
     // =========================================================================
     function switchView(viewName, scrollToMenu = false) {
       const actualView = viewName === "menu" ? "home" : viewName;
-      const views = ["home", "checkout", "coupon", "reviews"];
+      const checkoutWasHidden = document.getElementById("view-checkout").classList.contains("hidden");
+      const views = ["home", "product-detail", "checkout", "coupon", "reviews"];
       views.forEach(v => {
         const el = document.getElementById(`view-${v}`);
         if (el) {
@@ -522,6 +561,7 @@
 
       // Đóng mobile menu nếu đang mở
       document.getElementById("mobileNavMenu").classList.add("hidden");
+      document.getElementById("floatingContactLinks").classList.toggle("hidden", actualView === "checkout");
 
       if (viewName === "reviews") {
         setTimeout(() => {
@@ -539,56 +579,25 @@
       }
 
       if (actualView === "checkout") {
-        updateCartAndCheckoutUI();
-      }
-    }
-
-    // =========================================================================
-    // 7. CẬP NHẬT BẢN ĐỒ GOOGLE MAPS TỪ 450 LÊ VĂN VIỆT ĐẾN ĐỊA CHỈ KHÁCH
-    // =========================================================================
-    function updateGoogleMapsRoute() {
-      const dest = (document.getElementById("orderAddress").value || "").trim();
-      const isOut = checkIsOutOfHCM();
-
-      if (dest) {
-        const estimatedKm = estimateDistanceFrom450LeVanViet(dest);
-        if (estimatedKm !== null) {
-          document.getElementById("orderDistanceKm").value = estimatedKm;
+        if (checkoutWasHidden) {
+          setCheckoutStep(1);
+          document.getElementById("orderPlacedPanel").classList.add("hidden");
+          document.getElementById("checkoutSummary").classList.remove("hidden");
         }
-        document.getElementById("mapDestLabel").textContent = dest;
-        const encodedOrigin = encodeURIComponent("450 Lê Văn Việt, Phường Tăng Nhơn Phú, Thành phố Hồ Chí Minh");
-        const encodedDest = encodeURIComponent(dest);
-        document.getElementById("linkOpenGoogleMapsRoute").href = `https://www.google.com/maps/dir/${encodedOrigin}/${encodedDest}`;
-        document.getElementById("googleMapEmbedFrame").src = `https://maps.google.com/maps?q=${encodedDest}&t=&z=14&ie=UTF8&iwloc=&output=embed`;
-      }
-
-      updateCartAndCheckoutUI();
-      if (isOut) {
-        showToast("🚫 CHÚ Ý: Cơm Trưa Anh Béo chỉ ship trong nội thành TP.HCM, không giao qua tỉnh thành khác!");
-      } else {
-        const { subtotal } = getCartSummary();
-        const km = parseFloat(document.getElementById("orderDistanceKm").value) || 1.5;
-        const shipCalc = calculateShippingFee(km, subtotal);
-        showToast(`📍 Đã tính phí ship (${km}km): ${formatVND(shipCalc.fee)} - Cộng vào tổng bill!`);
+        updateCartAndCheckoutUI();
       }
     }
 
     // =========================================================================
     // 9. KHỞI TẠO SỰ KIỆN TƯƠNG TÁC
     // =========================================================================
-    window.addEventListener("DOMContentLoaded", () => {
+    function initializeStorefront() {
       // Render thực đơn & giỏ hàng ban đầu
       renderMenuGrid();
       loadMenuItems();
       updateCartAndCheckoutUI();
 
-      // Điền sẵn thông tin mẫu thuận tiện để người dùng test ngay hoặc sửa tùy ý
-      document.getElementById("orderFullName").value = "Nguyễn Minh Tuấn";
-      document.getElementById("orderPhone").value = "0909123456";
-      document.getElementById("orderEmail").value = "minhtuan.sgn@gmail.com";
-      document.getElementById("orderAddress").value = "380 Lê Văn Việt, Phường Tăng Nhơn Phú, TP.HCM";
-      document.getElementById("orderDistanceKm").value = "0.8";
-      updateCartAndCheckoutUI();
+      setCheckoutStep(1);
 
       // 1. Sự kiện thanh điều hướng Header & Footer
       document.getElementById("btnLogoHome").addEventListener("click", () => switchView("home"));
@@ -615,10 +624,9 @@
         });
       });
 
-      // 2. Giỏ hàng trên Header: "khi bấm vào trỏ tới menu của quán"
+      // 2. Giỏ hàng trên Header mở thẳng quy trình đặt hàng.
       document.getElementById("btnHeaderCart").addEventListener("click", () => {
-        switchView("menu", true);
-        showToast("🍚 Đã chuyển tới thực đơn món chính của Cơm Trưa Anh Béo!");
+        switchView("checkout");
       });
 
       document.getElementById("btnHeroWatchMenu").addEventListener("click", () => {
@@ -640,34 +648,44 @@
         renderMenuGrid();
       });
 
-      // 4. Sự kiện bấm vào nút Đặt hàng hoặc + Giỏ trên từng món ăn (Event Delegation)
+      // 4. Mở chi tiết món từ ảnh hoặc thêm món trực tiếp vào giỏ.
       document.getElementById("menuGridContainer").addEventListener("click", (e) => {
         if (e.target.closest(".btn-retry-menu")) {
           loadMenuItems();
           return;
         }
 
-        const orderBtn = e.target.closest(".btn-order-now");
-        if (orderBtn) {
-          const dishId = Number(orderBtn.getAttribute("data-order-now"));
-          cart[dishId] = (cart[dishId] || 0) + 1;
-          const dish = MENU_ITEMS.find(m => m.id === dishId);
-          renderMenuGrid();
-          updateCartAndCheckoutUI();
-          // Trỏ thẳng đến giao diện đặt hàng theo đúng yêu cầu
-          switchView("checkout");
-          showToast(`🛵 Đã chọn "${dish ? dish.name : 'Món ăn'}" và chuyển tới Giao diện Đặt hàng!`);
+        const detailButton = e.target.closest("[data-open-product]");
+        if (detailButton) {
+          openProductDetail(Number(detailButton.getAttribute("data-open-product")));
           return;
         }
 
         const addBtn = e.target.closest(".btn-add-cart");
         if (addBtn) {
-          const dishId = Number(addBtn.getAttribute("data-add-cart"));
-          cart[dishId] = (cart[dishId] || 0) + 1;
-          const dish = MENU_ITEMS.find(m => m.id === dishId);
-          renderMenuGrid();
-          updateCartAndCheckoutUI();
-          showToast(`✅ Đã thêm "${dish ? dish.name : 'Món ăn'}" vào giỏ hàng!`);
+          addDishToCart(Number(addBtn.getAttribute("data-add-cart")));
+        }
+      });
+
+      document.getElementById("productDetailContent").addEventListener("click", event => {
+        const backButton = event.target.closest("#btnBackToMenuFromProduct");
+        if (backButton) {
+          switchView("menu", true);
+          return;
+        }
+
+        const retryButton = event.target.closest(".btn-retry-side-menu");
+        if (retryButton) {
+          sideMenuLoadState = "idle";
+          loadSideItems().catch(() => {
+            showToast("Không thể tải danh sách món ăn kèm. Vui lòng thử lại.");
+          });
+          return;
+        }
+
+        const addButton = event.target.closest("[data-add-side], [data-add-detail]");
+        if (addButton) {
+          addDishToCart(Number(addButton.getAttribute("data-add-side") || addButton.getAttribute("data-add-detail")));
         }
       });
 
@@ -709,200 +727,249 @@
         showToast("🗑️ Đã làm trống giỏ hàng.");
       });
 
-      // 6. Sự kiện Định tuyến Google Maps & Nút Tính Phí Ship
-      document.getElementById("orderQuickLandmark").addEventListener("change", (e) => {
-        const val = e.target.value;
-        if (!val) return;
-        const [addr, kmStr] = val.split("|");
-        document.getElementById("orderAddress").value = addr;
-        document.getElementById("orderDistanceKm").value = kmStr;
-        if (addr.toLowerCase().includes("bình dương")) {
-          document.getElementById("orderProvinceSelect").value = "BINH_DUONG";
-        } else {
-          document.getElementById("orderProvinceSelect").value = "HCM";
+      document.getElementById("orderAddress").addEventListener("input", event => {
+        if (selectedDeliveryLocation && event.target.value.trim() !== "Vị trí hiện tại") {
+          selectedDeliveryLocation = null;
+          document.getElementById("deliveryLocationStatus").textContent =
+            "Đã chuyển sang nhập địa chỉ thủ công.";
         }
-        updateGoogleMapsRoute();
-      });
-
-      document.getElementById("orderProvinceSelect").addEventListener("change", () => {
         updateCartAndCheckoutUI();
       });
 
-      document.getElementById("orderDistanceKm").addEventListener("input", () => {
-        updateCartAndCheckoutUI();
+      ["orderFullName", "orderPhone", "orderEmail"].forEach(id => {
+        document.getElementById(id).addEventListener("input", () => {
+          if (id === "orderPhone" && appliedCoupon) {
+            appliedCoupon = null;
+            document.getElementById("couponStatus").textContent =
+              "Số điện thoại đã thay đổi. Hãy áp dụng lại mã giảm giá.";
+          }
+          updateCartAndCheckoutUI();
+        });
       });
+      document.getElementById("orderNote").addEventListener("input", updateCartAndCheckoutUI);
 
-      document.getElementById("orderAddress").addEventListener("input", () => {
-        updateCartAndCheckoutUI();
-      });
-
-      document.getElementById("btnCalculateShipFee").addEventListener("click", () => {
-        updateGoogleMapsRoute();
-      });
-
-      // 7. Nút Xác nhận Đặt hàng (Bước 1 -> Hiện ra Giao diện Thanh toán Bước 2)
-      document.getElementById("btnConfirmOrderStep1").addEventListener("click", () => {
-        const { totalQty } = getCartSummary();
-        if (totalQty === 0) {
-          showToast("⚠️ Vui lòng chọn ít nhất 1 món ăn trước khi xác nhận đặt hàng!");
-          return;
-        }
-        const name = document.getElementById("orderFullName").value.trim();
-        const phone = document.getElementById("orderPhone").value.trim();
-        const email = document.getElementById("orderEmail").value.trim();
-        const address = document.getElementById("orderAddress").value.trim();
-
-        if (!name || !phone || !email || !address) {
-          showToast("⚠️ Vui lòng nhập đầy đủ Họ tên, SĐT, Email và Địa chỉ nhận hàng!");
+      document.getElementById("btnUseCurrentLocation").addEventListener("click", event => {
+        const button = event.currentTarget;
+        const status = document.getElementById("deliveryLocationStatus");
+        if (!navigator.geolocation) {
+          status.textContent = "Trình duyệt này không hỗ trợ lấy vị trí. Vui lòng nhập địa chỉ.";
           return;
         }
 
-        if (checkIsOutOfHCM()) {
-          showToast("🚫 CHÚ Ý KHÔNG ĐƯỢC ĐẶT HÀNG: Quán chỉ ship trong nội thành TP.HCM!");
-          document.getElementById("outOfHcmWarningBox").scrollIntoView({ behavior: "smooth" });
+        button.disabled = true;
+        status.textContent = "Đang lấy vị trí hiện tại...";
+        navigator.geolocation.getCurrentPosition(
+          position => {
+            selectedDeliveryLocation = {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude
+            };
+            document.getElementById("orderAddress").value = "Vị trí hiện tại";
+            status.textContent = `Đã chọn vị trí hiện tại (${selectedDeliveryLocation.latitude.toFixed(5)}, ${selectedDeliveryLocation.longitude.toFixed(5)}).`;
+            button.disabled = false;
+            updateCartAndCheckoutUI();
+          },
+          error => {
+            const message = error.code === error.PERMISSION_DENIED
+              ? "Bạn chưa cấp quyền truy cập vị trí. Vui lòng nhập địa chỉ."
+              : error.code === error.TIMEOUT
+                ? "Lấy vị trí quá thời gian chờ. Vui lòng thử lại hoặc nhập địa chỉ."
+                : "Không lấy được vị trí hiện tại. Vui lòng nhập địa chỉ.";
+            status.textContent = message;
+            button.disabled = false;
+          },
+          { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 }
+        );
+      });
+
+      document.getElementById("couponCodeInput").addEventListener("input", event => {
+        if (appliedCoupon && event.target.value.trim().toUpperCase() !== appliedCoupon.code.toUpperCase()) {
+          appliedCoupon = null;
+          document.getElementById("couponStatus").textContent = "Mã đã thay đổi. Bấm Áp dụng để kiểm tra.";
+          updateCartAndCheckoutUI();
+        }
+      });
+
+      document.getElementById("btnApplyCoupon").addEventListener("click", async event => {
+        const button = event.currentTarget;
+        button.disabled = true;
+        try {
+          await applyCoupon();
+          showToast("Đã áp dụng mã giảm giá.");
+        } catch (error) {
+          appliedCoupon = null;
+          document.getElementById("couponStatus").textContent = error.message;
+          updateCartAndCheckoutUI();
+          showToast(error.message);
+        } finally {
+          button.disabled = false;
+        }
+      });
+
+      document.getElementById("btnConfirmOrderStep1").addEventListener("click", async event => {
+        const error = document.getElementById("checkoutFormError");
+        const nameInput = document.getElementById("orderFullName");
+        const phoneInput = document.getElementById("orderPhone");
+        const emailInput = document.getElementById("orderEmail");
+        const addressInput = document.getElementById("orderAddress");
+        const phone = phoneInput.value.replace(/\D/g, "");
+        phoneInput.value = phone;
+
+        if (getCartSummary().totalQty === 0) {
+          error.textContent = "Giỏ hàng đang trống. Hãy chọn món trước khi tiếp tục.";
+          return;
+        }
+        if (!nameInput.value.trim() || !phone || !addressInput.value.trim()) {
+          error.textContent = "Vui lòng nhập họ tên, số điện thoại và địa chỉ giao hàng.";
+          return;
+        }
+        if (!/^0\d{9}$/.test(phone)) {
+          error.textContent = "Số điện thoại cần gồm 10 chữ số và bắt đầu bằng số 0.";
+          phoneInput.focus();
+          return;
+        }
+        if (emailInput.value.trim() && !emailInput.checkValidity()) {
+          error.textContent = "Email chưa đúng định dạng.";
+          emailInput.focus();
           return;
         }
 
-        updateCartAndCheckoutUI();
-        const payPanel = document.getElementById("paymentStepPanel");
-        payPanel.classList.remove("hidden");
-        document.getElementById("stepBadge2").className = "px-3 py-1.5 rounded-full bg-plt-brown text-plt-gold";
-        payPanel.scrollIntoView({ behavior: "smooth" });
-        showToast("✅ Đã xác nhận thông tin! Vui lòng chọn phương thức thanh toán bên dưới.");
+        const button = event.currentTarget;
+        button.disabled = true;
+        error.textContent = "";
+        try {
+          await refreshAppliedCoupon();
+          updateCartAndCheckoutUI();
+          setCheckoutStep(2);
+          document.getElementById("orderDetailsStepPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+        } catch (requestError) {
+          error.textContent = requestError.message;
+        } finally {
+          button.disabled = getCartSummary().totalQty === 0;
+        }
       });
 
-      // 8. Chọn phương thức thanh toán (MoMo, VNPAY, Thanh toán khi nhận hàng)
+      document.getElementById("btnBackToCustomer").addEventListener("click", () => setCheckoutStep(1));
+      document.getElementById("btnBackToCustomerFromReview").addEventListener("click", () => setCheckoutStep(1));
+      document.getElementById("btnProceedToPayment").addEventListener("click", async event => {
+        const error = document.getElementById("orderStepError");
+        if (getCartSummary().totalQty === 0) {
+          error.textContent = "Giỏ hàng đang trống. Hãy chọn món trước khi tiếp tục.";
+          return;
+        }
+
+        const button = event.currentTarget;
+        button.disabled = true;
+        error.textContent = "";
+        try {
+          await refreshAppliedCoupon();
+          updateCartAndCheckoutUI();
+          setCheckoutStep(3);
+          document.getElementById("paymentStepPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+        } catch (requestError) {
+          error.textContent = requestError.message;
+        } finally {
+          button.disabled = getCartSummary().totalQty === 0;
+        }
+      });
+      document.getElementById("btnBackToOrderDetails").addEventListener("click", () => setCheckoutStep(2));
+
       document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
         radio.addEventListener("change", () => {
-          const val = radio.value;
-          const box = document.getElementById("paymentInstructionBox");
           document.querySelectorAll(".payment-method-card").forEach(card => {
-            card.classList.remove("border-pink-600", "bg-pink-50/50", "border-blue-600", "bg-blue-50/50", "border-amber-600", "bg-amber-50/50");
+            card.classList.remove("border-plt-brown", "bg-amber-50");
             card.classList.add("border-stone-200", "bg-white");
           });
-          const activeCard = radio.closest(".payment-method-card");
-          if (val === "MoMo") {
-            activeCard.classList.replace("border-stone-200", "border-pink-600");
-            box.className = "rounded-xl p-4 bg-pink-50 border border-pink-200 text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-between gap-4";
-            box.innerHTML = `
-              <div class="space-y-1">
-                <div class="font-extrabold text-pink-800 uppercase">📱 Thanh toán bằng Ví điện tử MoMo</div>
-                <p class="text-stone-700">Chuyển khoản hoặc quét QR MoMo tới SĐT: <strong>0775058143 – Mr. Khoa (Cơm Trưa Anh Béo)</strong></p>
-                <p class="text-xs text-stone-500">Hệ thống tự động xác nhận ngay sau khi bấm hoàn tất.</p>
-              </div>
-              <div class="w-24 h-24 rounded-xl bg-white border-2 border-pink-500 flex flex-col items-center justify-center p-2 shrink-0 shadow-sm">
-                <div class="text-2xl">📲</div>
-                <div class="text-[10px] font-black text-pink-700 uppercase mt-1">QR MoMo</div>
-                <div class="text-[9px] font-bold text-stone-500">0775058143</div>
-              </div>
-            `;
-          } else if (val === "VNPAY") {
-            activeCard.classList.replace("border-stone-200", "border-blue-600");
-            box.className = "rounded-xl p-4 bg-blue-50 border border-blue-200 text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-between gap-4";
-            box.innerHTML = `
-              <div class="space-y-1">
-                <div class="font-extrabold text-blue-800 uppercase">🏦 Thanh toán qua cổng VNPAY-QR</div>
-                <p class="text-stone-700">Quét mã VNPAY trên ứng dụng Ngân hàng / VNPAY Wallet để thanh toán tổng hóa đơn.</p>
-                <p class="text-xs text-stone-500">Thụ hưởng: CƠM TRƯA ANH BÉO (Mr. Khoa - 0775058143)</p>
-              </div>
-              <div class="w-24 h-24 rounded-xl bg-white border-2 border-blue-600 flex flex-col items-center justify-center p-2 shrink-0 shadow-sm">
-                <div class="text-2xl">💳</div>
-                <div class="text-[10px] font-black text-blue-700 uppercase mt-1">VNPAY-QR</div>
-                <div class="text-[9px] font-bold text-stone-500">ANH BEO</div>
-              </div>
-            `;
-          } else {
-            activeCard.classList.replace("border-stone-200", "border-amber-600");
-            box.className = "rounded-xl p-4 bg-amber-50 border border-amber-200 text-xs sm:text-sm flex flex-col sm:flex-row items-center justify-between gap-4";
-            box.innerHTML = `
-              <div class="space-y-1">
-                <div class="font-extrabold text-amber-900 uppercase">🛵 Thanh toán khi nhận hàng (Đưa tiền cho Shipper)</div>
-                <p class="text-stone-700">Quý khách kiểm tra phần cơm nóng hổi và thanh toán tiền mặt trực tiếp cho Shipper khi nhận hàng trong vòng 1 tiếng.</p>
-              </div>
-              <div class="w-24 h-24 rounded-xl bg-white border-2 border-amber-600 flex flex-col items-center justify-center p-2 shrink-0 shadow-sm">
-                <div class="text-2xl">💵</div>
-                <div class="text-[10px] font-black text-amber-800 uppercase mt-1">COD</div>
-                <div class="text-[9px] font-bold text-stone-500">Giao 1 tiếng</div>
-              </div>
-            `;
-          }
+          radio.closest(".payment-method-card").classList.add("border-plt-brown", "bg-amber-50");
+          radio.closest(".payment-method-card").classList.remove("border-stone-200", "bg-white");
+
+          const box = document.getElementById("paymentInstructionBox");
+          box.innerHTML = radio.value === "MOMO"
+            ? `<strong>Thanh toán qua MoMo</strong>
+               <p class="mt-1">Chuyển khoản đến số 0775058143 – Mr. Khoa. Ghi nội dung chuyển khoản là số điện thoại đặt hàng.</p>
+               <p class="mt-2 text-xs text-stone-600">Đơn hàng sẽ chờ quán xác nhận thanh toán. Trang này chưa kết nối cổng thanh toán trực tuyến.</p>`
+            : radio.value === "COD"
+              ? `<strong>Thanh toán khi nhận hàng</strong>
+                 <p class="mt-1">Vui lòng thanh toán ${formatVND(getCartSummary().subtotal + SHIPPING_FEE - calculateCouponDiscount(getCartSummary().subtotal))} trực tiếp cho tài xế khi nhận món.</p>`
+              : `<strong>Ví điện tử khác</strong>
+                 <p class="mt-1">Quán sẽ liên hệ để hướng dẫn thanh toán và xác nhận giao dịch. Phương thức này chưa được tự động tích hợp.</p>`;
         });
       });
+      document.querySelector('input[name="paymentMethod"]:checked')?.dispatchEvent(new Event("change"));
 
-      // 9. Nút Hoàn tất Thanh toán -> Lưu vào SQL Server & Gửi Email đúng mẫu
-      document.getElementById("btnCompletePaymentFinal").addEventListener("click", () => {
-        if (checkIsOutOfHCM()) {
-          showToast("🚫 CHÚ Ý KHÔNG ĐƯỢC ĐẶT HÀNG: Chỉ giao trong nội thành TP.HCM!");
-          return;
-        }
-        const { totalQty, subtotal, detailedItems } = getCartSummary();
+      document.getElementById("btnCompletePaymentFinal").addEventListener("click", async event => {
+        const button = event.currentTarget;
+        const error = document.getElementById("paymentError");
+        const { totalQty, detailedItems } = getCartSummary();
         if (totalQty === 0) {
-          showToast("⚠️ Giỏ hàng đang trống!");
+          error.textContent = "Giỏ hàng đang trống. Hãy chọn món trước khi đặt hàng.";
           return;
         }
 
-        const customerName = document.getElementById("orderFullName").value.trim() || "Quý khách";
-        const phone = document.getElementById("orderPhone").value.trim() || "0909123456";
-        const email = document.getElementById("orderEmail").value.trim() || "khachhang@gmail.com";
-        const address = document.getElementById("orderAddress").value.trim() || "TP. Hồ Chí Minh";
-        const km = parseFloat(document.getElementById("orderDistanceKm").value) || 1.5;
-        const shipCalc = calculateShippingFee(km, subtotal);
-        const grandTotal = subtotal + shipCalc.fee;
-        const selectedRadio = document.querySelector('input[name="paymentMethod"]:checked');
-        const paymentMethod = selectedRadio ? selectedRadio.value : "MoMo";
+        button.disabled = true;
+        error.textContent = "";
+        try {
+          await refreshAppliedCoupon();
+          const request = {
+            customerName: document.getElementById("orderFullName").value.trim(),
+            phone: document.getElementById("orderPhone").value.replace(/\D/g, ""),
+            email: document.getElementById("orderEmail").value.trim() || null,
+            address: document.getElementById("orderAddress").value.trim(),
+            note: document.getElementById("orderNote").value.trim() || null,
+            paymentMethod: document.querySelector('input[name="paymentMethod"]:checked')?.value || "MOMO",
+            couponCode: appliedCoupon?.code || null,
+            latitude: selectedDeliveryLocation?.latitude ?? null,
+            longitude: selectedDeliveryLocation?.longitude ?? null,
+            items: detailedItems.map(item => ({ dishId: item.id, quantity: item.qty }))
+          };
+          const response = await fetch("/api/orders", {
+            method: "POST",
+            headers: { Accept: "application/json", "Content-Type": "application/json" },
+            body: JSON.stringify(request),
+            cache: "no-store"
+          });
+          const result = await response.json().catch(() => null);
+          if (!response.ok) {
+            throw new Error(result?.message || `Không thể tạo đơn hàng (HTTP ${response.status}).`);
+          }
 
-        const newOrderId = 1000 + sqlOrders.length + 1;
-        const nowStr = new Date().toISOString().slice(0, 19).replace("T", " ");
-        const itemsSummary = detailedItems.map(i => `${i.qty}x ${i.name} (${formatVND(i.lineTotal)})`).join(", ");
+          document.getElementById("orderPlacedTrackingCode").textContent = result.trackingCode;
+          document.getElementById("orderPlacedTotal").textContent = formatVND(result.total);
+          document.getElementById("orderPlacedPaymentStatus").textContent = result.paymentMethod === "COD"
+            ? "Đã chọn thanh toán khi nhận hàng"
+            : "Đơn hàng đã ghi nhận · chờ xác nhận thanh toán";
+          document.getElementById("orderPlacedPaymentNote").textContent = result.paymentMethod === "MOMO"
+            ? "Hãy chuyển khoản MoMo với nội dung là số điện thoại đặt hàng. Quán sẽ xác nhận sau khi nhận được thanh toán."
+            : result.paymentMethod === "WALLET"
+              ? "Quán sẽ liên hệ để hướng dẫn thanh toán bằng ví điện tử và xác nhận giao dịch."
+              : "Vui lòng thanh toán tiền mặt cho tài xế khi nhận món.";
 
-        // Lưu vào bảng DonHang
-        sqlOrders.push({
-          id: newOrderId,
-          customerName,
-          phone,
-          email,
-          address,
-          km,
-          subtotal,
-          shipFee: shipCalc.fee,
-          total: grandTotal,
-          method: paymentMethod,
-          status: "Đang chuẩn bị (Giao trong 1 tiếng)",
-          createdAt: nowStr,
-          items: itemsSummary
-        });
-
-        // Tạo nội dung Email xác nhận đúng từng chữ theo yêu cầu
-        const emailBody = buildConfirmationEmailBody(customerName, paymentMethod);
-        const emailSubject = `[CƠM TRƯA ANH BÉO] Xác nhận đơn hàng #${newOrderId} thành công`;
-
-        sqlEmails.push({
-          id: sqlEmails.length + 1,
-          orderId: newOrderId,
-          to: email,
-          subject: emailSubject,
-          body: emailBody,
-          sentAt: nowStr
-        });
-
-        document.getElementById("stepBadge3").className = "px-3 py-1.5 rounded-full bg-emerald-600 text-white";
-
-        // Hiển thị Modal Email xác nhận
-        document.getElementById("emailModalRecipient").textContent = email;
-        document.getElementById("emailModalSubject").textContent = emailSubject;
-        document.getElementById("emailModalBodyText").textContent = emailBody;
-        document.getElementById("emailModalOrderId").textContent = `#${newOrderId}`;
-        document.getElementById("emailModalMethod").textContent = paymentMethod;
-        document.getElementById("emailModalTotal").textContent = formatVND(grandTotal);
-        document.getElementById("modalOrderSuccessEmail").classList.remove("hidden");
+          document.getElementById("customerStepPanel").classList.add("hidden");
+          document.getElementById("orderDetailsStepPanel").classList.add("hidden");
+          document.getElementById("paymentStepPanel").classList.add("hidden");
+          document.getElementById("orderPlacedPanel").classList.remove("hidden");
+          document.getElementById("checkoutSummary").classList.add("hidden");
+          [1, 2, 3].forEach(number => {
+            document.getElementById(`stepBadge${number}`).className =
+              "rounded-md bg-emerald-100 px-2 py-2 text-emerald-900";
+          });
+          cart = {};
+          appliedCoupon = null;
+          selectedDeliveryLocation = null;
+          document.getElementById("couponCodeInput").value = "";
+          renderMenuGrid();
+          updateCartAndCheckoutUI();
+          document.getElementById("couponStatus").textContent = "Nhập mã rồi bấm Áp dụng.";
+        } catch (requestError) {
+          error.textContent = requestError.message;
+        } finally {
+          button.disabled = false;
+        }
       });
 
-      const closeSuccessModal = () => {
-        document.getElementById("modalOrderSuccessEmail").classList.add("hidden");
-      };
-      document.getElementById("btnCloseSuccessModalTop").addEventListener("click", closeSuccessModal);
-      document.getElementById("btnCloseSuccessModalBottom").addEventListener("click", () => {
-        closeSuccessModal();
+      document.getElementById("btnContinueShopping").addEventListener("click", () => {
+        document.getElementById("orderPlacedPanel").classList.add("hidden");
+        document.getElementById("checkoutSummary").classList.remove("hidden");
         switchView("menu", true);
       });
       // 10. Đăng nhập, đăng ký và đăng xuất tài khoản khách
@@ -972,6 +1039,7 @@
           document.getElementById("orderPhone").value = currentUser.phone;
           document.getElementById("orderEmail").value = currentUser.email;
           document.getElementById("orderAddress").value = currentUser.address || "";
+          selectedDeliveryLocation = null;
           updateCartAndCheckoutUI();
         } else {
           label.textContent = "Đăng nhập";
@@ -1361,5 +1429,10 @@
       }
 
       loadCurrentUser();
+    }
 
-    });
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initializeStorefront, { once: true });
+    } else {
+      initializeStorefront();
+    }

@@ -101,6 +101,7 @@ public sealed class AdminController : Controller
             order.grandTotal,
             order.createdAt,
             paymentMethod = MapPaymentMethod(order.paymentMethod),
+            isBankPayment = order.paymentMethod == "BANK",
             isPaid = order.paymentStatus == "DaTT",
             driver = string.IsNullOrWhiteSpace(order.driverName) && string.IsNullOrWhiteSpace(order.driverPhone)
                 ? null
@@ -112,6 +113,65 @@ public sealed class AdminController : Controller
                 },
             order.items
         }));
+    }
+
+    [HttpPost("api/orders/{orderId:int}/confirm")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ConfirmOrder(int orderId, CancellationToken cancellationToken)
+    {
+        var order = await _db.DonHangs
+            .FirstOrDefaultAsync(item => item.MaDon == orderId, cancellationToken);
+        if (order is null)
+        {
+            return NotFound(new { message = "Không tìm thấy đơn hàng." });
+        }
+
+        if (order.TrangThai != "ChoXacNhan")
+        {
+            return Conflict(new { message = "Đơn hàng không còn ở trạng thái chờ xác nhận. Vui lòng tải lại danh sách." });
+        }
+
+        order.TrangThai = "DaXacNhan";
+        await _db.SaveChangesAsync(cancellationToken);
+
+        return Ok(new
+        {
+            status = MapOrderStatus(order.TrangThai),
+            statusLabel = GetOrderStatusLabel(order.TrangThai)
+        });
+    }
+
+    [HttpPost("api/orders/{orderId:int}/payment/confirm")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ConfirmCodPayment(int orderId, CancellationToken cancellationToken)
+    {
+        var payment = await _db.ThanhToans
+            .FirstOrDefaultAsync(item => item.MaDon == orderId, cancellationToken);
+        if (payment is null)
+        {
+            return NotFound(new { message = "Không tìm thấy thông tin thanh toán của đơn hàng." });
+        }
+
+        if (payment.PhuongThuc != "COD")
+        {
+            return BadRequest(new { message = "Chỉ xác nhận thu tiền thủ công cho đơn thanh toán khi nhận hàng." });
+        }
+
+        if (payment.TrangThai == "DaTT")
+        {
+            return Ok(new { isPaid = true });
+        }
+
+        if (payment.TrangThai != "ChuaTT")
+        {
+            return Conflict(new { message = "Trạng thái thanh toán đã thay đổi. Vui lòng tải lại danh sách." });
+        }
+
+        payment.TrangThai = "DaTT";
+        payment.ThoiGianTt = DateTime.Now;
+        await _db.SaveChangesAsync(cancellationToken);
+
+        return Ok(new { isPaid = true });
     }
 
     [HttpGet("promotions")]
@@ -252,7 +312,7 @@ public sealed class AdminController : Controller
         "DaCoTaiXe" => "DRIVER_ASSIGNED",
         "DangGiao" => "DELIVERING",
         "HoanThanh" => "COMPLETED",
-        "Huy" => "CANCELED",
+        "Huy" or "DaHuy" => "CANCELED",
         "ThatBai" or "GiaoThatBai" => "FAILED",
         _ => "UNKNOWN"
     };
@@ -266,7 +326,7 @@ public sealed class AdminController : Controller
         "DaCoTaiXe" => "Đã có tài xế",
         "DangGiao" => "Đang giao hàng",
         "HoanThanh" => "Hoàn thành",
-        "Huy" => "Đã hủy",
+        "Huy" or "DaHuy" => "Đã hủy",
         "ThatBai" or "GiaoThatBai" => "Giao thất bại",
         _ => string.IsNullOrWhiteSpace(status) ? "Không rõ trạng thái" : status
     };

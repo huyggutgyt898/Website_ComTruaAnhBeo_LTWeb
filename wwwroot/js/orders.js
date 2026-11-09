@@ -27,6 +27,7 @@ let checkedOrderIds = new Set();
 let soundEnabled = true;
 let isLoadingOrders = false;
 let orderLoadError = "";
+let hasLoadedOrders = false;
 
 // Filters State
 let currentSearch = "";
@@ -89,6 +90,7 @@ function playNotificationChime() {
 document.addEventListener("DOMContentLoaded", () => {
   initEventListeners();
   loadOrders();
+  window.setInterval(loadOrders, 15000);
 });
 
 function initEventListeners() {
@@ -199,7 +201,6 @@ function initEventListeners() {
         soundBtn.classList.remove("sound-muted");
         soundBtn.setAttribute("title", "Âm thanh thông báo: ĐANG BẬT");
         showToast("Đã bật âm thanh thông báo đơn mới", "info");
-        playNotificationChime();
       } else {
         soundBtn.classList.add("sound-muted");
         soundBtn.setAttribute("title", "Âm thanh thông báo: ĐÃ TẮT");
@@ -242,9 +243,25 @@ async function loadOrders() {
       throw new Error("Dữ liệu đơn hàng từ máy chủ không hợp lệ.");
     }
 
-    orders = result.map(order => ({ ...order, id: String(order.id) }));
-    checkedOrderIds.clear();
+    const updatedOrders = result.map(order => ({ ...order, id: String(order.id) }));
+    const previousOrderIds = new Set(orders.map(order => order.id));
+    const newOrders = hasLoadedOrders
+      ? updatedOrders.filter(order => !previousOrderIds.has(order.id))
+      : [];
+    const updatedOrderIds = new Set(updatedOrders.map(order => order.id));
+    checkedOrderIds.forEach(orderId => {
+      if (!updatedOrderIds.has(orderId)) checkedOrderIds.delete(orderId);
+    });
+    orders = updatedOrders;
+    hasLoadedOrders = true;
     if (!orders.some(order => order.id === selectedOrderId)) selectedOrderId = null;
+    if (newOrders.length > 0) {
+      playNotificationChime();
+      const newOrderLabel = newOrders.length === 1
+        ? `Đơn #${newOrders[0].trackingCode || newOrders[0].id} vừa được đặt`
+        : `Có ${newOrders.length} đơn hàng mới vừa được đặt`;
+      showToast(newOrderLabel, "info");
+    }
   } catch (error) {
     orderLoadError = error instanceof Error ? error.message : "Không thể tải dữ liệu đơn hàng.";
     if (orders.length > 0) {
@@ -573,16 +590,12 @@ function executeBulkAction(actionType) {
   }
 
   if (actionType === "CONFIRM") {
-    // UI Skeleton interaction
-    showToast(`Đã gửi yêu cầu xác nhận hàng loạt cho ${count} đơn hàng (Chờ API kết nối)`, "info");
-    // TODO: Call Backend Bulk Confirm API endpoint
+    showToast(`Xác nhận ${count} đơn hàng chưa được kết nối với cơ sở dữ liệu; không đơn nào bị thay đổi.`, "warning");
   } else if (actionType === "PRINT") {
-    showToast(`Đã gửi lệnh in phiếu bếp cho ${count} đơn hàng`, "info");
-    // TODO: Call Backend Bulk Print API
+    showToast("Chức năng in phiếu hàng loạt chưa được hỗ trợ.", "warning");
   } else if (actionType === "CANCEL") {
     if (confirm(`Bạn có chắc chắn muốn hủy hàng loạt ${count} đơn hàng đã chọn?`)) {
-      showToast(`Đã ghi nhận yêu cầu hủy hàng loạt cho ${count} đơn hàng`, "warning");
-      // TODO: Call Backend Bulk Cancel API
+      showToast(`Hủy ${count} đơn hàng chưa được kết nối với cơ sở dữ liệu; không đơn nào bị thay đổi.`, "warning");
     }
   }
 }
@@ -659,11 +672,7 @@ function renderRightPanel() {
   payStatusBadge.textContent = order.isPaid ? "✓ Đã thanh toán" : "⏳ Chưa thanh toán";
 
   const btnConfirmPay = document.getElementById("btnConfirmPayment");
-  if (order.isPaid) {
-    btnConfirmPay.style.display = "none";
-  } else {
-    btnConfirmPay.style.display = "inline-flex";
-  }
+  btnConfirmPay.style.display = !order.isPaid && !order.isBankPayment ? "inline-flex" : "none";
 
   // Lalamove Section
   renderLalamoveSection(order);
@@ -867,51 +876,83 @@ function renderContextualActions(order) {
 /* ==========================================================================
    7. STATUS TRANSITIONS & INTEGRATION HOOKS
    ========================================================================= */
-function transitionOrderStatus(nextStatus) {
+async function transitionOrderStatus(nextStatus) {
   if (!selectedOrderId) return;
   const order = orders.find(o => o.id === selectedOrderId);
   if (!order) return;
 
-  const currentLabel = ORDER_STATUS[order.status]?.label || order.status;
-  const nextLabel = ORDER_STATUS[nextStatus]?.label || nextStatus;
+  if (nextStatus !== "CONFIRMED") {
+    showToast(`Đổi trạng thái đơn #${order.trackingCode || order.id} chưa được kết nối với cơ sở dữ liệu; đơn hàng chưa bị thay đổi.`, "warning");
+    return;
+  }
 
-  // Frontend UI state transition
-  order.status = nextStatus;
+  const confirmButton = document.querySelector("#panelActionsFooter .btn-primary-burgundy");
+  if (confirmButton) confirmButton.disabled = true;
 
-  if (!order.history) order.history = [];
-  const nowStr = new Date().toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'});
-  order.history.unshift({
-    time: nowStr,
-    text: `Chuyển trạng thái từ [${currentLabel}] sang [${nextLabel}]`
-  });
+  try {
+    const response = await fetch(`/admin/api/orders/${encodeURIComponent(order.id)}/confirm`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        RequestVerificationToken: getAntiforgeryToken()
+      },
+      cache: "no-store"
+    });
+    const result = await response.json().catch(() => null);
+    if (!response.ok) {
+      throw new Error(result?.message || `Không thể xác nhận đơn hàng (HTTP ${response.status}).`);
+    }
 
-  renderKPIs();
-  renderOrderTable();
-  renderRightPanel();
-
-  showToast(`Đã cập nhật trạng thái đơn #${order.trackingCode || order.id} sang "${nextLabel}"`, "success");
-
-  // TODO: Call Backend Status API (e.g. PUT /api/orders/{id}/status)
+    order.status = result.status;
+    order.statusLabel = result.statusLabel;
+    renderKPIs();
+    renderOrderTable();
+    renderRightPanel();
+    showToast(`Đã xác nhận đơn #${order.trackingCode || order.id}. Trạng thái thanh toán không thay đổi.`, "success");
+  } catch (error) {
+    showToast(error instanceof Error ? error.message : "Không thể xác nhận đơn hàng.", "danger");
+    await loadOrders();
+  }
 }
 
-function confirmPayment() {
+async function confirmPayment() {
   if (!selectedOrderId) return;
   const order = orders.find(o => o.id === selectedOrderId);
   if (!order) return;
 
-  order.isPaid = true;
-  if (!order.history) order.history = [];
-  const nowStr = new Date().toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'});
-  order.history.unshift({
-    time: nowStr,
-    text: "Xác nhận đã thanh toán tiền mặt/chuyển khoản thành công"
-  });
+  if (order.isBankPayment) return;
 
-  renderOrderTable();
-  renderRightPanel();
-  showToast(`Đã xác nhận thanh toán đơn #${order.trackingCode || order.id}`, "success");
+  const confirmButton = document.getElementById("btnConfirmPayment");
+  if (confirmButton) confirmButton.disabled = true;
 
-  // TODO: Call Backend Payment Confirmation API
+  try {
+    const response = await fetch(`/admin/api/orders/${encodeURIComponent(order.id)}/payment/confirm`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        RequestVerificationToken: getAntiforgeryToken()
+      },
+      cache: "no-store"
+    });
+    const result = await response.json().catch(() => null);
+    if (!response.ok) {
+      throw new Error(result?.message || `Không thể xác nhận thu tiền (HTTP ${response.status}).`);
+    }
+
+    order.isPaid = result.isPaid;
+    renderOrderTable();
+    renderRightPanel();
+    showToast(`Đã xác nhận thu tiền đơn #${order.trackingCode || order.id}`, "success");
+  } catch (error) {
+    showToast(error instanceof Error ? error.message : "Không thể xác nhận thu tiền.", "danger");
+    await loadOrders();
+  }
+}
+
+function getAntiforgeryToken() {
+  const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+  if (!token) throw new Error("Không tìm thấy mã bảo mật của biểu mẫu. Vui lòng tải lại trang.");
+  return token;
 }
 
 function retryDriverRequest() {
@@ -950,28 +991,11 @@ function submitCancelOrder() {
     return;
   }
 
-  const reason = reasonSelect.value + (reasonDetails.value.trim() ? ` - ${reasonDetails.value.trim()}` : "");
-
   if (!selectedOrderId) return;
   const order = orders.find(o => o.id === selectedOrderId);
-  if (order) {
-    order.status = "CANCELED";
-    if (!order.history) order.history = [];
-    const nowStr = new Date().toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'});
-    order.history.unshift({
-      time: nowStr,
-      text: `Đã hủy đơn: ${reason}`
-    });
-  }
+  if (!order) return;
 
-  closeCancelOrderModal();
-  renderKPIs();
-  renderOrderTable();
-  renderRightPanel();
-
-  showToast(`Đã hủy đơn hàng #${order?.trackingCode || selectedOrderId}`, "danger");
-
-  // TODO: Call Backend Cancel API
+  showToast(`Hủy đơn #${order.trackingCode || order.id} chưa được kết nối với cơ sở dữ liệu; đơn hàng chưa bị thay đổi.`, "warning");
 }
 
 // Print Kitchen Ticket Modal

@@ -159,7 +159,7 @@ D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\lib\bootstrap\dist\css\
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\js\statistics.js
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\js\site.js
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\js\promotions.js
-D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\js\orders.js
+D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\css\orders.css
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\js\index.js
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\js\delivery.js
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\js\adminpage.js
@@ -169,7 +169,7 @@ D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\favicon.ico
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\css\statistics.css
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\css\site.css
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\css\promotions.css
-D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\css\orders.css
+D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\js\orders.js
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\css\index.css
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\css\delivery.css
 D:\Subject\Web development\Project\ComTruaAnhBeo\wwwroot\css\adminpage.css

@@ -162,7 +162,6 @@ D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\lv
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\al2gpypzg0-{0}-vno4k61jvy-vno4k61jvy.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\vmkjom0rlv-{0}-rrn5qdxdws-rrn5qdxdws.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\6s385t1rky-{0}-xj9r3qvjfu-xj9r3qvjfu.gz
-D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\3npk5z6x7d-{0}-w9b7el8egs-w9b7el8egs.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\rwfj4q0wj4-{0}-taiihpo8ey-taiihpo8ey.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\4y4sbug701-{0}-b9sayid5wm-b9sayid5wm.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\fni68rqyfp-{0}-2cfw7fjuat-2cfw7fjuat.gz
@@ -470,8 +469,6 @@ D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\win-
 D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\win-x86\native\libSkiaSharp.pdb
 D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\unix\lib\net6.0\System.Drawing.Common.dll
 D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
-D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\sgbxgy3bbn-{0}-yjx18oqive-yjx18oqive.gz
-D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\udf4nsjn5i-{0}-rxjok0kw8s-rxjok0kw8s.gz
 C:\Users\ASUS\AppData\Local\Temp\comtrua-menu-fix-build\appsettings.Development.json
 C:\Users\ASUS\AppData\Local\Temp\comtrua-menu-fix-build\appsettings.json
 C:\Users\ASUS\AppData\Local\Temp\comtrua-menu-fix-build\efpt.config.json
@@ -515,5 +512,8 @@ C:\Users\ASUS\AppData\Local\Temp\comtrua-canceled-status-build\ComTruaAnhBeo.pdb
 D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\BouncyCastle.Cryptography.dll
 D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\MailKit.dll
 D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\MimeKit.dll
-D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\45g7q2e8jt-{0}-ggwiggoltg-ggwiggoltg.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\3npk5z6x7d-{0}-zk5xhuw7wp-zk5xhuw7wp.gz
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\sgbxgy3bbn-{0}-7rx7usvlxt-7rx7usvlxt.gz
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\45g7q2e8jt-{0}-97yul8etnn-97yul8etnn.gz
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\udf4nsjn5i-{0}-2usdorenot-2usdorenot.gz

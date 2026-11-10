@@ -25,9 +25,8 @@ builder.Services.AddDbContext<ComTruaAnhBeoContext>(options =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddMemoryCache();
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Email"));
-builder.Services.Configure<BankPaymentEmailSettings>(builder.Configuration.GetSection("BankPaymentEmail"));
 builder.Services.AddTransient<IEmailSender, SmtpEmailSender>();
-builder.Services.AddHostedService<BankPaymentEmailWorker>();
+builder.Services.AddHostedService<OnlinePaymentExpiryWorker>();
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;

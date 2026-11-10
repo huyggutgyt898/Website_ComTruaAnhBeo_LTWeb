@@ -84,8 +84,8 @@
           }
 
           if (result.paymentStatus === "DaTT") {
-            status.textContent = "Đã thanh toán";
-            note.textContent = "Hệ thống đã tự động xác nhận khoản chuyển khoản.";
+            status.textContent = "Đã xác nhận thanh toán — đang chờ quán tiếp nhận đơn";
+            note.textContent = "Quán đã xác nhận nhận được khoản chuyển khoản.";
             countdown.textContent = "";
             stopBankPaymentTracking();
           } else if (result.orderStatus === "Huy" || result.orderStatus === "DaHuy") {
@@ -997,9 +997,9 @@
           document.getElementById("orderPlacedTotal").textContent = formatVND(result.total);
           document.getElementById("orderPlacedPaymentStatus").textContent = result.paymentMethod === "COD"
             ? "Đã chọn thanh toán khi nhận hàng"
-            : "Đang chờ xác nhận thanh toán qua email ngân hàng";
+            : "Đang chờ quán xác nhận thanh toán";
           document.getElementById("orderPlacedPaymentNote").textContent = result.paymentMethod === "BANK"
-            ? `Quét mã QR MB Bank bên dưới để chuyển đúng ${formatVND(result.total)}. Nội dung chuyển khoản: ${result.trackingCode}. Đơn sẽ tự hủy nếu chưa thanh toán sau 10 phút.`
+            ? `Quét mã QR MB Bank bên dưới để chuyển đúng ${formatVND(result.total)}. Nội dung chuyển khoản: ${result.trackingCode}. Quán sẽ kiểm tra giao dịch; đơn tự hủy nếu chưa thanh toán sau 10 phút.`
             : "Vui lòng thanh toán tiền mặt cho tài xế khi nhận món.";
           const paymentCountdown = document.getElementById("orderPlacedPaymentCountdown");
           paymentCountdown.classList.toggle("hidden", result.paymentMethod !== "BANK");
@@ -1021,6 +1021,7 @@
           document.getElementById("paymentStepPanel").classList.add("hidden");
           document.getElementById("orderPlacedPanel").classList.remove("hidden");
           document.getElementById("checkoutSummary").classList.add("hidden");
+          document.getElementById("checkoutContentGrid").classList.add("order-placed-layout");
           [1, 2, 3].forEach(number => {
             document.getElementById(`stepBadge${number}`).className =
               "rounded-md bg-emerald-100 px-2 py-2 text-emerald-900";
@@ -1042,6 +1043,7 @@
       document.getElementById("btnContinueShopping").addEventListener("click", () => {
         document.getElementById("orderPlacedPanel").classList.add("hidden");
         document.getElementById("checkoutSummary").classList.remove("hidden");
+        document.getElementById("checkoutContentGrid").classList.remove("order-placed-layout");
         switchView("menu", true);
       });
       // 10. Đăng nhập, đăng ký và đăng xuất tài khoản khách

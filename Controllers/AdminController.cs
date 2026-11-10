@@ -16,6 +16,7 @@ namespace ComTruaAnhBeo.Controllers;
 public sealed class AdminController : Controller
 {
     internal const string AdminRole = "Admin";
+    private const int BankPaymentTimeoutMinutes = 10;
 
     private readonly ComTruaAnhBeoContext _db;
     private readonly IPasswordHasher<TaiKhoan> _passwordHasher;
@@ -131,6 +132,16 @@ public sealed class AdminController : Controller
             return Conflict(new { message = "Đơn hàng không còn ở trạng thái chờ xác nhận. Vui lòng tải lại danh sách." });
         }
 
+        var payment = await _db.ThanhToans
+            .AsNoTracking()
+            .FirstOrDefaultAsync(item => item.MaDon == orderId, cancellationToken);
+        if (payment is not null &&
+            payment.PhuongThuc != "COD" &&
+            payment.TrangThai != "DaTT")
+        {
+            return Conflict(new { message = "Chưa thể tiếp nhận đơn thanh toán online trước khi xác nhận đã thanh toán." });
+        }
+
         order.TrangThai = "DaXacNhan";
         await _db.SaveChangesAsync(cancellationToken);
 
@@ -143,18 +154,19 @@ public sealed class AdminController : Controller
 
     [HttpPost("api/orders/{orderId:int}/payment/confirm")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ConfirmCodPayment(int orderId, CancellationToken cancellationToken)
+    public async Task<IActionResult> ConfirmPayment(int orderId, CancellationToken cancellationToken)
     {
         var payment = await _db.ThanhToans
+            .Include(item => item.MaDonNavigation)
             .FirstOrDefaultAsync(item => item.MaDon == orderId, cancellationToken);
         if (payment is null)
         {
             return NotFound(new { message = "Không tìm thấy thông tin thanh toán của đơn hàng." });
         }
 
-        if (payment.PhuongThuc != "COD")
+        if (payment.PhuongThuc is not ("COD" or "BANK"))
         {
-            return BadRequest(new { message = "Chỉ xác nhận thu tiền thủ công cho đơn thanh toán khi nhận hàng." });
+            return BadRequest(new { message = "Phương thức thanh toán của đơn hàng không được hỗ trợ." });
         }
 
         if (payment.TrangThai == "DaTT")
@@ -167,8 +179,24 @@ public sealed class AdminController : Controller
             return Conflict(new { message = "Trạng thái thanh toán đã thay đổi. Vui lòng tải lại danh sách." });
         }
 
+        if (payment.PhuongThuc == "BANK" && payment.MaDonNavigation.TrangThai != "ChoXacNhan")
+        {
+            return Conflict(new { message = "Đơn chuyển khoản không còn chờ xác nhận. Vui lòng tải lại danh sách." });
+        }
+
+        if (payment.PhuongThuc == "BANK" &&
+            payment.MaDonNavigation.NgayDat.AddMinutes(BankPaymentTimeoutMinutes) <= DateTime.Now)
+        {
+            return Conflict(new { message = "Đơn chuyển khoản đã hết hạn thanh toán và không thể xác nhận." });
+        }
+
         payment.TrangThai = "DaTT";
         payment.ThoiGianTt = DateTime.Now;
+        if (payment.PhuongThuc == "BANK" && string.IsNullOrWhiteSpace(payment.MaGiaoDich))
+        {
+            payment.MaGiaoDich = $"ADMIN-MANUAL-{payment.MaDon}";
+        }
+
         await _db.SaveChangesAsync(cancellationToken);
 
         return Ok(new { isPaid = true });

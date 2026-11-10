@@ -672,7 +672,11 @@ function renderRightPanel() {
   payStatusBadge.textContent = order.isPaid ? "✓ Đã thanh toán" : "⏳ Chưa thanh toán";
 
   const btnConfirmPay = document.getElementById("btnConfirmPayment");
-  btnConfirmPay.style.display = !order.isPaid && !order.isBankPayment ? "inline-flex" : "none";
+  btnConfirmPay.style.display = !order.isPaid && (!order.isBankPayment || order.status === "PENDING")
+    ? "inline-flex"
+    : "none";
+  btnConfirmPay.disabled = order.isPaid || (order.isBankPayment && order.status !== "PENDING");
+  btnConfirmPay.textContent = order.isBankPayment ? "✓ Xác nhận đã nhận tiền" : "✓ Đã thu tiền";
 
   // Lalamove Section
   renderLalamoveSection(order);
@@ -791,10 +795,20 @@ function renderContextualActions(order) {
 
   // Status transitions based on workflow
   if (order.status === "PENDING") {
+    if (order.isBankPayment && !order.isPaid) {
+      buttonsHtml += `
+        <p class="payment-confirmation-required" role="status">
+          Vui lòng xác nhận đã nhận tiền chuyển khoản trước khi tiếp nhận đơn.
+        </p>
+      `;
+    } else {
+      buttonsHtml += `
+        <button class="btn-order-action btn-primary-burgundy" onclick="transitionOrderStatus('CONFIRMED')">
+          ✓ Xác nhận đơn hàng
+        </button>
+      `;
+    }
     buttonsHtml += `
-      <button class="btn-order-action btn-primary-burgundy" onclick="transitionOrderStatus('CONFIRMED')">
-        ✓ Xác nhận đơn hàng
-      </button>
       <button class="btn-order-action btn-secondary-action" onclick="openPrintTicketModal()">
         🖨️ In phiếu bếp
       </button>
@@ -881,6 +895,11 @@ async function transitionOrderStatus(nextStatus) {
   const order = orders.find(o => o.id === selectedOrderId);
   if (!order) return;
 
+  if (nextStatus === "CONFIRMED" && order.isBankPayment && !order.isPaid) {
+    showToast("Chưa thể tiếp nhận đơn: hãy xác nhận đã nhận tiền chuyển khoản trước.", "warning");
+    return;
+  }
+
   if (nextStatus !== "CONFIRMED") {
     showToast(`Đổi trạng thái đơn #${order.trackingCode || order.id} chưa được kết nối với cơ sở dữ liệu; đơn hàng chưa bị thay đổi.`, "warning");
     return;
@@ -920,8 +939,6 @@ async function confirmPayment() {
   const order = orders.find(o => o.id === selectedOrderId);
   if (!order) return;
 
-  if (order.isBankPayment) return;
-
   const confirmButton = document.getElementById("btnConfirmPayment");
   if (confirmButton) confirmButton.disabled = true;
 
@@ -942,10 +959,22 @@ async function confirmPayment() {
     order.isPaid = result.isPaid;
     renderOrderTable();
     renderRightPanel();
-    showToast(`Đã xác nhận thu tiền đơn #${order.trackingCode || order.id}`, "success");
+    showToast(
+      order.isBankPayment
+        ? `Đã xác nhận nhận tiền chuyển khoản đơn #${order.trackingCode || order.id}`
+        : `Đã xác nhận thu tiền đơn #${order.trackingCode || order.id}`,
+      "success"
+    );
   } catch (error) {
     showToast(error instanceof Error ? error.message : "Không thể xác nhận thu tiền.", "danger");
     await loadOrders();
+  } finally {
+    const currentOrder = orders.find(item => item.id === selectedOrderId);
+    if (confirmButton) {
+      confirmButton.disabled = currentOrder
+        ? currentOrder.isPaid || (currentOrder.isBankPayment && currentOrder.status !== "PENDING")
+        : false;
+    }
   }
 }
 

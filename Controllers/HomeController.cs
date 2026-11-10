@@ -107,7 +107,9 @@ namespace ComTruaAnhBeo.Controllers
                 {
                     paymentStatus = payment.TrangThai,
                     orderStatus = payment.MaDonNavigation.TrangThai,
-                    paymentDeadline = payment.HanThanhToan
+                    paymentDeadline = payment.PhuongThuc == "BANK"
+                        ? payment.MaDonNavigation.NgayDat.AddMinutes(BankPaymentTimeoutMinutes)
+                        : payment.HanThanhToan
                 })
                 .FirstOrDefaultAsync(cancellationToken);
 

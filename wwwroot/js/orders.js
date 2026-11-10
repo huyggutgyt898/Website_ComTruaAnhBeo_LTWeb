@@ -28,6 +28,7 @@ let soundEnabled = true;
 let isLoadingOrders = false;
 let orderLoadError = "";
 let hasLoadedOrders = false;
+let deliverySyncError = "";
 
 // Filters State
 let currentSearch = "";
@@ -224,6 +225,7 @@ async function loadOrders() {
   renderOrderTable();
 
   try {
+    await refreshSelectedDeliveryStatus();
     const response = await fetch("/admin/api/orders", {
       headers: { Accept: "application/json" },
       cache: "no-store"
@@ -272,6 +274,37 @@ async function loadOrders() {
     renderKPIs();
     renderOrderTable();
     renderRightPanel();
+  }
+}
+
+async function refreshSelectedDeliveryStatus() {
+  const order = orders.find(item => item.id === selectedOrderId);
+  if (!order?.deliveryOrderId || ["COMPLETED", "FAILED", "CANCELED"].includes(order.status)) {
+    deliverySyncError = "";
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `/admin/api/orders/${encodeURIComponent(order.id)}/delivery/refresh`,
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          RequestVerificationToken: getAntiforgeryToken()
+        },
+        cache: "no-store"
+      });
+    const result = await response.json().catch(() => null);
+    if (!response.ok) {
+      throw new Error(result?.message || `Không thể cập nhật trạng thái tài xế (HTTP ${response.status}).`);
+    }
+
+    deliverySyncError = "";
+  } catch (error) {
+    deliverySyncError = error instanceof Error
+      ? error.message
+      : "Không thể cập nhật trạng thái tài xế Lalamove.";
   }
 }
 
@@ -706,8 +739,12 @@ function renderLalamoveSection(order) {
     const driverPlate = document.getElementById("driverPlateText");
     driverPlate.textContent = order.driver.licensePlate;
     driverPlate.style.display = order.driver.licensePlate ? "" : "none";
-    statusText.textContent = "Tài xế đang giao chuyến";
-    statusText.style.color = "var(--success)";
+    statusText.textContent = order.deliveryStatus || "Đã nhận thông tin tài xế";
+    statusText.style.color = order.status === "COMPLETED" ? "var(--success)" : "var(--brand-burgundy)";
+  } else if (order.deliveryStatus) {
+    driverBox.style.display = "none";
+    statusText.textContent = order.deliveryStatus;
+    statusText.style.color = order.status === "FAILED" ? "var(--danger)" : "#E65100";
   } else if (order.status === "FINDING_DRIVER") {
     driverBox.style.display = "none";
     statusText.textContent = "Đang phát tín hiệu tìm tài xế Lalamove gần nhất...";
@@ -716,6 +753,22 @@ function renderLalamoveSection(order) {
     driverBox.style.display = "none";
     statusText.textContent = "Chưa phát lệnh gọi tài xế";
     statusText.style.color = "var(--text-muted)";
+  }
+
+  if (deliverySyncError && order.id === selectedOrderId) {
+    statusText.textContent = `Chưa cập nhật được trạng thái: ${deliverySyncError}`;
+    statusText.style.color = "var(--danger)";
+  }
+
+  const trackingLink = document.getElementById("driverTrackingLink");
+  if (trackingLink) {
+    if (order.trackingUrl) {
+      trackingLink.href = order.trackingUrl;
+      trackingLink.style.display = "inline-flex";
+    } else {
+      trackingLink.removeAttribute("href");
+      trackingLink.style.display = "none";
+    }
   }
 }
 
@@ -818,12 +871,9 @@ function renderContextualActions(order) {
     `;
   } else if (order.status === "CONFIRMED") {
     buttonsHtml += `
-      <button class="btn-order-action btn-primary-burgundy" onclick="transitionOrderStatus('PREPARING')">
-        🍳 Bắt đầu chế biến
-      </button>
-      <button class="btn-order-action btn-secondary-action" onclick="transitionOrderStatus('FINDING_DRIVER')">
-        🛵 Tìm tài xế Lalamove
-      </button>
+      <p class="payment-confirmation-required" role="status">
+        Đơn đã xác nhận và đang chuyển sang bếp chế biến.
+      </p>
       <button class="btn-order-action btn-secondary-action" onclick="openPrintTicketModal()">
         🖨️ In phiếu bếp
       </button>
@@ -833,8 +883,8 @@ function renderContextualActions(order) {
     `;
   } else if (order.status === "PREPARING") {
     buttonsHtml += `
-      <button class="btn-order-action btn-primary-burgundy" onclick="transitionOrderStatus('FINDING_DRIVER')">
-        🛵 Bếp xong - Gọi tài xế
+      <button class="btn-order-action btn-primary-burgundy" onclick="dispatchDeliveryOrder()">
+        🛵 Bếp đã xong - Tìm tài xế Lalamove
       </button>
       <button class="btn-order-action btn-secondary-action" onclick="openPrintTicketModal()">
         🖨️ In lại phiếu bếp
@@ -845,29 +895,28 @@ function renderContextualActions(order) {
     `;
   } else if (order.status === "FINDING_DRIVER") {
     buttonsHtml += `
-      <button class="btn-order-action btn-secondary-action" onclick="retryDriverRequest()">
-        🔄 Thử lại tìm tài xế Lalamove
-      </button>
+      <p class="payment-confirmation-required" role="status">
+        Đang tìm tài xế Lalamove. Trạng thái sẽ tự cập nhật theo hệ thống tài xế.
+      </p>
       <button class="btn-order-action btn-danger-outline" onclick="openCancelOrderModal()">
         ✕ Hủy đơn hàng
       </button>
     `;
   } else if (order.status === "DRIVER_ASSIGNED" || order.status === "DELIVERING") {
     buttonsHtml += `
-      <button class="btn-order-action btn-primary-burgundy" onclick="transitionOrderStatus('COMPLETED')">
-        ✓ Xác nhận hoàn thành đơn
-      </button>
+      <p class="payment-confirmation-required" role="status">
+        ${order.status === "DELIVERING"
+          ? "Tài xế đang giao hàng. Đơn chỉ hoàn thành khi Lalamove xác nhận giao thành công."
+          : "Tài xế đã nhận chuyến. Đang chờ cập nhật quá trình giao hàng."}
+      </p>
       <button class="btn-order-action btn-secondary-action" onclick="openPrintTicketModal()">
         🖨️ In phiếu giao hàng
-      </button>
-      <button class="btn-order-action btn-danger-outline" onclick="transitionOrderStatus('FAILED')">
-        ⚠️ Báo giao thất bại
       </button>
     `;
   } else if (order.status === "COMPLETED") {
     buttonsHtml += `
       <div style="text-align: center; color: var(--success); font-weight: 700; font-size: 13px; padding: 6px 0;">
-        ✓ Đơn hàng đã hoàn thành trọn vẹn
+        ✓ Lalamove đã xác nhận giao hàng thành công
       </div>
       <button class="btn-order-action btn-secondary-action" onclick="openPrintTicketModal()">
         🖨️ In lại hóa đơn
@@ -878,6 +927,11 @@ function renderContextualActions(order) {
       <div style="text-align: center; color: var(--danger); font-weight: 700; font-size: 13px; padding: 6px 0;">
         ✕ Đơn hàng đã dừng xử lý (${order.status === 'CANCELED' ? 'Đã hủy' : 'Giao thất bại'})
       </div>
+      ${order.status === "FAILED" ? `
+        <button class="btn-order-action btn-primary-burgundy" onclick="dispatchDeliveryOrder()">
+          🔄 Gọi lại tài xế Lalamove
+        </button>
+      ` : ""}
       <button class="btn-order-action btn-secondary-action" onclick="openPrintTicketModal()">
         🖨️ Xem lại phiếu đơn
       </button>
@@ -901,7 +955,7 @@ async function transitionOrderStatus(nextStatus) {
   }
 
   if (nextStatus !== "CONFIRMED") {
-    showToast(`Đổi trạng thái đơn #${order.trackingCode || order.id} chưa được kết nối với cơ sở dữ liệu; đơn hàng chưa bị thay đổi.`, "warning");
+    showToast("Trạng thái bếp và giao hàng chỉ được cập nhật theo luồng xử lý đơn.", "warning");
     return;
   }
 
@@ -930,6 +984,39 @@ async function transitionOrderStatus(nextStatus) {
     showToast(`Đã xác nhận đơn #${order.trackingCode || order.id}. Trạng thái thanh toán không thay đổi.`, "success");
   } catch (error) {
     showToast(error instanceof Error ? error.message : "Không thể xác nhận đơn hàng.", "danger");
+    await loadOrders();
+  }
+}
+
+async function dispatchDeliveryOrder() {
+  if (!selectedOrderId) return;
+  const order = orders.find(item => item.id === selectedOrderId);
+  if (!order) return;
+
+  const dispatchButton = document.querySelector("#panelActionsFooter .btn-primary-burgundy");
+  if (dispatchButton) dispatchButton.disabled = true;
+
+  try {
+    const response = await fetch(
+      `/admin/api/orders/${encodeURIComponent(order.id)}/delivery`,
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          RequestVerificationToken: getAntiforgeryToken()
+        },
+        cache: "no-store"
+      });
+    const result = await response.json().catch(() => null);
+    if (!response.ok) {
+      throw new Error(result?.message || `Không thể gọi tài xế Lalamove (HTTP ${response.status}).`);
+    }
+
+    deliverySyncError = "";
+    await loadOrders();
+    showToast(`Đã tạo chuyến Lalamove cho đơn #${order.trackingCode || order.id}.`, "success");
+  } catch (error) {
+    showToast(error instanceof Error ? error.message : "Không thể gọi tài xế Lalamove.", "danger");
     await loadOrders();
   }
 }
@@ -984,14 +1071,7 @@ function getAntiforgeryToken() {
   return token;
 }
 
-function retryDriverRequest() {
-  showToast("Đang phát lại tín hiệu điều phối tài xế Lalamove (Mô phỏng UI)", "info");
-  // TODO: Call Lalamove API dispatch
-}
-
-/* ==========================================================================
-   8. MODALS (CANCEL ORDER & KITCHEN TICKET PRINT)
-   ========================================================================== */
+/* 8. MODALS (CANCEL ORDER & KITCHEN TICKET PRINT) */
 function openCancelOrderModal() {
   if (!selectedOrderId) return;
   const modal = document.getElementById("cancelOrderModal");

@@ -31,11 +31,15 @@ function Read-HiddenValue([string]$prompt) {
 $apiKey = Read-HiddenValue "New Lalamove sandbox API key"
 $apiSecret = Read-HiddenValue "New Lalamove sandbox API secret"
 $openRouteServiceKey = Read-HiddenValue "New OpenRouteService API key"
+$storeName = Read-Host "Store pickup contact name"
+$storePhone = Read-HiddenValue "Store pickup contact phone"
 
 if ([string]::IsNullOrWhiteSpace($apiKey) -or
     [string]::IsNullOrWhiteSpace($apiSecret) -or
-    [string]::IsNullOrWhiteSpace($openRouteServiceKey)) {
-    throw "All three API keys are required. No settings were saved."
+    [string]::IsNullOrWhiteSpace($openRouteServiceKey) -or
+    [string]::IsNullOrWhiteSpace($storeName) -or
+    [string]::IsNullOrWhiteSpace($storePhone)) {
+    throw "All API keys and the store pickup contact are required. No settings were saved."
 }
 
 $secretsDirectory = Join-Path $env:APPDATA "Microsoft\UserSecrets\$userSecretsId"
@@ -64,6 +68,11 @@ $secrets | Add-Member -MemberType NoteProperty -Name OpenRouteService -Value ([p
     BaseUrl = "https://api.openrouteservice.org"
 }) -Force
 
+$secrets | Add-Member -MemberType NoteProperty -Name CuaHang -Value ([pscustomobject]@{
+    Ten = $storeName.Trim()
+    Sdt = $storePhone
+}) -Force
+
 $json = ConvertTo-Json -InputObject $secrets -Depth 20
 [System.IO.File]::WriteAllText(
     $secretsPath,
@@ -73,6 +82,8 @@ $json = ConvertTo-Json -InputObject $secrets -Depth 20
 $apiKey = $null
 $apiSecret = $null
 $openRouteServiceKey = $null
+$storeName = $null
+$storePhone = $null
 $secrets = $null
 $json = $null
 

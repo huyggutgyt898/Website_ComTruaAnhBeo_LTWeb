@@ -22,7 +22,22 @@ public sealed class StoreLocationOptions
     public double KinhDo { get; set; } = 106.795180;
     public string DiaChi { get; set; } =
         "Phân hiệu Trường Đại học Giao thông Vận tải tại Thành phố Hồ Chí Minh, 450 Lê Văn Việt, Phường Tăng Nhơn Phú A, Thành phố Thủ Đức, Thành phố Hồ Chí Minh";
+    public string Ten { get; set; } = "";
+    public string Sdt { get; set; } = "";
 }
+
+public sealed record LalamoveDispatchResult(
+    string OrderId,
+    string Status,
+    string? TrackingUrl,
+    string? DriverName,
+    string? DriverPhone);
+
+public sealed record LalamoveDeliveryStatusResult(
+    string Status,
+    string? TrackingUrl,
+    string? DriverName,
+    string? DriverPhone);
 
 public sealed record DeliveryQuoteResult(
     string QuoteToken,

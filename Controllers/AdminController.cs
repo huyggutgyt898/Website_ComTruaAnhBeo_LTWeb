@@ -20,13 +20,16 @@ public sealed class AdminController : Controller
 
     private readonly ComTruaAnhBeoContext _db;
     private readonly IPasswordHasher<TaiKhoan> _passwordHasher;
+    private readonly DeliveryPricingService _deliveryPricing;
 
     public AdminController(
         ComTruaAnhBeoContext db,
-        IPasswordHasher<TaiKhoan> passwordHasher)
+        IPasswordHasher<TaiKhoan> passwordHasher,
+        DeliveryPricingService deliveryPricing)
     {
         _db = db;
         _passwordHasher = passwordHasher;
+        _deliveryPricing = deliveryPricing;
     }
 
     [HttpGet("")]
@@ -70,6 +73,9 @@ public sealed class AdminController : Controller
                 paymentStatus = order.ThanhToan == null ? null : order.ThanhToan.TrangThai,
                 driverName = order.VanChuyen == null ? null : order.VanChuyen.TenTaiXe,
                 driverPhone = order.VanChuyen == null ? null : order.VanChuyen.SdttaiXe,
+                deliveryOrderId = order.VanChuyen == null ? null : order.VanChuyen.LalamoveOrderId,
+                deliveryStatus = order.VanChuyen == null ? null : order.VanChuyen.TrangThai,
+                trackingUrl = order.VanChuyen == null ? null : order.VanChuyen.LinkTheoDoi,
                 items = order.CtDonHangs
                     .Where(item => item.MaCtcha == null)
                     .Select(item => new
@@ -104,6 +110,9 @@ public sealed class AdminController : Controller
             paymentMethod = MapPaymentMethod(order.paymentMethod),
             isBankPayment = order.paymentMethod == "BANK",
             isPaid = order.paymentStatus == "DaTT",
+            order.deliveryOrderId,
+            deliveryStatus = order.deliveryStatus is null ? null : GetDeliveryStatusLabel(order.deliveryStatus),
+            order.trackingUrl,
             driver = string.IsNullOrWhiteSpace(order.driverName) && string.IsNullOrWhiteSpace(order.driverPhone)
                 ? null
                 : new
@@ -142,13 +151,155 @@ public sealed class AdminController : Controller
             return Conflict(new { message = "Chưa thể tiếp nhận đơn thanh toán online trước khi xác nhận đã thanh toán." });
         }
 
-        order.TrangThai = "DaXacNhan";
+        order.TrangThai = "DangChuanBi";
         await _db.SaveChangesAsync(cancellationToken);
 
         return Ok(new
         {
             status = MapOrderStatus(order.TrangThai),
             statusLabel = GetOrderStatusLabel(order.TrangThai)
+        });
+    }
+
+    [HttpPost("api/orders/{orderId:int}/delivery")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DispatchDelivery(int orderId, CancellationToken cancellationToken)
+    {
+        var order = await _db.DonHangs
+            .Include(item => item.VanChuyen)
+            .FirstOrDefaultAsync(item => item.MaDon == orderId, cancellationToken);
+        if (order is null)
+        {
+            return NotFound(new { message = "Không tìm thấy đơn hàng." });
+        }
+
+        if (order.VanChuyen is not null && order.VanChuyen.TrangThai != "Huy")
+        {
+            return Conflict(new { message = "Đơn hàng đã có chuyến Lalamove đang hoạt động." });
+        }
+
+        if (order.TrangThai is not ("DangChuanBi" or "ThatBai"))
+        {
+            return Conflict(new { message = "Chỉ có thể gọi tài xế sau khi đơn đã được xác nhận và bếp đang chế biến hoặc chuyến trước giao thất bại." });
+        }
+
+        LalamoveDispatchResult dispatch;
+        try
+        {
+            dispatch = await _deliveryPricing.CreateOrderAsync(
+                order.DiaChiGiao,
+                order.ViDo,
+                order.KinhDo,
+                order.TenNguoiNhan,
+                order.Sdt,
+                order.GhiChu ?? "",
+                cancellationToken);
+        }
+        catch (DeliveryPricingException exception)
+        {
+            return BadRequest(new { message = exception.Message });
+        }
+
+        if (dispatch.OrderId.Length > 50)
+        {
+            return StatusCode(
+                StatusCodes.Status502BadGateway,
+                new { message = "Mã chuyến Lalamove trả về vượt quá giới hạn lưu trữ." });
+        }
+
+        var delivery = new VanChuyen
+        {
+            MaDon = order.MaDon,
+            LalamoveOrderId = dispatch.OrderId,
+            PhiThucTe = 0,
+            LinkTheoDoi = dispatch.TrackingUrl ?? "",
+            TenTaiXe = dispatch.DriverName ?? "",
+            SdttaiXe = NormalizeDriverPhone(dispatch.DriverPhone),
+            TrangThai = "TimTaiXe"
+        };
+        _db.VanChuyens.Add(delivery);
+        ApplyDeliveryStatus(order, delivery, dispatch.Status);
+        await _db.SaveChangesAsync(cancellationToken);
+
+        return Ok(new
+        {
+            status = MapOrderStatus(order.TrangThai),
+            statusLabel = GetOrderStatusLabel(order.TrangThai),
+            deliveryOrderId = delivery.LalamoveOrderId,
+            deliveryStatus = GetDeliveryStatusLabel(delivery.TrangThai),
+            trackingUrl = delivery.LinkTheoDoi
+        });
+    }
+
+    [HttpPost("api/orders/{orderId:int}/delivery/refresh")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RefreshDeliveryStatus(int orderId, CancellationToken cancellationToken)
+    {
+        var order = await _db.DonHangs
+            .Include(item => item.VanChuyen)
+            .FirstOrDefaultAsync(item => item.MaDon == orderId, cancellationToken);
+        if (order is null)
+        {
+            return NotFound(new { message = "Không tìm thấy đơn hàng." });
+        }
+
+        var delivery = order.VanChuyen;
+        if (delivery is null)
+        {
+            return NotFound(new { message = "Đơn hàng chưa có chuyến Lalamove." });
+        }
+
+        if (delivery.TrangThai is "HoanThanh" or "Huy")
+        {
+            return Ok(new
+            {
+                status = MapOrderStatus(order.TrangThai),
+                statusLabel = GetOrderStatusLabel(order.TrangThai),
+                deliveryStatus = GetDeliveryStatusLabel(delivery.TrangThai)
+            });
+        }
+
+        LalamoveDeliveryStatusResult currentStatus;
+        try
+        {
+            currentStatus = await _deliveryPricing.GetOrderStatusAsync(
+                delivery.LalamoveOrderId,
+                cancellationToken);
+        }
+        catch (DeliveryPricingException exception)
+        {
+            return BadRequest(new { message = exception.Message });
+        }
+
+        try
+        {
+            ApplyDeliveryStatus(order, delivery, currentStatus.Status);
+        }
+        catch (DeliveryPricingException exception)
+        {
+            return StatusCode(StatusCodes.Status502BadGateway, new { message = exception.Message });
+        }
+        if (!string.IsNullOrWhiteSpace(currentStatus.TrackingUrl))
+        {
+            delivery.LinkTheoDoi = currentStatus.TrackingUrl;
+        }
+
+        if (!string.IsNullOrWhiteSpace(currentStatus.DriverName))
+        {
+            delivery.TenTaiXe = currentStatus.DriverName;
+        }
+
+        if (!string.IsNullOrWhiteSpace(currentStatus.DriverPhone))
+        {
+            delivery.SdttaiXe = NormalizeDriverPhone(currentStatus.DriverPhone);
+        }
+
+        await _db.SaveChangesAsync(cancellationToken);
+        return Ok(new
+        {
+            status = MapOrderStatus(order.TrangThai),
+            statusLabel = GetOrderStatusLabel(order.TrangThai),
+            deliveryStatus = GetDeliveryStatusLabel(delivery.TrangThai)
         });
     }
 
@@ -358,6 +509,68 @@ public sealed class AdminController : Controller
         "ThatBai" or "GiaoThatBai" => "Giao thất bại",
         _ => string.IsNullOrWhiteSpace(status) ? "Không rõ trạng thái" : status
     };
+
+    private static void ApplyDeliveryStatus(
+        DonHang order,
+        VanChuyen delivery,
+        string lalamoveStatus)
+    {
+        switch (lalamoveStatus)
+        {
+            case "ASSIGNING_DRIVER":
+            case "PENDING":
+                delivery.TrangThai = "TimTaiXe";
+                order.TrangThai = "TimTaiXe";
+                break;
+            case "ON_GOING":
+                delivery.TrangThai = "DaCoTaiXe";
+                order.TrangThai = "DaCoTaiXe";
+                break;
+            case "PICKED_UP":
+                delivery.TrangThai = "DangGiao";
+                order.TrangThai = "DangGiao";
+                break;
+            case "COMPLETED":
+                delivery.TrangThai = "HoanThanh";
+                order.TrangThai = "HoanThanh";
+                break;
+            case "CANCELED":
+            case "EXPIRED":
+            case "REJECTED":
+                delivery.TrangThai = "Huy";
+                order.TrangThai = "ThatBai";
+                break;
+            default:
+                throw new DeliveryPricingException(
+                    "Lalamove trả về trạng thái chuyến giao hàng không được hỗ trợ.");
+        }
+    }
+
+    private static string GetDeliveryStatusLabel(string? status) => status switch
+    {
+        "TimTaiXe" => "Đang tìm tài xế Lalamove",
+        "DaCoTaiXe" => "Tài xế đã nhận chuyến",
+        "DangGiao" => "Tài xế đang giao hàng",
+        "HoanThanh" => "Tài xế xác nhận giao thành công",
+        "Huy" => "Chuyến giao thất bại hoặc đã hủy",
+        _ => string.IsNullOrWhiteSpace(status) ? "Chưa gọi tài xế" : status
+    };
+
+    private static string NormalizeDriverPhone(string? phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone))
+        {
+            return "";
+        }
+
+        var digits = new string(phone.Where(char.IsDigit).ToArray());
+        if (digits.StartsWith("84", StringComparison.Ordinal) && digits.Length == 11)
+        {
+            return $"0{digits[2..]}";
+        }
+
+        return digits.Length == 10 ? digits : "";
+    }
 
     private static string MapPaymentMethod(string? paymentMethod) => paymentMethod switch
     {

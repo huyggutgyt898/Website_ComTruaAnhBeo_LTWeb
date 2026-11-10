@@ -39,7 +39,6 @@ D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\compressed\sdq4hy4o41
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\compressed\z2lgvmvpbf-{0}-zk6f9tnuds-zk6f9tnuds.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\compressed\j85yiowp77-{0}-ue42l13n71-ue42l13n71.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\compressed\oowzqmoojz-{0}-nkbj9n9zwu-nkbj9n9zwu.gz
-D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\compressed\45g7q2e8jt-{0}-97yul8etnn-97yul8etnn.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\compressed\h7cnx0ojbb-{0}-znqq73u7h7-znqq73u7h7.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\compressed\me7m76g5bk-{0}-xtxxf3hu2r-xtxxf3hu2r.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\compressed\b5466zazxr-{0}-ftv2fid77z-ftv2fid77z.gz
@@ -116,3 +115,14 @@ D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\ComTruaAnhBeo.pdb
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\ComTruaAnhBeo.genruntimeconfig.cache
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\ref\ComTruaAnhBeo.dll
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\compressed\udf4nsjn5i-{0}-2usdorenot-2usdorenot.gz
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-delivery-quote-build\appsettings.Development.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-delivery-quote-build\appsettings.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-delivery-quote-build\efpt.config.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-delivery-quote-build\ComTruaAnhBeo.staticwebassets.runtime.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-delivery-quote-build\ComTruaAnhBeo.staticwebassets.endpoints.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-delivery-quote-build\ComTruaAnhBeo.exe
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-delivery-quote-build\ComTruaAnhBeo.deps.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-delivery-quote-build\ComTruaAnhBeo.runtimeconfig.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-delivery-quote-build\ComTruaAnhBeo.dll
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-delivery-quote-build\ComTruaAnhBeo.pdb
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\compressed\45g7q2e8jt-{0}-1701w9i71o-1701w9i71o.gz

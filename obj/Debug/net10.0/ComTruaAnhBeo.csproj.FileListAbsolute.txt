@@ -515,5 +515,5 @@ D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\MimeKit.dll
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\3npk5z6x7d-{0}-zk5xhuw7wp-zk5xhuw7wp.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\sgbxgy3bbn-{0}-7rx7usvlxt-7rx7usvlxt.gz
-D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\45g7q2e8jt-{0}-97yul8etnn-97yul8etnn.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\udf4nsjn5i-{0}-2usdorenot-2usdorenot.gz
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\45g7q2e8jt-{0}-1701w9i71o-1701w9i71o.gz

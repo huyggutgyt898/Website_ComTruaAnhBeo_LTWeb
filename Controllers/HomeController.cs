@@ -1,23 +1,26 @@
 using ComTruaAnhBeo.Models;
 using ComTruaAnhBeo.Helpers;
+using ComTruaAnhBeo.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Security.Cryptography;
+using System.Text.Json;
 
 namespace ComTruaAnhBeo.Controllers
 {
     public class HomeController : Controller
     {
-        private const decimal ShippingFee = 20_000m;
         private const int BankPaymentTimeoutMinutes = 10;
         private readonly ComTruaAnhBeoContext _db;
+        private readonly DeliveryPricingService _deliveryPricing;
 
-        public HomeController(ComTruaAnhBeoContext db)
+        public HomeController(ComTruaAnhBeoContext db, DeliveryPricingService deliveryPricing)
         {
             _db = db;
+            _deliveryPricing = deliveryPricing;
         }
 
         public IActionResult Index()
@@ -139,6 +142,7 @@ namespace ComTruaAnhBeo.Controllers
                 request.Code.Trim(),
                 request.Phone.Trim(),
                 request.Subtotal,
+                request.ShippingFee,
                 cancellationToken);
             if (result.Error is not null)
             {
@@ -155,6 +159,62 @@ namespace ComTruaAnhBeo.Controllers
                 minOrderValue = result.Promotion.DonToiThieu,
                 discount = result.Discount
             });
+        }
+
+        [HttpPost("/api/delivery/quote")]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public async Task<IActionResult> QuoteDelivery(
+            [FromBody] DeliveryQuoteRequest? request,
+            CancellationToken cancellationToken)
+        {
+            if (request is null ||
+                string.IsNullOrWhiteSpace(request.Address) ||
+                !TryValidateModel(request))
+            {
+                return BadRequest(new { message = "Vui lòng nhập địa chỉ giao hàng hợp lệ." });
+            }
+
+            try
+            {
+                var quote = await _deliveryPricing.GetQuoteAsync(
+                    request.Address.Trim(),
+                    request.Latitude,
+                    request.Longitude,
+                    cancellationToken);
+                return Ok(new
+                {
+                    quoteToken = quote.QuoteToken,
+                    shippingFee = quote.ShippingFee,
+                    distanceKm = quote.DistanceKm,
+                    currency = quote.Currency,
+                    expiresAt = quote.ExpiresAt,
+                    resolvedAddress = quote.ResolvedAddress,
+                    latitude = quote.Latitude,
+                    longitude = quote.Longitude
+                });
+            }
+            catch (DeliveryPricingException exception)
+            {
+                return StatusCode(StatusCodes.Status503ServiceUnavailable, new { message = exception.Message });
+            }
+            catch (HttpRequestException)
+            {
+                return StatusCode(
+                    StatusCodes.Status503ServiceUnavailable,
+                    new { message = "Không kết nối được dịch vụ báo giá giao hàng. Vui lòng thử lại." });
+            }
+            catch (JsonException)
+            {
+                return StatusCode(
+                    StatusCodes.Status503ServiceUnavailable,
+                    new { message = "Dịch vụ báo giá giao hàng trả về dữ liệu không hợp lệ. Vui lòng thử lại." });
+            }
+            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+            {
+                return StatusCode(
+                    StatusCodes.Status503ServiceUnavailable,
+                    new { message = "Dịch vụ báo giá giao hàng quá thời gian chờ. Vui lòng thử lại." });
+            }
         }
 
         [HttpPost("/api/orders")]
@@ -207,7 +267,21 @@ namespace ComTruaAnhBeo.Controllers
 
             var dishById = dishes.ToDictionary(dish => dish.MaMon);
             var subtotal = quantities.Sum(item => dishById[item.Key].Gia * item.Value);
-            var shippingFee = quantities.Count > 0 ? ShippingFee : 0m;
+            if (!_deliveryPricing.TryGetValidQuote(
+                request.DeliveryQuoteToken,
+                address,
+                request.Latitude,
+                request.Longitude,
+                out var deliveryQuote) ||
+                deliveryQuote is null)
+            {
+                return Conflict(new
+                {
+                    message = "Báo giá giao hàng đã hết hạn hoặc địa chỉ đã thay đổi. Vui lòng lấy lại báo giá."
+                });
+            }
+
+            var shippingFee = deliveryQuote.ShippingFee;
             KhuyenMai? promotion = null;
             var discount = 0m;
 
@@ -217,6 +291,7 @@ namespace ComTruaAnhBeo.Controllers
                     request.CouponCode.Trim(),
                     phone,
                     subtotal,
+                    shippingFee,
                     cancellationToken);
                 if (promotionResult.Error is not null)
                 {
@@ -241,8 +316,8 @@ namespace ComTruaAnhBeo.Controllers
                 Sdt = phone,
                 Email = string.IsNullOrWhiteSpace(request.Email) ? null : request.Email.Trim(),
                 DiaChiGiao = address,
-                ViDo = request.Latitude ?? 0,
-                KinhDo = request.Longitude ?? 0,
+                ViDo = deliveryQuote.Latitude,
+                KinhDo = deliveryQuote.Longitude,
                 GhiChu = note,
                 TienMon = subtotal,
                 TienGiam = discount,
@@ -294,6 +369,7 @@ namespace ComTruaAnhBeo.Controllers
                 shippingFee,
                 discount,
                 total = order.TongTien,
+                deliveryDistanceKm = deliveryQuote.DistanceKm,
                 paymentStatus = "ChuaTT",
                 paymentQrCode
             });
@@ -303,6 +379,7 @@ namespace ComTruaAnhBeo.Controllers
             string code,
             string phone,
             decimal subtotal,
+            decimal shippingFee,
             CancellationToken cancellationToken)
         {
             var promotion = await _db.KhuyenMais
@@ -364,7 +441,7 @@ namespace ComTruaAnhBeo.Controllers
                 return PromotionDiscountResult.Failed("Mã giảm giá có loại ưu đãi chưa được hỗ trợ.");
             }
 
-            var discountBase = isShippingDiscount ? ShippingFee : subtotal;
+            var discountBase = isShippingDiscount ? shippingFee : subtotal;
             var discount = isPercentageDiscount
                 ? Math.Floor(discountBase * promotion.GiaTri / 100m)
                 : promotion.GiaTri;
@@ -401,7 +478,21 @@ namespace ComTruaAnhBeo.Controllers
     }
 }
 
-public sealed record CouponValidationRequest(string? Code, string? Phone, decimal Subtotal);
+public sealed record CouponValidationRequest(
+    string? Code,
+    string? Phone,
+    decimal Subtotal,
+    decimal ShippingFee = 0);
+
+public sealed class DeliveryQuoteRequest
+{
+    [Required, StringLength(255)]
+    public string? Address { get; init; }
+
+    public double? Latitude { get; init; }
+
+    public double? Longitude { get; init; }
+}
 
 public sealed class CreateOrderRequest
 {
@@ -428,6 +519,9 @@ public sealed class CreateOrderRequest
 
     [StringLength(30)]
     public string? CouponCode { get; init; }
+
+    [Required, StringLength(64)]
+    public string? DeliveryQuoteToken { get; init; }
 
     public double? Latitude { get; init; }
 

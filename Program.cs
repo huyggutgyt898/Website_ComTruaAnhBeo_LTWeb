@@ -25,6 +25,13 @@ builder.Services.AddDbContext<ComTruaAnhBeoContext>(options =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddMemoryCache();
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Email"));
+builder.Services.Configure<LalamoveOptions>(builder.Configuration.GetSection("Lalamove"));
+builder.Services.Configure<OpenRouteServiceOptions>(builder.Configuration.GetSection("OpenRouteService"));
+builder.Services.Configure<StoreLocationOptions>(builder.Configuration.GetSection("CuaHang"));
+builder.Services.AddHttpClient<DeliveryPricingService>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(15);
+});
 builder.Services.AddTransient<IEmailSender, SmtpEmailSender>();
 builder.Services.AddHostedService<OnlinePaymentExpiryWorker>();
 builder.Services.AddRateLimiter(options =>

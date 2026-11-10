@@ -21,7 +21,7 @@
     let currentProductId = null;
     let appliedCoupon = null;
     let selectedDeliveryLocation = null;
-    const SHIPPING_FEE = 20000;
+    let currentShippingQuote = null;
 
     // =========================================================================
     // 2. STATE ỨNG DỤNG (GIỎ HÀNG, BỘ LỌC, TÀI KHOẢN ĐANG ĐĂNG NHẬP)
@@ -425,7 +425,7 @@
     // =========================================================================
     // 5. CẬP NHẬT GIỎ HÀNG & BẢNG TÍNH TỔNG BILL
     // =========================================================================
-    function calculateCouponDiscount(subtotal, shippingFee = SHIPPING_FEE) {
+    function calculateCouponDiscount(subtotal, shippingFee = 0) {
       if (!appliedCoupon || subtotal < Number(appliedCoupon.minOrderValue || 0)) return 0;
 
       const discountBase = appliedCoupon.appliesToShipping ? shippingFee : subtotal;
@@ -438,11 +438,72 @@
       return Math.max(0, Math.min(discountBase, cappedDiscount));
     }
 
+    function getCurrentShippingQuote() {
+      const address = document.getElementById("orderAddress").value.trim();
+      if (!currentShippingQuote ||
+          currentShippingQuote.address !== address ||
+          Date.parse(currentShippingQuote.expiresAt) <= Date.now()) {
+        return null;
+      }
+
+      return currentShippingQuote;
+    }
+
+    async function refreshDeliveryQuote() {
+      const addressInput = document.getElementById("orderAddress");
+      const address = addressInput.value.trim();
+      if (!address) throw new Error("Vui lòng nhập địa chỉ giao hàng để lấy báo giá.");
+
+      const existingQuote = getCurrentShippingQuote();
+      if (existingQuote) return existingQuote;
+
+      const status = document.getElementById("deliveryLocationStatus");
+      status.textContent = "Đang lấy báo giá giao hàng từ Lalamove...";
+      try {
+        const response = await fetch("/api/delivery/quote", {
+          method: "POST",
+          headers: { Accept: "application/json", "Content-Type": "application/json" },
+          body: JSON.stringify({
+            address,
+            latitude: selectedDeliveryLocation?.latitude ?? null,
+            longitude: selectedDeliveryLocation?.longitude ?? null
+          }),
+          cache: "no-store"
+        });
+        const result = await response.json().catch(() => null);
+        if (!response.ok) {
+          throw new Error(result?.message || `Không thể lấy báo giá giao hàng (HTTP ${response.status}).`);
+        }
+
+        if (address.toLowerCase() === "vị trí hiện tại" && result.resolvedAddress) {
+          addressInput.value = result.resolvedAddress;
+        }
+        currentShippingQuote = {
+          ...result,
+          address: addressInput.value.trim()
+        };
+        status.textContent =
+          `Khoảng cách ${Number(result.distanceKm).toLocaleString("vi-VN", { maximumFractionDigits: 1 })} km · ` +
+          `Phí giao hàng ${formatVND(result.shippingFee)} theo báo giá Lalamove.`;
+        updateCartAndCheckoutUI();
+        return currentShippingQuote;
+      } catch (error) {
+        currentShippingQuote = null;
+        status.textContent = error instanceof Error ? error.message : "Không thể lấy báo giá giao hàng.";
+        updateCartAndCheckoutUI();
+        throw error;
+      }
+    }
+
     async function applyCoupon() {
       const code = document.getElementById("couponCodeInput").value.trim().toUpperCase();
       const phone = document.getElementById("orderPhone").value.trim();
       const { subtotal } = getCartSummary();
       if (!code) throw new Error("Vui lòng nhập mã giảm giá.");
+      const shippingQuote = getCurrentShippingQuote();
+      if (!shippingQuote) {
+        throw new Error("Vui lòng nhập địa chỉ và lấy báo giá giao hàng trước khi áp dụng mã.");
+      }
 
       const response = await fetch("/api/promotions/validate", {
         method: "POST",
@@ -450,7 +511,7 @@
           Accept: "application/json",
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ code, phone, subtotal }),
+        body: JSON.stringify({ code, phone, subtotal, shippingFee: shippingQuote.shippingFee }),
         cache: "no-store"
       });
       const result = await response.json().catch(() => null);
@@ -530,7 +591,8 @@
       document.getElementById("stickyCartTotal").textContent = formatVND(subtotal);
       document.getElementById("checkoutItemCount").textContent = `${totalQty} món`;
       document.getElementById("cartCountBadge").setAttribute("aria-label", `${totalQty} món trong giỏ`);
-      const shippingFee = totalQty > 0 ? SHIPPING_FEE : 0;
+      const shippingQuote = getCurrentShippingQuote();
+      const shippingFee = totalQty > 0 && shippingQuote ? Number(shippingQuote.shippingFee) : 0;
       const discount = calculateCouponDiscount(subtotal, shippingFee);
       const grandTotal = subtotal + shippingFee - discount;
       if (appliedCoupon) {
@@ -573,9 +635,14 @@
 
       // Cập nhật bảng tổng kết bên phải
       document.getElementById("summarySubtotal").textContent = formatVND(subtotal);
-      document.getElementById("summaryShippingFee").textContent = formatVND(shippingFee);
+      document.getElementById("summaryShippingFee").textContent = totalQty === 0
+        ? formatVND(0)
+        : shippingQuote
+          ? formatVND(shippingFee)
+          : "Nhập địa chỉ để báo giá";
       document.getElementById("summaryDiscount").textContent = discount > 0 ? `-${formatVND(discount)}` : "0đ";
-      document.getElementById("summaryGrandTotal").textContent = formatVND(grandTotal);
+      document.getElementById("summaryGrandTotal").textContent =
+        totalQty === 0 || shippingQuote ? formatVND(grandTotal) : "—";
 
       document.getElementById("reviewName").textContent =
         document.getElementById("orderFullName").value.trim() || "--";
@@ -588,8 +655,8 @@
       document.getElementById("reviewNote").textContent =
         document.getElementById("orderNote").value.trim() || "Không có";
       document.getElementById("btnConfirmOrderStep1").disabled = totalQty === 0;
-      document.getElementById("btnProceedToPayment").disabled = totalQty === 0;
-      document.getElementById("btnCompletePaymentFinal").disabled = totalQty === 0;
+      document.getElementById("btnProceedToPayment").disabled = totalQty === 0 || !shippingQuote;
+      document.getElementById("btnCompletePaymentFinal").disabled = totalQty === 0 || !shippingQuote;
     }
 
     // =========================================================================
@@ -796,6 +863,7 @@
           document.getElementById("deliveryLocationStatus").textContent =
             "Đã chuyển sang nhập địa chỉ thủ công.";
         }
+        currentShippingQuote = null;
         updateCartAndCheckoutUI();
       });
 
@@ -828,7 +896,8 @@
               longitude: position.coords.longitude
             };
             document.getElementById("orderAddress").value = "Vị trí hiện tại";
-            status.textContent = `Đã chọn vị trí hiện tại (${selectedDeliveryLocation.latitude.toFixed(5)}, ${selectedDeliveryLocation.longitude.toFixed(5)}).`;
+            currentShippingQuote = null;
+            status.textContent = "Đã chọn vị trí hiện tại. Báo giá giao hàng sẽ được lấy khi tiếp tục.";
             button.disabled = false;
             updateCartAndCheckoutUI();
           },
@@ -901,6 +970,7 @@
         button.disabled = true;
         error.textContent = "";
         try {
+          await refreshDeliveryQuote();
           await refreshAppliedCoupon();
           updateCartAndCheckoutUI();
           setCheckoutStep(2);
@@ -925,6 +995,7 @@
         button.disabled = true;
         error.textContent = "";
         try {
+          await refreshDeliveryQuote();
           await refreshAppliedCoupon();
           updateCartAndCheckoutUI();
           setCheckoutStep(3);
@@ -952,7 +1023,11 @@
                <p class="mt-1">MB Bank · Số tài khoản: <strong>0961016972</strong>.</p>
                <p class="mt-1">Đặt đơn xong, mã QR kèm số tiền và nội dung chuyển khoản sẽ hiện để bạn thanh toán ngay.</p>`
             : `<strong>Thanh toán khi nhận hàng</strong>
-               <p class="mt-1">Vui lòng thanh toán ${formatVND(getCartSummary().subtotal + SHIPPING_FEE - calculateCouponDiscount(getCartSummary().subtotal))} trực tiếp cho tài xế khi nhận món.</p>`;
+               <p class="mt-1">Vui lòng thanh toán ${formatVND(
+                 getCartSummary().subtotal +
+                 Number(getCurrentShippingQuote()?.shippingFee || 0) -
+                 calculateCouponDiscount(getCartSummary().subtotal, Number(getCurrentShippingQuote()?.shippingFee || 0))
+               )} trực tiếp cho tài xế khi nhận món.</p>`;
         });
       });
       document.querySelector('input[name="paymentMethod"]:checked')?.dispatchEvent(new Event("change"));
@@ -969,6 +1044,7 @@
         button.disabled = true;
         error.textContent = "";
         try {
+          const shippingQuote = await refreshDeliveryQuote();
           await refreshAppliedCoupon();
           const request = {
             customerName: document.getElementById("orderFullName").value.trim(),
@@ -978,6 +1054,7 @@
             note: document.getElementById("orderNote").value.trim() || null,
             paymentMethod: document.querySelector('input[name="paymentMethod"]:checked')?.value || "COD",
             couponCode: appliedCoupon?.code || null,
+            deliveryQuoteToken: shippingQuote.quoteToken,
             latitude: selectedDeliveryLocation?.latitude ?? null,
             longitude: selectedDeliveryLocation?.longitude ?? null,
             items: detailedItems.map(item => ({ dishId: item.id, quantity: item.qty }))
@@ -1044,6 +1121,7 @@
         document.getElementById("orderPlacedPanel").classList.add("hidden");
         document.getElementById("checkoutSummary").classList.remove("hidden");
         document.getElementById("checkoutContentGrid").classList.remove("order-placed-layout");
+        currentShippingQuote = null;
         switchView("menu", true);
       });
       // 10. Đăng nhập, đăng ký và đăng xuất tài khoản khách

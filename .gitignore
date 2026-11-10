@@ -1,0 +1,33 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+
+# Build
+bin/
+obj/
+Debug/
+Release/
+
+# NuGet
+packages/
+*.nupkg
+
+# File cấu hình nhạy cảm
+appsettings.Development.json
+*.secrets.json
+
+# Data Protection
+App_Data/DataProtection-Keys/
+
+# Logs
+logs/
+*.log
+
+# Node.js
+node_modules/
+
+# Hệ điều hành
+.DS_Store
+Thumbs.db

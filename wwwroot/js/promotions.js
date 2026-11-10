@@ -897,15 +897,6 @@ function markAllNotiRead() {
 
 function handleNavClick(module) {
   if (module === 'mon-an') {
-<<<<<<< HEAD
-    window.location.href = "adminpage.html";
-  } else if (module === 'don-hang') {
-    window.location.href = "orders.html";
-  } else if (module === 'khuyen-mai') {
-    showToast("Bạn đang ở trang Quản lý khuyến mãi", "info");
-  } else if (module === 'tai-khoan' || module === 'quan-ly-khac') {
-    window.location.href = "accounts.html";
-=======
     window.location.href = "/admin/products";
   } else if (module === 'don-hang') {
     window.location.href = "/admin/orders";
@@ -913,6 +904,5 @@ function handleNavClick(module) {
     showToast("Bạn đang ở trang Quản lý khuyến mãi", "info");
   } else if (module === 'tai-khoan' || module === 'quan-ly-khac') {
     window.location.href = "/admin/accounts";
->>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
   }
 }

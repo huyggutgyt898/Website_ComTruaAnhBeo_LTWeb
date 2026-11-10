@@ -1303,7 +1303,7 @@
           }
 
           const result = await response.json();
-          currentUser = result.user?.role === "KhachHang" ? result.user : null;
+          currentUser = result.user || null;
           updateAuthHeaderState();
         } catch (error) {
           console.error("Không thể tải trạng thái tài khoản:", error);

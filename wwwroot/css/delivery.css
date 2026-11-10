@@ -363,10 +363,259 @@
 }
 
 /* ==========================================================================
-   5. RESPONSIVE BREAKPOINTS
+   5. REAL DELIVERY TABLE & API TESTING TOOLS
+   ========================================================================== */
+.btn-refresh-delivery {
+  background: var(--white);
+  color: var(--brand-burgundy);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-refresh-delivery:hover {
+  background: var(--brand-cream);
+  border-color: var(--brand-yellow);
+}
+
+.card-status-api::before {
+  background: #FF9800;
+}
+
+.status-warning {
+  color: #E65100 !important;
+}
+
+.status-ok {
+  color: var(--success) !important;
+}
+
+.delivery-table-container {
+  overflow-x: auto;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+}
+
+.delivery-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  text-align: left;
+}
+
+.delivery-table th {
+  background: #F9F5F0;
+  color: var(--brand-burgundy);
+  font-weight: 800;
+  padding: 10px 14px;
+  border-bottom: 1.5px solid var(--border-light);
+  white-space: nowrap;
+}
+
+.delivery-table td {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--border-light);
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+.delivery-table tr:hover {
+  background: #FFFDF9;
+  cursor: pointer;
+}
+
+.delivery-table tr.selected {
+  background: #FFF8E1 !important;
+  border-left: 3px solid var(--brand-yellow);
+}
+
+/* API Testing Grid */
+.api-test-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.api-test-card {
+  background: #FCFAF6;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.api-test-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.api-test-card-header strong {
+  font-size: 13px;
+  color: var(--brand-burgundy);
+}
+
+.api-endpoint-badge {
+  font-size: 10px;
+  font-family: monospace;
+  background: var(--brand-burgundy);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.btn-api-test {
+  margin-top: 10px;
+  width: 100%;
+  height: 36px;
+  background: var(--brand-burgundy);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-api-test:hover {
+  background: var(--brand-burgundy-light);
+}
+
+.api-result-box {
+  margin-top: 10px;
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  font-size: 11.5px;
+  min-height: 50px;
+  max-height: 120px;
+  overflow-y: auto;
+  line-height: 1.45;
+}
+
+/* Empty Placeholder in Right Panel */
+.empty-selection-placeholder {
+  text-align: center;
+  padding: 40px 18px;
+}
+
+.empty-selection-icon {
+  font-size: 42px;
+  margin-bottom: 12px;
+}
+
+.empty-selection-placeholder h4 {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--brand-burgundy);
+  margin-bottom: 8px;
+}
+
+.empty-selection-placeholder p {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.det-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 12px;
+  border-bottom: 1px solid #FAF4EE;
+}
+
+.det-label {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.det-value {
+  color: var(--text-primary);
+}
+
+.btn-cancel-delivery {
+  width: 100%;
+  height: 38px;
+  background: #FFF;
+  color: var(--danger);
+  border: 1.5px solid var(--danger);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel-delivery:hover {
+  background: #FFEBEE;
+}
+
+.badge-status-neutral {
+  background: #EEEEEE;
+  color: #616161;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.badge-status-success {
+  background: #E8F5E9;
+  color: #2E7D32;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.badge-status-warning {
+  background: #FFF3E0;
+  color: #E65100;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.badge-status-danger {
+  background: #FFEBEE;
+  color: #C62828;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   6. RESPONSIVE BREAKPOINTS
    ========================================================================== */
 @media (max-width: 900px) {
-  .simulator-body {
+  .api-test-grid {
     grid-template-columns: 1fr;
   }
 }

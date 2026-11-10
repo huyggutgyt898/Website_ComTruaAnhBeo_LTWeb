@@ -1,5 +1,5 @@
 @{
-    ViewData["Title"] = "Quản lý tài khoản website";
+    ViewData["Title"] = "Quản lý tài khoản khách hàng";
     ViewData["ActiveNav"] = "accounts";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
@@ -9,14 +9,22 @@
 }
 
 <!-- =======================================================================
-     COLUMN 2: CENTRAL WORKSPACE (LARGEST AREA, WARM CREAM BACKGROUND)
+     COLUMN 2: CENTRAL WORKSPACE (WARM CREAM BACKGROUND)
      ======================================================================= -->
 <main class="center-workspace">
   <!-- Title & Headline -->
   <div class="workspace-top-bar">
     <div class="page-heading-group">
-      <h1>QUẢN LÝ TÀI KHOẢN WEBSITE</h1>
-      <p>Xem danh sách khách hàng đăng ký qua website, sổ địa chỉ và theo dõi lịch sử đơn hàng</p>
+      <h1>QUẢN LÝ TÀI KHOẢN KHÁCH HÀNG</h1>
+      <p>Theo dõi danh sách khách hàng đăng ký qua website, thông tin liên lạc và quản lý trạng thái tài khoản</p>
+    </div>
+    <div style="display: flex; gap: 8px;">
+      <button type="button" class="btn-refresh-orders" id="btnRefreshAccounts" onclick="fetchAccounts(currentPage)" title="Làm mới dữ liệu từ máy chủ">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+          <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+        </svg>
+        <span>Làm mới danh sách</span>
+      </button>
     </div>
   </div>
 
@@ -25,7 +33,7 @@
     <div class="account-kpi-card account-kpi-total">
       <div class="kpi-avatar-wrap">👥</div>
       <div class="kpi-data-wrap">
-        <span class="kpi-label-text">Tổng tài khoản</span>
+        <span class="kpi-label-text">Tổng khách hàng</span>
         <span class="kpi-count-num" id="kpiTotalAccounts">0</span>
       </div>
     </div>
@@ -39,7 +47,7 @@
     <div class="account-kpi-card account-kpi-locked">
       <div class="kpi-avatar-wrap">🔒</div>
       <div class="kpi-data-wrap">
-        <span class="kpi-label-text">Đã khóa / Tạm dừng</span>
+        <span class="kpi-label-text">Đang bị khóa</span>
         <span class="kpi-count-num" id="kpiLockedAccounts">0</span>
       </div>
     </div>
@@ -56,15 +64,14 @@
     </div>
 
     <!-- Status Filter Select -->
-    <select id="filterAccountStatus" class="account-select-filter">
+    <select id="filterAccountStatus" class="account-select-filter" onchange="handleStatusFilterChange()">
       <option value="ALL">Tất cả trạng thái</option>
       <option value="ACTIVE">Đang hoạt động</option>
       <option value="LOCKED">Đã khóa</option>
-      <option value="INACTIVE">Tạm dừng</option>
     </select>
 
     <!-- Reset Button -->
-    <button class="btn-filter-reset" onclick="resetAllFilters()" title="Đặt lại bộ lọc">
+    <button type="button" class="btn-filter-reset" onclick="resetAllFilters()" title="Đặt lại bộ lọc">
       <span>↺</span>
       <span>Đặt lại</span>
     </button>
@@ -75,31 +82,34 @@
     <table class="account-data-table">
       <thead>
         <tr>
+          <th style="width: 80px;">Mã KH</th>
           <th>Khách hàng</th>
           <th>Số điện thoại</th>
           <th>Email</th>
-          <th>Ngày đăng ký</th>
+          <th>Địa chỉ</th>
           <th>Trạng thái</th>
-          <th style="text-align: right;">Thao tác</th>
+          <th style="text-align: right; width: 100px;">Thao tác</th>
         </tr>
       </thead>
       <tbody id="accountTableBody">
-        <!-- Dynamic rows rendered by JS -->
+        <tr>
+          <td colspan="7" style="text-align: center; padding: 28px; color: var(--text-muted);">
+            <div style="font-size: 26px; margin-bottom: 8px;">⏳</div>
+            Đang tải danh sách tài khoản khách hàng từ máy chủ...
+          </td>
+        </tr>
       </tbody>
     </table>
 
-    <!-- Dedicated Empty State (Mandatory Vietnamese per AGENTS.md) -->
-    <div class="account-empty-state-wrap" id="accountEmptyState">
+    <!-- Dedicated Empty State -->
+    <div class="account-empty-state-wrap" id="accountEmptyState" style="display: none;">
       <div class="account-empty-icon">👥</div>
-      <h3 class="account-empty-title">Chưa có tài khoản</h3>
-      <p class="account-empty-desc">Hiện chưa có dữ liệu tài khoản khách hàng nào hoặc hệ thống đang chờ kết nối dữ liệu từ máy chủ.</p>
+      <h3 class="account-empty-title">Không tìm thấy tài khoản khách hàng</h3>
+      <p class="account-empty-desc">Không có dữ liệu khách hàng nào phù hợp với điều kiện tìm kiếm hoặc chưa có khách hàng đăng ký.</p>
       <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
-        <button class="btn-refresh-orders" onclick="resetAllFilters()">
+        <button type="button" class="btn-refresh-orders" onclick="resetAllFilters()">
           <span>🔄</span>
-          <span>Làm mới danh sách</span>
-        </button>
-        <button class="bulk-action-btn bulk-btn-print" onclick="loadDemoAccountsForTesting()" title="Chỉ dùng để kiểm thử UI và tương tác giao diện">
-          🧪 Nạp dữ liệu kiểm thử UI Live Server
+          <span>Tải lại danh sách</span>
         </button>
       </div>
     </div>
@@ -124,7 +134,7 @@
   <div class="panel-empty-placeholder" id="panelEmptyPlaceholder">
     <div class="empty-icon">👤</div>
     <h3>CHỌN MỘT TÀI KHOẢN</h3>
-    <p>Bấm vào bất kỳ dòng khách hàng nào trong danh sách bên trái để xem thông tin chi tiết, sổ địa chỉ giao hàng, lịch sử đơn và quản lý tài khoản.</p>
+    <p>Bấm vào bất kỳ dòng khách hàng nào trong danh sách bên trái để xem thông tin chi tiết và quản lý trạng thái tài khoản.</p>
   </div>
 
   <!-- Detailed Content when account is selected -->
@@ -133,7 +143,7 @@
     <div class="account-panel-header">
       <div class="account-panel-title-wrap">
         <h2>HỒ SƠ KHÁCH HÀNG</h2>
-        <span>Chi tiết & quản lý tài khoản</span>
+        <span id="panelSubtitle">Chi tiết &amp; quản lý tài khoản</span>
       </div>
       <span class="badge-acc-status badge-acc-active" id="panelAccountStatusBadge">
         Đang hoạt động
@@ -147,37 +157,42 @@
         <div class="user-profile-avatar-lg" id="panelAccountAvatar">--</div>
         <div class="user-profile-info-wrap">
           <span class="user-profile-name" id="panelAccountFullName">--</span>
-          <span style="font-size: 12px; font-weight: 700; color: var(--text-primary); font-family: 'Courier New', monospace;" id="panelAccountPhone">--</span>
+          <span style="font-size: 12px; font-weight: 700; color: var(--brand-burgundy); margin-bottom: 2px;" id="panelAccountMaTk">--</span>
+          <span style="font-size: 12px; font-weight: 700; color: var(--text-primary); font-family: monospace;" id="panelAccountPhone">--</span>
           <span style="font-size: 11.5px; color: var(--text-secondary);" id="panelAccountEmail">--</span>
-          <span style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">
-            Ngày tham gia: <strong id="panelAccountRegDate">--</strong>
-          </span>
         </div>
       </div>
 
-      <!-- 2. Saved Delivery Addresses -->
+      <!-- 2. Address Card -->
       <div class="panel-section-box">
         <div class="panel-section-header">
-          <span>📍 Sổ địa chỉ giao hàng</span>
+          <span>📍 Địa chỉ nhận hàng</span>
         </div>
-        <div id="panelSavedAddressesList">
-          <!-- Rendered via JS -->
+        <div id="panelAccountAddress" style="font-size: 13px; color: var(--text-primary); line-height: 1.5; padding: 4px 0;">
+          --
         </div>
       </div>
 
-      <!-- 3. Order History -->
+      <!-- 3. Account Role & Security Info -->
       <div class="panel-section-box">
         <div class="panel-section-header">
-          <span>📦 Lịch sử đơn hàng</span>
+          <span>🛡️ Phân quyền &amp; Trạng thái</span>
         </div>
-        <div id="panelOrderHistoryList">
-          <!-- Rendered via JS -->
+        <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12.5px;">
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--text-muted);">Vai trò hệ thống:</span>
+            <strong style="color: #2E7D32;">Khách hàng (KhachHang)</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--text-muted);">Tình trạng đăng nhập:</span>
+            <strong id="panelAccountLoginState">Cho phép đăng nhập</strong>
+          </div>
         </div>
       </div>
 
-      <!-- 4. Historical Preservation Rule Banner -->
+      <!-- 4. Account Security Notice -->
       <div class="preservation-notice-banner">
-        <strong>Chính sách dữ liệu:</strong> Toàn bộ lịch sử đơn hàng, hóa đơn và doanh thu đã phát sinh sẽ luôn được hệ thống bảo lưu an toàn ngay cả khi tài khoản bị khóa hoặc xóa.
+        <strong>Chính sách tài khoản:</strong> Khi tài khoản bị khóa, khách hàng sẽ không thể đăng nhập để đặt món. Mọi dữ liệu đơn hàng đã phát sinh trước đó vẫn được lưu trữ bảo lưu trên hệ thống.
       </div>
     </div>
 
@@ -187,60 +202,6 @@
     </div>
   </div>
 </aside>
-
-<!-- =========================================================================
-     MODALS (DEACTIVATE & DELETE ACCOUNT CONFIRMATION)
-     ========================================================================= -->
-
-<!-- Modal 1: Vô hiệu hóa tài khoản -->
-<div class="admin-modal-backdrop" id="deactivateAccountModal" style="display: none;">
-  <div class="admin-modal-box">
-    <div class="admin-modal-header">
-      <h3>XÁC NHẬN VÔ HIỆU HÓA TÀI KHOẢN</h3>
-      <button class="btn-modal-close" onclick="closeDeactivateModal()">✕</button>
-    </div>
-    <div class="admin-modal-body">
-      <p style="font-size: 13.5px; color: var(--text-primary); margin-bottom: 12px;">
-        Bạn có chắc chắn muốn tạm dừng (vô hiệu hóa) tài khoản của khách hàng:
-      </p>
-      <div style="background: #FAF6F0; padding: 10px 14px; border-radius: var(--radius-sm); font-weight: 700; color: var(--brand-burgundy); margin-bottom: 14px;" id="deactivateTargetName">
-        --
-      </div>
-      <p style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.5;">
-        Khách hàng sẽ tạm thời không thể đăng nhập vào website để đặt món cho đến khi được kích hoạt lại.
-      </p>
-    </div>
-    <div class="admin-modal-footer">
-      <button class="bulk-action-btn bulk-btn-print" onclick="closeDeactivateModal()">Hủy bỏ</button>
-      <button class="bulk-action-btn bulk-btn-confirm" onclick="confirmDeactivateAccount()">Xác nhận vô hiệu hóa</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal 2: Xóa tài khoản (Bảo lưu dữ liệu lịch sử) -->
-<div class="admin-modal-backdrop" id="deleteAccountModal" style="display: none;">
-  <div class="admin-modal-box">
-    <div class="admin-modal-header">
-      <h3>XÁC NHẬN XÓA TÀI KHOẢN KHÁCH HÀNG</h3>
-      <button class="btn-modal-close" onclick="closeDeleteModal()">✕</button>
-    </div>
-    <div class="admin-modal-body">
-      <p style="font-size: 13.5px; color: var(--danger); font-weight: 700; margin-bottom: 12px;">
-        ⚠️ Hành động xóa tài khoản không thể hoàn tác:
-      </p>
-      <div style="background: #FFEBEE; border: 1px solid rgba(198, 40, 40, 0.2); padding: 10px 14px; border-radius: var(--radius-sm); font-weight: 700; color: var(--danger); margin-bottom: 14px;" id="deleteTargetName">
-        --
-      </div>
-      <div class="preservation-notice-banner" style="background: #FFF9E6; border-left-color: #FFA000;">
-        <strong>BẢO LƯU DỮ LIỆU ĐƠN HÀNG:</strong> Toàn bộ các đơn hàng đã đặt, thông tin giao nhận lịch sử và số tiền thanh toán trước đây của khách hàng sẽ <u>vẫn được giữ nguyên trên hệ thống báo cáo</u> để đảm bảo số liệu kế toán.
-      </div>
-    </div>
-    <div class="admin-modal-footer">
-      <button class="bulk-action-btn bulk-btn-print" onclick="closeDeleteModal()">Hủy bỏ</button>
-      <button class="bulk-action-btn bulk-btn-cancel" onclick="confirmDeleteAccount()">Xác nhận xóa tài khoản</button>
-    </div>
-  </div>
-</div>
 
 @section Scripts {
     <script src="~/js/accounts.js" asp-append-version="true"></script>

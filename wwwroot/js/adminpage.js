@@ -818,19 +818,11 @@ function handleNavClick(module) {
   if (module === 'mon-an') {
     showToast("Bạn đang ở trang Quản lý món ăn", "info");
   } else if (module === 'don-hang') {
-<<<<<<< HEAD
-    window.location.href = "orders.html";
-  } else if (module === 'khuyen-mai') {
-    window.location.href = "Promotions.html";
-  } else if (module === 'tai-khoan' || module === 'quan-ly-khac') {
-    window.location.href = "accounts.html";
-=======
     window.location.href = "/admin/orders";
   } else if (module === 'khuyen-mai') {
     window.location.href = "/admin/promotions";
   } else if (module === 'tai-khoan' || module === 'quan-ly-khac') {
     window.location.href = "/admin/accounts";
->>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
   }
 }
 

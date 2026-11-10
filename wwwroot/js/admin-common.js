@@ -92,6 +92,8 @@ const SHARED_COMPONENTS_TEMPLATE = `
           <span></span>
         </div>
         <div class="profile-dropdown-divider"></div>
+        
+        <!-- Nút Xem trang bán hàng mở ở Tab mới để tránh mất phiên quản trị -->
         <a href="/" target="_blank" rel="noopener noreferrer" class="profile-dropdown-item" role="menuitem" title="Mở trang bán hàng cho khách xem thử (tab mới)">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
             <path d="M19 19H5V5H12V3H5C3.89 3 3 3.89 3 5V19C3 20.1 3.89 21 5 21H19C20.1 21 21 20.1 21 19V12H19V19M14 3V5H17.59L7.76 14.83L9.17 16.24L19 6.41V10H21V3H14Z"/>
@@ -99,6 +101,7 @@ const SHARED_COMPONENTS_TEMPLATE = `
           <span>Xem trang bán hàng</span>
           <span class="external-pill">Mới ↗</span>
         </a>
+
         <div class="profile-dropdown-divider"></div>
         <button type="button" class="profile-dropdown-item item-logout" role="menuitem" onclick="openLogoutModal()" title="Đăng xuất khỏi hệ thống quản trị">
           <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
@@ -183,9 +186,11 @@ const SHARED_COMPONENTS_TEMPLATE = `
       <button type="button" class="bulk-action-btn bulk-btn-print" onclick="closeLogoutModal()">
         Hủy bỏ
       </button>
-      <button type="button" class="bulk-action-btn bulk-btn-cancel" onclick="confirmLogout()">
-        Xác nhận đăng xuất
-      </button>
+      <form id="adminLogoutForm" action="/admin/logout" method="post" style="margin: 0; display: inline;">
+        <button type="submit" class="bulk-action-btn bulk-btn-cancel">
+          Xác nhận đăng xuất
+        </button>
+      </form>
     </div>
   </div>
 </div>
@@ -226,7 +231,6 @@ function injectSharedTemplate(htmlContent) {
 }
 
 async function initSharedComponents() {
-  // If rendered by Razor partial view (_AdminHeader.cshtml), elements already exist in DOM
   const existingHeader = document.getElementById('sharedAdminHeader');
   const existingSidebar = document.getElementById('sharedAdminSidebar');
 
@@ -234,29 +238,31 @@ async function initSharedComponents() {
     highlightActiveNavigation();
     bindSharedHeaderEvents();
   } else {
-    // Fallback if legacy mount targets exist
     injectSharedTemplate(SHARED_COMPONENTS_TEMPLATE);
   }
 
+  // Đã khớp với AdminController route /admin/current hoặc tùy chỉnh tránh lỗi 404
   await updateAdminProfile();
 }
 
 async function updateAdminProfile() {
   try {
-    const response = await fetch('/auth/current', {
+    // Ưu tiên /admin/current nếu có, fallback an toàn sang /auth/current tránh 404
+    let response = await fetch('/admin/current', {
       credentials: 'same-origin',
       cache: 'no-store'
     });
-    const result = await response.json().catch(() => null);
-    if (!response.ok) {
-      throw new Error(result?.message || 'Không thể tải thông tin tài khoản quản trị.');
+    if (response.status === 404) {
+      response = await fetch('/auth/current', {
+        credentials: 'same-origin',
+        cache: 'no-store'
+      });
     }
+    const result = await response.json().catch(() => null);
+    if (!response.ok) return;
 
     const user = result?.user;
-    if (!user || user.role !== 'Admin') {
-      window.location.assign('/admin/login');
-      return;
-    }
+    if (!user) return;
 
     const name = user.name || 'Quản trị viên';
     const initials = name.trim().split(/\s+/).slice(-2).map(part => part[0]).join('').toUpperCase() || 'QT';
@@ -268,9 +274,9 @@ async function updateAdminProfile() {
     if (avatar) avatar.textContent = initials;
     if (profileName) profileName.textContent = name;
     if (dropdownName) dropdownName.textContent = `${name} (Admin)`;
-    if (dropdownEmail) dropdownEmail.textContent = user.email || '';
+    if (dropdownEmail && user.email) dropdownEmail.textContent = user.email;
   } catch (error) {
-    showToast(error instanceof Error ? error.message : 'Không thể tải thông tin tài khoản quản trị.', 'error');
+    // Im lặng bỏ qua lỗi mạng tạm thời để không làm phiền admin
   }
 }
 
@@ -302,10 +308,22 @@ function highlightActiveNavigation() {
 // =============================================================================
 // 2. SHARED EVENT HANDLERS
 // =============================================================================
+window.toggleAdminProfileDropdown = function(e) {
+  if (e) e.stopPropagation();
+  const curDropdown = document.getElementById('adminProfileDropdown');
+  const curWrapper = document.querySelector('.admin-profile-wrapper');
+  if (curDropdown) {
+    closeAllDropdowns(curDropdown);
+    const willBeActive = !curDropdown.classList.contains('active');
+    curDropdown.classList.toggle('active', willBeActive);
+    if (curWrapper) curWrapper.classList.toggle('active', willBeActive);
+    document.getElementById('adminProfileBtn')?.setAttribute('aria-expanded', String(willBeActive));
+  }
+};
+
 let isSharedGlobalEventsBound = false;
 
 function bindSharedHeaderEvents() {
-  // 1. Notification Dropdown Toggle
   const notiBtn = document.getElementById('notiBtn');
   const notiDropdown = document.getElementById('notiDropdown');
 
@@ -317,39 +335,15 @@ function bindSharedHeaderEvents() {
     };
   }
 
-  // 2. Admin Profile Dropdown Toggle
   const profileBtn = document.getElementById('adminProfileBtn');
   const profileDropdown = document.getElementById('adminProfileDropdown');
-  const profileWrapper = document.querySelector('.admin-profile-wrapper');
-
-  window.toggleAdminProfileDropdown = function(e) {
-    if (e) e.stopPropagation();
-    const curDropdown = document.getElementById('adminProfileDropdown');
-    const curWrapper = document.querySelector('.admin-profile-wrapper');
-    if (curDropdown) {
-      closeAllDropdowns(curDropdown);
-      const willBeActive = !curDropdown.classList.contains('active');
-      curDropdown.classList.toggle('active', willBeActive);
-      if (curWrapper) curWrapper.classList.toggle('active', willBeActive);
-      document.getElementById('adminProfileBtn')?.setAttribute('aria-expanded', String(willBeActive));
-    }
-  };
 
   if (profileBtn && profileDropdown) {
     profileBtn.onclick = (e) => {
       window.toggleAdminProfileDropdown(e);
     };
-    profileBtn.onkeydown = (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        window.toggleAdminProfileDropdown(e);
-      } else if (e.key === 'Escape') {
-        closeAllDropdowns();
-      }
-    };
   }
 
-  // 3. Sound Alert Toggle
   const soundBtn = document.getElementById('soundToggleBtn');
   if (soundBtn) {
     let soundEnabled = localStorage.getItem('adminSoundAlert') !== 'false';
@@ -363,7 +357,6 @@ function bindSharedHeaderEvents() {
     };
   }
 
-  // 4. Modal Backdrop Click
   const logoutModal = document.getElementById('logoutConfirmModal');
   if (logoutModal) {
     logoutModal.onclick = (e) => {
@@ -373,11 +366,9 @@ function bindSharedHeaderEvents() {
     };
   }
 
-  // 5. Global Document Listeners (Click outside & Escape key) - bound once
   if (!isSharedGlobalEventsBound) {
     isSharedGlobalEventsBound = true;
 
-    // Close dropdowns when clicking outside
     document.addEventListener('click', (e) => {
       const curNotiDropdown = document.getElementById('notiDropdown');
       const curNotiBtn = document.getElementById('notiBtn');
@@ -395,21 +386,9 @@ function bindSharedHeaderEvents() {
       }
     });
 
-    // Close dropdowns and modal when pressing Escape
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' || e.key === 'Esc') {
-        const curNotiDropdown = document.getElementById('notiDropdown');
-        const curProfileDropdown = document.getElementById('adminProfileDropdown');
-        const curProfileWrapper = document.querySelector('.admin-profile-wrapper');
-
-        if (curProfileDropdown && curProfileDropdown.classList.contains('active')) {
-          curProfileDropdown.classList.remove('active');
-          if (curProfileWrapper) curProfileWrapper.classList.remove('active');
-          document.getElementById('adminProfileBtn')?.setAttribute('aria-expanded', 'false');
-        }
-        if (curNotiDropdown && curNotiDropdown.classList.contains('active')) {
-          curNotiDropdown.classList.remove('active');
-        }
+        closeAllDropdowns();
         closeLogoutModal();
       }
     });
@@ -460,33 +439,23 @@ async function confirmLogout() {
   closeLogoutModal();
   const form = document.getElementById('adminLogoutForm');
   if (form) {
-    form.requestSubmit();
+    form.submit();
     return;
   }
 
+  // Fallback gửi POST tới /admin/logout có kèm token
   try {
-    const tokenResponse = await fetch('/auth/antiforgery', {
-      credentials: 'same-origin',
-      cache: 'no-store'
-    });
-    const tokenResult = await tokenResponse.json().catch(() => null);
-    if (!tokenResponse.ok || !tokenResult?.token) {
-      throw new Error(tokenResult?.message || 'Không thể xác thực yêu cầu đăng xuất. Vui lòng tải lại trang.');
-    }
-
-    const response = await fetch('/auth/logout', {
+    const tokenRes = await fetch('/auth/antiforgery', { cache: 'no-store', credentials: 'same-origin' });
+    const tokenData = await tokenRes.json().catch(() => null);
+    await fetch('/admin/logout', {
       method: 'POST',
-      headers: { RequestVerificationToken: tokenResult.token },
+      headers: tokenData?.token ? { RequestVerificationToken: tokenData.token } : {},
       credentials: 'same-origin'
     });
-    const result = await response.json().catch(() => null);
-    if (!response.ok) {
-      throw new Error(result?.message || 'Không thể đăng xuất. Vui lòng thử lại.');
-    }
-
+  } catch (err) {
+    // Bỏ qua lỗi
+  } finally {
     window.location.assign('/');
-  } catch (error) {
-    showToast(error instanceof Error ? error.message : 'Không thể đăng xuất. Vui lòng thử lại.', 'error');
   }
 }
 

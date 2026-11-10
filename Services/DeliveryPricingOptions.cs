@@ -2,8 +2,8 @@ namespace ComTruaAnhBeo.Services;
 
 public sealed class LalamoveOptions
 {
-    public string ApiKey { get; set; } = "pk_test_cd66be7f448a3d5f39750eeeea7a18e6";
-    public string ApiSecret { get; set; } = "sk_test_vmAwpC2ZVDS9wL1yO4qGmIvgRcttBzWE0XPn3sqSocvMOBIOarABavJ0zs2xendy";
+    public string ApiKey { get; set; } = "";
+    public string ApiSecret { get; set; } = "";
     public string BaseUrl { get; set; } = "https://rest.sandbox.lalamove.com";
     public string Market { get; set; } = "VN";
     public string ServiceType { get; set; } = "MOTORCYCLE";

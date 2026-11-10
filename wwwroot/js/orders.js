@@ -216,7 +216,7 @@ function initEventListeners() {
   }, { once: true });
 }
 
-async function loadOrders() {
+async function loadOrders(refreshDelivery = true) {
   if (isLoadingOrders) return;
 
   isLoadingOrders = true;
@@ -225,7 +225,7 @@ async function loadOrders() {
   renderOrderTable();
 
   try {
-    await refreshSelectedDeliveryStatus();
+    if (refreshDelivery) await refreshSelectedDeliveryStatus();
     const response = await fetch("/admin/api/orders", {
       headers: { Accept: "application/json" },
       cache: "no-store"
@@ -586,9 +586,16 @@ function changePage(page) {
    ========================================================================== */
 function selectOrder(orderId, event) {
   selectedOrderId = orderId;
+  deliverySyncError = "";
   document.querySelectorAll("#orderTableBody tr").forEach(tr => tr.classList.remove("selected-row"));
   renderOrderTable();
   renderRightPanel();
+  void refreshSelectedDeliveryAndOrders();
+}
+
+async function refreshSelectedDeliveryAndOrders() {
+  await refreshSelectedDeliveryStatus();
+  await loadOrders(false);
 }
 
 function toggleOrderCheck(orderId, isChecked) {
@@ -615,7 +622,7 @@ function updateBulkActionBar() {
   }
 }
 
-function executeBulkAction(actionType) {
+async function executeBulkAction(actionType) {
   const count = checkedOrderIds.size;
   if (count === 0) {
     showToast("Vui lòng chọn ít nhất 1 đơn hàng để thao tác hàng loạt", "warning");
@@ -623,7 +630,49 @@ function executeBulkAction(actionType) {
   }
 
   if (actionType === "CONFIRM") {
-    showToast(`Xác nhận ${count} đơn hàng chưa được kết nối với cơ sở dữ liệu; không đơn nào bị thay đổi.`, "warning");
+    const ordersToConfirm = orders.filter(order => checkedOrderIds.has(order.id) && order.status === "PENDING");
+    if (ordersToConfirm.length === 0) {
+      showToast("Không có đơn nào đang chờ xác nhận trong các đơn đã chọn.", "warning");
+      return;
+    }
+
+    const results = [];
+    for (const order of ordersToConfirm) {
+      try {
+        const response = await fetch(`/admin/api/orders/${encodeURIComponent(order.id)}/confirm`, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            RequestVerificationToken: getAntiforgeryToken()
+          },
+          cache: "no-store"
+        });
+        const result = await response.json().catch(() => null);
+        if (!response.ok) {
+          throw new Error(result?.message || `HTTP ${response.status}`);
+        }
+
+        results.push({
+          order,
+          dispatchError: result.dispatchError || null
+        });
+      } catch (error) {
+        results.push({
+          order,
+          dispatchError: error instanceof Error ? error.message : "Không thể xác nhận đơn."
+        });
+      }
+    }
+
+    await loadOrders();
+    const failures = results.filter(result => result.dispatchError);
+    if (failures.length > 0) {
+      showToast(
+        `Đã xử lý ${results.length - failures.length}/${results.length} đơn hoàn chỉnh. Kiểm tra các đơn còn lại trong danh sách; một số đơn có thể đã xác nhận nhưng chưa gọi được Lalamove.`,
+        "warning");
+    } else {
+      showToast(`Đã xác nhận ${results.length} đơn; bếp và Lalamove đang xử lý song song.`, "success");
+    }
   } else if (actionType === "PRINT") {
     showToast("Chức năng in phiếu hàng loạt chưa được hỗ trợ.", "warning");
   } else if (actionType === "CANCEL") {
@@ -705,10 +754,13 @@ function renderRightPanel() {
   payStatusBadge.textContent = order.isPaid ? "✓ Đã thanh toán" : "⏳ Chưa thanh toán";
 
   const btnConfirmPay = document.getElementById("btnConfirmPayment");
-  btnConfirmPay.style.display = !order.isPaid && (!order.isBankPayment || order.status === "PENDING")
+  const canConfirmPayment = order.isBankPayment
+    ? order.status === "PENDING"
+    : order.isCodPayment && order.status === "COMPLETED";
+  btnConfirmPay.style.display = !order.isPaid && canConfirmPayment
     ? "inline-flex"
     : "none";
-  btnConfirmPay.disabled = order.isPaid || (order.isBankPayment && order.status !== "PENDING");
+  btnConfirmPay.disabled = order.isPaid || !canConfirmPayment;
   btnConfirmPay.textContent = order.isBankPayment ? "✓ Xác nhận đã nhận tiền" : "✓ Đã thu tiền";
 
   // Lalamove Section
@@ -730,7 +782,9 @@ function renderLalamoveSection(order) {
 
   if (!lalaCard) return;
 
-  codText.textContent = order.isPaid ? "0đ (Đã thanh toán Online)" : formatVND(order.grandTotal);
+  codText.textContent = order.isPaid
+    ? order.isCodPayment ? "0đ (COD đã thu sau khi giao)" : "0đ (Đã thanh toán Online)"
+    : formatVND(order.grandTotal);
 
   if (order.driver) {
     driverBox.style.display = "flex";
@@ -872,8 +926,11 @@ function renderContextualActions(order) {
   } else if (order.status === "CONFIRMED") {
     buttonsHtml += `
       <p class="payment-confirmation-required" role="status">
-        Đơn đã xác nhận và đang chuyển sang bếp chế biến.
+        Tiếp tục đưa đơn vào bếp và tự động tìm tài xế Lalamove.
       </p>
+      <button class="btn-order-action btn-primary-burgundy" onclick="transitionOrderStatus('CONFIRMED')">
+        🍳 Bắt đầu bếp và tìm tài xế
+      </button>
       <button class="btn-order-action btn-secondary-action" onclick="openPrintTicketModal()">
         🖨️ In phiếu bếp
       </button>
@@ -883,9 +940,13 @@ function renderContextualActions(order) {
     `;
   } else if (order.status === "PREPARING") {
     buttonsHtml += `
-      <button class="btn-order-action btn-primary-burgundy" onclick="dispatchDeliveryOrder()">
-        🛵 Bếp đã xong - Tìm tài xế Lalamove
-      </button>
+      ${order.deliveryOrderId
+        ? `<p class="payment-confirmation-required" role="status">
+            Bếp đang chế biến; Lalamove đang điều phối tài xế song song.
+          </p>`
+        : `<button class="btn-order-action btn-primary-burgundy" onclick="dispatchDeliveryOrder()">
+            🛵 Thử lại tìm tài xế Lalamove
+          </button>`}
       <button class="btn-order-action btn-secondary-action" onclick="openPrintTicketModal()">
         🖨️ In lại phiếu bếp
       </button>
@@ -978,10 +1039,16 @@ async function transitionOrderStatus(nextStatus) {
 
     order.status = result.status;
     order.statusLabel = result.statusLabel;
-    renderKPIs();
-    renderOrderTable();
-    renderRightPanel();
-    showToast(`Đã xác nhận đơn #${order.trackingCode || order.id}. Trạng thái thanh toán không thay đổi.`, "success");
+    await loadOrders();
+    if (result.dispatchError) {
+      showToast(
+        `Đã xác nhận đơn và chuyển vào bếp, nhưng chưa gọi được Lalamove: ${result.dispatchError}`,
+        "warning");
+    } else {
+      showToast(
+        `Đã xác nhận đơn #${order.trackingCode || order.id}; bếp và Lalamove đang xử lý song song.`,
+        "success");
+    }
   } catch (error) {
     showToast(error instanceof Error ? error.message : "Không thể xác nhận đơn hàng.", "danger");
     await loadOrders();
@@ -1059,7 +1126,9 @@ async function confirmPayment() {
     const currentOrder = orders.find(item => item.id === selectedOrderId);
     if (confirmButton) {
       confirmButton.disabled = currentOrder
-        ? currentOrder.isPaid || (currentOrder.isBankPayment && currentOrder.status !== "PENDING")
+        ? currentOrder.isPaid || (currentOrder.isBankPayment
+          ? currentOrder.status !== "PENDING"
+          : !currentOrder.isCodPayment || currentOrder.status !== "COMPLETED")
         : false;
     }
   }

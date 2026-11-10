@@ -42,6 +42,11 @@ if ([string]::IsNullOrWhiteSpace($apiKey) -or
     throw "All API keys and the store pickup contact are required. No settings were saved."
 }
 
+if (-not $apiKey.StartsWith("pk_test", [StringComparison]::OrdinalIgnoreCase) -or
+    -not $apiSecret.StartsWith("sk_test", [StringComparison]::OrdinalIgnoreCase)) {
+    throw "Lalamove sandbox credentials must use a Public Key starting with pk_test and a Secret Key starting with sk_test. No settings were saved."
+}
+
 $secretsDirectory = Join-Path $env:APPDATA "Microsoft\UserSecrets\$userSecretsId"
 $secretsPath = Join-Path $secretsDirectory "secrets.json"
 New-Item -ItemType Directory -Path $secretsDirectory -Force | Out-Null
@@ -52,6 +57,21 @@ if (Test-Path -LiteralPath $secretsPath) {
     if (-not [string]::IsNullOrWhiteSpace($existingContent)) {
         $secrets = ConvertFrom-Json -InputObject $existingContent
     }
+}
+
+foreach ($key in @(
+    "Lalamove:ApiKey",
+    "Lalamove:ApiSecret",
+    "Lalamove:BaseUrl",
+    "Lalamove:Market",
+    "Lalamove:ServiceType",
+    "Lalamove:Language",
+    "OpenRouteService:ApiKey",
+    "OpenRouteService:BaseUrl",
+    "CuaHang:Ten",
+    "CuaHang:Sdt"
+)) {
+    $secrets.PSObject.Properties.Remove($key)
 }
 
 $secrets | Add-Member -MemberType NoteProperty -Name Lalamove -Value ([pscustomobject]@{

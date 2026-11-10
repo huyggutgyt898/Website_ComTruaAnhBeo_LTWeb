@@ -67,7 +67,11 @@ public sealed class DeliveryPricingService
         if (!response.IsSuccessStatusCode)
         {
             throw new DeliveryPricingException(
-                $"Lalamove chưa thể báo giá giao hàng (HTTP {(int)response.StatusCode}). Vui lòng kiểm tra địa chỉ hoặc thử lại.");
+                await GetProviderErrorMessageAsync(
+                    response,
+                    "Lalamove",
+                    "báo giá giao hàng",
+                    cancellationToken));
         }
 
         using var document = await JsonDocument.ParseAsync(
@@ -231,7 +235,11 @@ public sealed class DeliveryPricingService
         if (!quotationResponse.IsSuccessStatusCode)
         {
             throw new DeliveryPricingException(
-                $"Lalamove chưa thể tạo báo giá giao hàng (HTTP {(int)quotationResponse.StatusCode}).");
+                await GetProviderErrorMessageAsync(
+                    quotationResponse,
+                    "Lalamove",
+                    "tạo báo giá giao hàng",
+                    cancellationToken));
         }
 
         using var quotationDocument = await JsonDocument.ParseAsync(
@@ -279,7 +287,11 @@ public sealed class DeliveryPricingService
         if (!orderResponse.IsSuccessStatusCode)
         {
             throw new DeliveryPricingException(
-                $"Lalamove chưa thể tạo chuyến giao hàng (HTTP {(int)orderResponse.StatusCode}).");
+                await GetProviderErrorMessageAsync(
+                    orderResponse,
+                    "Lalamove",
+                    "tạo chuyến giao hàng",
+                    cancellationToken));
         }
 
         using var orderDocument = await JsonDocument.ParseAsync(
@@ -304,7 +316,11 @@ public sealed class DeliveryPricingService
         if (!response.IsSuccessStatusCode)
         {
             throw new DeliveryPricingException(
-                $"Không thể cập nhật trạng thái chuyến Lalamove (HTTP {(int)response.StatusCode}).");
+                await GetProviderErrorMessageAsync(
+                    response,
+                    "Lalamove",
+                    "cập nhật trạng thái chuyến",
+                    cancellationToken));
         }
 
         using var document = await JsonDocument.ParseAsync(
@@ -360,7 +376,11 @@ public sealed class DeliveryPricingService
         if (!response.IsSuccessStatusCode)
         {
             throw new DeliveryPricingException(
-                $"Không thể xác định tọa độ địa chỉ (OpenRouteService HTTP {(int)response.StatusCode}). Vui lòng ghi địa chỉ rõ hơn.");
+                await GetProviderErrorMessageAsync(
+                    response,
+                    "OpenRouteService",
+                    "xác định tọa độ địa chỉ",
+                    cancellationToken));
         }
 
         using var document = await JsonDocument.ParseAsync(
@@ -408,7 +428,11 @@ public sealed class DeliveryPricingService
         if (!response.IsSuccessStatusCode)
         {
             throw new DeliveryPricingException(
-                $"Không thể xác định địa chỉ từ vị trí GPS (OpenRouteService HTTP {(int)response.StatusCode}).");
+                await GetProviderErrorMessageAsync(
+                    response,
+                    "OpenRouteService",
+                    "xác định địa chỉ từ vị trí GPS",
+                    cancellationToken));
         }
 
         using var document = await JsonDocument.ParseAsync(
@@ -460,7 +484,14 @@ public sealed class DeliveryPricingService
             string.IsNullOrWhiteSpace(_lalamove.ApiSecret))
         {
             throw new DeliveryPricingException(
-                "Chưa cấu hình Lalamove API key/secret. Chạy scripts\\Configure-DeliverySecrets.ps1 bằng khóa sandbox mới rồi khởi động lại ứng dụng.");
+                "Chưa cấu hình Lalamove sandbox API key/secret. Chạy scripts\\Configure-DeliverySecrets.ps1 với thông tin sandbox của bạn rồi khởi động lại ứng dụng.");
+        }
+
+        if (!_lalamove.ApiKey.StartsWith("pk_test", StringComparison.OrdinalIgnoreCase) ||
+            !_lalamove.ApiSecret.StartsWith("sk_test", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new DeliveryPricingException(
+                "Ứng dụng đang chạy Lalamove sandbox nhưng API key/secret không đúng loại. Hãy dùng Public Key bắt đầu bằng pk_test và Secret Key bắt đầu bằng sk_test từ môi trường Sandbox của Lalamove Partner Portal.");
         }
 
         if (string.IsNullOrWhiteSpace(_store.DiaChi) ||
@@ -469,6 +500,57 @@ public sealed class DeliveryPricingService
         {
             throw new DeliveryPricingException("Chưa cấu hình vị trí cửa hàng hợp lệ.");
         }
+    }
+
+    private static async Task<string> GetProviderErrorMessageAsync(
+        HttpResponseMessage response,
+        string provider,
+        string operation,
+        CancellationToken cancellationToken)
+    {
+        var fallback = $"{provider} chưa thể {operation} (HTTP {(int)response.StatusCode}).";
+        var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+        if (string.IsNullOrWhiteSpace(responseBody))
+        {
+            return fallback;
+        }
+
+        string detail = responseBody;
+        var reader = new Utf8JsonReader(Encoding.UTF8.GetBytes(responseBody));
+        if (JsonDocument.TryParseValue(ref reader, out var document))
+        {
+            using (document)
+            {
+                var root = document.RootElement;
+                if (TryGetString(root, "message", out var message))
+                {
+                    detail = message;
+                }
+                else if (TryGetString(root, "msg", out var shortMessage))
+                {
+                    detail = shortMessage;
+                }
+                else if (root.TryGetProperty("errors", out var errors))
+                {
+                    detail = errors.ToString();
+                }
+            }
+        }
+
+        var safeDetail = new string(detail
+            .Where(character => !char.IsControl(character) || character is '\r' or '\n' or '\t')
+            .ToArray());
+        safeDetail = string.Join(" ", safeDetail.Split(
+            (char[]?)null,
+            StringSplitOptions.RemoveEmptyEntries));
+        if (safeDetail.Length > 300)
+        {
+            safeDetail = $"{safeDetail[..300]}…";
+        }
+
+        return string.IsNullOrWhiteSpace(safeDetail)
+            ? fallback
+            : $"{fallback} Chi tiết: {safeDetail}";
     }
 
     private static object Coordinates(double latitude, double longitude) => new
@@ -537,9 +619,7 @@ public sealed class DeliveryPricingService
 
     private static LalamoveDeliveryStatusResult ReadDeliveryStatus(JsonElement data)
     {
-        var status = TryGetString(data, "status", out var statusText)
-            ? statusText
-            : "ASSIGNING_DRIVER";
+        var status = GetRequiredString(data, "status");
         var trackingUrl = TryGetString(data, "shareLink", out var shareLink)
             ? shareLink
             : null;

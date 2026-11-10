@@ -470,7 +470,6 @@ D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\win-
 D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\win-x86\native\libSkiaSharp.pdb
 D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\unix\lib\net6.0\System.Drawing.Common.dll
 D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
-D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\45g7q2e8jt-{0}-wdgorn7yr2-wdgorn7yr2.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\sgbxgy3bbn-{0}-yjx18oqive-yjx18oqive.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\udf4nsjn5i-{0}-rxjok0kw8s-rxjok0kw8s.gz
 C:\Users\ASUS\AppData\Local\Temp\comtrua-menu-fix-build\appsettings.Development.json
@@ -513,4 +512,8 @@ C:\Users\ASUS\AppData\Local\Temp\comtrua-canceled-status-build\ComTruaAnhBeo.dep
 C:\Users\ASUS\AppData\Local\Temp\comtrua-canceled-status-build\ComTruaAnhBeo.runtimeconfig.json
 C:\Users\ASUS\AppData\Local\Temp\comtrua-canceled-status-build\ComTruaAnhBeo.dll
 C:\Users\ASUS\AppData\Local\Temp\comtrua-canceled-status-build\ComTruaAnhBeo.pdb
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\BouncyCastle.Cryptography.dll
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\MailKit.dll
+D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\MimeKit.dll
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\45g7q2e8jt-{0}-ggwiggoltg-ggwiggoltg.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt

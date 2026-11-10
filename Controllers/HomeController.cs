@@ -12,6 +12,7 @@ namespace ComTruaAnhBeo.Controllers
     public class HomeController : Controller
     {
         private const decimal ShippingFee = 20_000m;
+        private const int BankPaymentTimeoutMinutes = 10;
         private readonly ComTruaAnhBeoContext _db;
 
         public HomeController(ComTruaAnhBeoContext db)
@@ -91,6 +92,31 @@ namespace ComTruaAnhBeo.Controllers
                 .ToListAsync(cancellationToken);
 
             return Ok(dishes);
+        }
+
+        [HttpGet("/api/orders/{trackingCode}/payment-status")]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public async Task<IActionResult> GetOrderPaymentStatus(
+            string trackingCode,
+            CancellationToken cancellationToken)
+        {
+            var paymentStatus = await _db.ThanhToans
+                .AsNoTracking()
+                .Where(payment => payment.MaDonNavigation.MaTraCuu == trackingCode)
+                .Select(payment => new
+                {
+                    paymentStatus = payment.TrangThai,
+                    orderStatus = payment.MaDonNavigation.TrangThai,
+                    paymentDeadline = payment.HanThanhToan
+                })
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (paymentStatus is null)
+            {
+                return NotFound(new { message = "Không tìm thấy đơn hàng." });
+            }
+
+            return Ok(paymentStatus);
         }
 
         [HttpPost("/api/promotions/validate")]
@@ -200,6 +226,9 @@ namespace ComTruaAnhBeo.Controllers
             }
 
             var orderedAt = DateTime.Now;
+            var paymentDeadline = paymentMethod == "BANK"
+                ? orderedAt.AddMinutes(BankPaymentTimeoutMinutes)
+                : (DateTime?)null;
             var order = new DonHang
             {
                 MaTraCuu = $"CM{string.Concat(Enumerable.Range(0, 10).Select(
@@ -247,7 +276,7 @@ namespace ComTruaAnhBeo.Controllers
                 PhuongThuc = paymentMethod,
                 SoTien = order.TongTien,
                 TrangThai = "ChuaTT",
-                HanThanhToan = paymentMethod == "COD" ? null : orderedAt.AddMinutes(30)
+                HanThanhToan = paymentDeadline
             });
 
             await _db.SaveChangesAsync(cancellationToken);
@@ -258,6 +287,7 @@ namespace ComTruaAnhBeo.Controllers
                 trackingCode = order.MaTraCuu,
                 orderId = order.MaDon,
                 paymentMethod,
+                paymentDeadline,
                 subtotal,
                 shippingFee,
                 discount,

@@ -35,10 +35,73 @@
     let authRequestInProgress = false;
     let registrationChallengeId = null;
     let registrationCooldownTimer = null;
+    let paymentStatusPollTimer = null;
+    let paymentCountdownTimer = null;
 
     // Định dạng tiền VNĐ
     function formatVND(amount) {
       return Number(amount || 0).toLocaleString("vi-VN") + "đ";
+    }
+
+    function stopBankPaymentTracking() {
+      if (paymentStatusPollTimer) clearInterval(paymentStatusPollTimer);
+      if (paymentCountdownTimer) clearInterval(paymentCountdownTimer);
+      paymentStatusPollTimer = null;
+      paymentCountdownTimer = null;
+    }
+
+    function startBankPaymentTracking(trackingCode, deadline) {
+      stopBankPaymentTracking();
+      const status = document.getElementById("orderPlacedPaymentStatus");
+      const note = document.getElementById("orderPlacedPaymentNote");
+      const countdown = document.getElementById("orderPlacedPaymentCountdown");
+      const deadlineTime = Date.parse(deadline);
+      countdown.classList.remove("hidden");
+
+      const updateCountdown = () => {
+        const remainingSeconds = Math.max(0, Math.ceil((deadlineTime - Date.now()) / 1000));
+        const minutes = Math.floor(remainingSeconds / 60);
+        const seconds = remainingSeconds % 60;
+        countdown.textContent = remainingSeconds > 0
+          ? `Thời gian thanh toán còn ${minutes}:${String(seconds).padStart(2, "0")}.`
+          : "Đã hết thời gian thanh toán; hệ thống đang cập nhật trạng thái đơn.";
+      };
+      updateCountdown();
+      paymentCountdownTimer = setInterval(updateCountdown, 1000);
+
+      let isChecking = false;
+      const refreshPaymentStatus = async () => {
+        if (isChecking) return;
+        isChecking = true;
+        try {
+          const response = await fetch(
+            `/api/orders/${encodeURIComponent(trackingCode)}/payment-status`,
+            { cache: "no-store", headers: { Accept: "application/json" } }
+          );
+          const result = await response.json().catch(() => null);
+          if (!response.ok) {
+            throw new Error(result?.message || `Không thể kiểm tra thanh toán (HTTP ${response.status}).`);
+          }
+
+          if (result.paymentStatus === "DaTT") {
+            status.textContent = "Đã thanh toán";
+            note.textContent = "Hệ thống đã tự động xác nhận khoản chuyển khoản.";
+            countdown.textContent = "";
+            stopBankPaymentTracking();
+          } else if (result.orderStatus === "Huy" || result.orderStatus === "DaHuy") {
+            status.textContent = "Đơn hàng đã hết hạn và bị hủy";
+            note.textContent = "Quán chưa nhận được thanh toán trong thời hạn 10 phút.";
+            countdown.textContent = "";
+            stopBankPaymentTracking();
+          }
+        } catch (requestError) {
+          note.textContent = `Chưa kiểm tra được trạng thái thanh toán: ${requestError.message}`;
+        } finally {
+          isChecking = false;
+        }
+      };
+      paymentStatusPollTimer = setInterval(refreshPaymentStatus, 5000);
+      refreshPaymentStatus();
     }
 
     // Hiển thị Toast
@@ -934,10 +997,18 @@
           document.getElementById("orderPlacedTotal").textContent = formatVND(result.total);
           document.getElementById("orderPlacedPaymentStatus").textContent = result.paymentMethod === "COD"
             ? "Đã chọn thanh toán khi nhận hàng"
-            : "Đơn hàng đã ghi nhận · vui lòng thanh toán ngay bằng mã QR";
+            : "Đang chờ xác nhận thanh toán qua email ngân hàng";
           document.getElementById("orderPlacedPaymentNote").textContent = result.paymentMethod === "BANK"
-            ? `Quét mã QR MB Bank bên dưới để chuyển ${formatVND(result.total)}. Nội dung chuyển khoản: ${result.trackingCode}. Quán sẽ đối soát giao dịch sau khi nhận tiền.`
+            ? `Quét mã QR MB Bank bên dưới để chuyển đúng ${formatVND(result.total)}. Nội dung chuyển khoản: ${result.trackingCode}. Đơn sẽ tự hủy nếu chưa thanh toán sau 10 phút.`
             : "Vui lòng thanh toán tiền mặt cho tài xế khi nhận món.";
+          const paymentCountdown = document.getElementById("orderPlacedPaymentCountdown");
+          paymentCountdown.classList.toggle("hidden", result.paymentMethod !== "BANK");
+          paymentCountdown.textContent = "";
+          if (result.paymentMethod === "BANK" && result.paymentDeadline) {
+            startBankPaymentTracking(result.trackingCode, result.paymentDeadline);
+          } else {
+            stopBankPaymentTracking();
+          }
           const paymentQr = document.getElementById("orderPlacedPaymentQr");
           paymentQr.classList.toggle("hidden", result.paymentMethod !== "BANK");
           paymentQr.removeAttribute("src");

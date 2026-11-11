@@ -26,6 +26,12 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddMemoryCache();
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Email"));
 builder.Services.AddTransient<IEmailSender, SmtpEmailSender>();
+
+// Đăng ký dịch vụ Quản lý Khách hàng
+builder.Services.AddScoped<IKhachHangService, KhachHangService>();
+
+// Đăng ký dịch vụ Thống kê & Báo cáo
+builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;

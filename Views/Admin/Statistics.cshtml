@@ -16,7 +16,7 @@
   <div class="workspace-top-bar">
     <div class="page-heading-group">
       <h1>THỐNG KÊ & BÁO CÁO</h1>
-      <p>Phân tích chuyên sâu doanh thu, món bán chạy, đánh giá khách hàng và chi phí vận chuyển Lalamove</p>
+      <p>Phân tích chuyên sâu doanh thu, món bán chạy và đánh giá khách hàng</p>
     </div>
   </div>
 
@@ -39,12 +39,6 @@
         <path d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2M20 16H6L4 18V4H20V16Z"/>
       </svg>
       <span>3. Đánh giá của khách</span>
-    </button>
-    <button type="button" class="stats-tab-btn" id="tabBtn-lalamove" onclick="switchStatsTab('lalamove')">
-      <svg viewBox="0 0 24 24">
-        <path d="M18 18.5C18 19.33 17.33 20 16.5 20C15.67 20 15 19.33 15 18.5C15 17.67 15.67 17 16.5 17C17.33 17 18 17.67 18 18.5M19.5 9.5L21.46 12H17V9.5H19.5M6 18.5C6 19.33 5.33 20 4.5 20C3.67 20 3 19.33 3 18.5C3 17.67 3.67 17 4.5 17C5.33 17 6 17.67 6 18.5M20 8H17V4H3C1.89 4 1 4.89 1 6V17H3C3 18.66 4.34 20 6 20C7.66 20 9 18.66 9 17H15C15 18.66 16.34 20 18 20C19.66 20 21 18.66 21 17H23V12L20 8Z"/>
-      </svg>
-      <span>4. Chi phí Lalamove</span>
     </button>
   </div>
 
@@ -215,87 +209,6 @@
             </tr>
           </thead>
           <tbody id="reviewsTableBody">
-            <!-- Empty state rendered by JS -->
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- =====================================================================
-       TAB PANE 4: LALAMOVE DELIVERY COSTS
-       ===================================================================== -->
-  <div class="stats-tab-pane" id="pane-lalamove">
-    <!-- Safety Rule Notice Banner: Prevent Double Counting -->
-    <div class="lalamove-notice-banner">
-      <svg viewBox="0 0 24 24">
-        <path d="M12 2C6.48 2 2 6.48 2 12S6.48 22 12 22 22 17.52 22 12 17.52 2 12 2M13 17H11V15H13V17M13 13H11V7H13V13Z"/>
-      </svg>
-      <div>
-        <strong>Nguyên tắc kiểm soát chi phí:</strong> Hệ thống tách bạch tuyệt đối cước trợ giá vận chuyển của quán và phụ phí phát sinh (mưa, giờ cao điểm) để ngăn chặn việc cộng dồn trùng lặp.
-      </div>
-    </div>
-
-    <!-- 4 Lalamove Shipping Metric KPI Cards -->
-    <div class="stats-kpi-grid">
-      <!-- Card 1: Phí ship khách trả -->
-      <div class="stats-kpi-card kpi-orders">
-        <div class="stats-kpi-icon-wrap">🛵</div>
-        <div class="stats-kpi-info">
-          <span class="stats-kpi-label">Phí khách đã trả</span>
-          <span class="stats-kpi-value" id="kpiCustomerShip">0đ</span>
-          <span class="stats-kpi-subtext">Thu trực tiếp trên đơn cơm</span>
-        </div>
-      </div>
-
-      <!-- Card 2: Cước thực tế Lalamove -->
-      <div class="stats-kpi-card kpi-revenue">
-        <div class="stats-kpi-icon-wrap">🚚</div>
-        <div class="stats-kpi-info">
-          <span class="stats-kpi-label">Cước trả Lalamove</span>
-          <span class="stats-kpi-value" id="kpiActualLalamove">0đ</span>
-          <span class="stats-kpi-subtext">Phí tài xế theo app Lalamove</span>
-        </div>
-      </div>
-
-      <!-- Card 3: Quán tài trợ cước -->
-      <div class="stats-kpi-card kpi-subsidy">
-        <div class="stats-kpi-icon-wrap">🎁</div>
-        <div class="stats-kpi-info">
-          <span class="stats-kpi-label">Quán tài trợ cước</span>
-          <span class="stats-kpi-value" id="kpiStoreSubsidy">0đ</span>
-          <span class="stats-kpi-subtext">Ưu đãi giảm/miễn ship cho khách</span>
-        </div>
-      </div>
-
-      <!-- Card 4: Phụ phí phát sinh -->
-      <div class="stats-kpi-card kpi-extra">
-        <div class="stats-kpi-icon-wrap">⚡</div>
-        <div class="stats-kpi-info">
-          <span class="stats-kpi-label">Phụ phí phát sinh</span>
-          <span class="stats-kpi-value" id="kpiExtraFees">0đ</span>
-          <span class="stats-kpi-subtext">Phí thời tiết xấu, cao điểm</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Shipping Cost Detailed Audit Table -->
-    <div class="ranking-table-card">
-      <div class="table-container">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th style="width: 120px;">Mã đơn</th>
-              <th style="width: 130px;">Ngày giao</th>
-              <th style="width: 160px;">Tài xế Lalamove</th>
-              <th style="width: 130px; text-align: right;">Khách trả</th>
-              <th style="width: 140px; text-align: right;">Cước Lalamove</th>
-              <th style="width: 130px; text-align: right;">Quán trợ giá</th>
-              <th style="width: 130px; text-align: right;">Phụ phí</th>
-              <th style="width: 140px; text-align: right;">Chênh lệch</th>
-            </tr>
-          </thead>
-          <tbody id="lalamoveTableBody">
             <!-- Empty state rendered by JS -->
           </tbody>
         </table>

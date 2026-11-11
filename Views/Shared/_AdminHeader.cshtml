@@ -71,7 +71,7 @@
 
     <!-- Admin Profile with Dropdown Menu -->
     <div class="admin-profile-wrapper">
-      <div class="admin-profile" id="adminProfileBtn" title="Tài khoản quản trị" role="button" tabindex="0" aria-haspopup="menu" aria-expanded="false">
+      <div class="admin-profile" id="adminProfileBtn" onclick="toggleAdminProfileDropdown(event)" title="Tài khoản quản trị" role="button" tabindex="0" aria-haspopup="menu" aria-expanded="false">
         <div class="profile-avatar">QT</div>
         <div class="profile-info">
           <span class="profile-name">Quản trị viên</span>
@@ -148,14 +148,6 @@
         <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3M19 19H5V5H19V19M7 10H9V17H7V10M11 7H13V17H11V7M15 13H17V17H15V13Z"/>
       </svg>
       <span>Thống kê & báo cáo</span>
-    </a>
-
-    <!-- Item 6: Cấu hình giao hàng -->
-    <a class="sidebar-nav-item" data-nav="delivery" asp-controller="Admin" asp-action="Delivery" title="Cấu hình giao hàng">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-        <path d="M18 18.5C18 19.33 17.33 20 16.5 20C15.67 20 15 19.33 15 18.5C15 17.67 15.67 17 16.5 17C17.33 17 18 17.67 18 18.5M19.5 9.5L21.46 12H17V9.5H19.5M6 18.5C6 19.33 5.33 20 4.5 20C3.67 20 3 19.33 3 18.5C3 17.67 3.67 17 4.5 17C5.33 17 6 17.67 6 18.5M20 8H17V4H3C1.89 4 1 4.89 1 6V17H3C3 18.66 4.34 20 6 20C7.66 20 9 18.66 9 17H15C15 18.66 16.34 20 18 20C19.66 20 21 18.66 21 17H23V12L20 8Z"/>
-      </svg>
-      <span>Cấu hình giao hàng</span>
     </a>
   </nav>
 

@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="~/css/promotions.css" asp-append-version="true" />
 }
 
+<div hidden>@Html.AntiForgeryToken()</div>
+
 <!-- =======================================================================
      COLUMN 2: CENTRAL WORKSPACE (WARM CREAM BACKGROUND, LARGEST AREA)
      ======================================================================= -->
@@ -26,21 +28,21 @@
       <div class="kpi-pill-icon kpi-icon-total">🏷️</div>
       <div class="kpi-pill-content">
         <span class="kpi-pill-label">Tổng mã ưu đãi</span>
-        <span class="kpi-pill-val" id="statTotalPromos">6</span>
+        <span class="kpi-pill-val" id="statTotalPromos">0</span>
       </div>
     </div>
     <div class="kpi-pill">
       <div class="kpi-pill-icon kpi-icon-active">🟢</div>
       <div class="kpi-pill-content">
         <span class="kpi-pill-label">Đang áp dụng</span>
-        <span class="kpi-pill-val" id="statActivePromos">5</span>
+        <span class="kpi-pill-val" id="statActivePromos">0</span>
       </div>
     </div>
     <div class="kpi-pill">
       <div class="kpi-pill-icon kpi-icon-soldout">⏸️</div>
       <div class="kpi-pill-content">
         <span class="kpi-pill-label">Tạm dừng</span>
-        <span class="kpi-pill-val" id="statPausedPromos">1</span>
+        <span class="kpi-pill-val" id="statPausedPromos">0</span>
       </div>
     </div>
     <div class="kpi-pill">
@@ -72,7 +74,9 @@
       <option value="all">Tất cả trạng thái</option>
       <option value="ACTIVE">Đang áp dụng</option>
       <option value="PAUSED">Tạm dừng</option>
+      <option value="UPCOMING">Sắp diễn ra</option>
       <option value="EXPIRED">Hết hạn</option>
+      <option value="EXHAUSTED">Hết lượt</option>
     </select>
 
     <select id="sortPromoOrder" class="select-filter" onchange="handleFilter()">
@@ -86,6 +90,18 @@
 
   <!-- Promotions Data Table Container -->
   <div class="table-container">
+    <div class="promo-load-state" id="promoLoadingState" role="status">Đang tải danh sách khuyến mãi…</div>
+    <div class="promo-load-state promo-load-error" id="promoErrorState" role="alert" hidden>
+      <div id="promoErrorMessage">Không thể tải danh sách khuyến mãi.</div>
+      <button type="button" class="btn-secondary" onclick="loadPromotions()">Thử lại</button>
+    </div>
+    <div class="empty-state-card" id="promoEmptyState" hidden>
+      <div class="empty-state-icon">🏷️</div>
+      <div class="empty-state-title">Chưa có mã khuyến mãi</div>
+      <div class="empty-state-desc">Tạo mã đầu tiên để khách hàng có thể áp dụng khi đặt món.</div>
+      <button type="button" class="btn-save" onclick="triggerAddNewPromotion()">Tạo mã khuyến mãi</button>
+    </div>
+    <div id="promoTableContainer" hidden>
     <table class="data-table" id="promoTable">
       <thead>
         <tr>
@@ -100,21 +116,14 @@
         </tr>
       </thead>
       <tbody id="promoTableBody">
-        <!-- Dynamic Promo Rows rendered via promotions.js -->
       </tbody>
     </table>
-
-    <!-- Empty State -->
-    <div class="empty-state-card" id="promoEmptyState" style="display: none;">
-      <div class="empty-state-icon">🏷️</div>
-      <div class="empty-state-title">Chưa có mã khuyến mãi</div>
-      <div class="empty-state-desc">Không tìm thấy mã ưu đãi nào khớp với tiêu chí tìm kiếm hoặc bộ lọc hiện tại.</div>
     </div>
   </div>
 
   <!-- Summary info below table -->
   <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 12.5px; color: var(--text-secondary);">
-    <span id="promoSummaryText">Hiển thị 6 trong tổng số 6 mã khuyến mãi</span>
+    <span id="promoSummaryText"></span>
   </div>
 </main>
 
@@ -127,7 +136,7 @@
   <div class="panel-header">
     <div class="panel-header-title-group">
       <h2 id="panelPromoTitle">CHI TIẾT MÃ KHUYẾN MÃI</h2>
-      <span id="panelPromoSubtitle">Xem & hiệu chỉnh điều kiện áp dụng</span>
+      <span id="panelPromoSubtitle">Chọn một mã trong bảng hoặc tạo mã mới.</span>
     </div>
     <button type="button" class="btn-create-dish" id="btnCreatePromo" onclick="triggerAddNewPromotion()">
       <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
@@ -144,7 +153,7 @@
       <!-- Top Badge Card: Code & Status Indicator -->
       <div class="promo-overview-card">
         <div class="coupon-code-pill" id="panelPromoCodeBadge" style="font-size: 15px; padding: 6px 14px;">
-          #TRUA15
+          Chưa chọn mã
         </div>
         <div class="pill-radio-group">
           <label class="pill-radio-label active-success" id="labelPromoActive">
@@ -159,20 +168,15 @@
       </div>
 
       <!-- Section 1: Basic Information -->
-      <div class="form-row">
-        <div class="form-group flex-1">
-          <label for="formPromoId">Mã hệ thống</label>
-          <input type="text" id="formPromoId" class="form-control" readonly value="PROMO-001">
-        </div>
-        <div class="form-group flex-2">
-          <label for="formPromoCode">Mã nhập voucher <span class="required">*</span></label>
-          <input type="text" id="formPromoCode" class="form-control" placeholder="VD: TRUA15, FREESHIP" style="text-transform: uppercase; font-family: 'Courier New', monospace; font-weight: 800;" required>
-        </div>
+      <div class="form-group">
+        <label for="formPromoCode">Mã voucher <span class="required">*</span></label>
+        <input type="text" id="formPromoCode" class="form-control" placeholder="VD: TRUA15, FREESHIP" maxlength="30" autocomplete="off" style="text-transform: uppercase; font-family: 'Courier New', monospace; font-weight: 800;" required>
+        <span class="field-hint" id="promoCodeHint" hidden>Mã voucher không thể đổi sau khi tạo để bảo toàn liên kết với đơn hàng.</span>
       </div>
 
       <div class="form-group">
         <label for="formPromoName">Tên chiến dịch ưu đãi <span class="required">*</span></label>
-        <input type="text" id="formPromoName" class="form-control" placeholder="VD: Giảm 15% cơm trưa văn phòng đầu tuần" required>
+        <input type="text" id="formPromoName" class="form-control" maxlength="150" placeholder="VD: Giảm 15% cơm trưa văn phòng đầu tuần" required>
       </div>
 
       <!-- Section 2: Discount Type & Values -->
@@ -189,14 +193,14 @@
         <div class="form-group flex-1" id="formDiscountValueGroup">
           <label for="formDiscountValue" id="formDiscountValLabel">Phần trăm giảm (%) <span class="required">*</span></label>
           <div class="price-input-wrapper">
-            <input type="number" id="formDiscountValue" class="form-control" placeholder="15" min="1" required>
+            <input type="number" id="formDiscountValue" class="form-control" placeholder="15" min="1" step="1" required>
             <span class="price-currency-tag" id="formDiscountValSuffix">%</span>
           </div>
         </div>
         <div class="form-group flex-1" id="formMaxDiscountGroup">
           <label for="formMaxDiscount">Giảm tối đa (VNĐ)</label>
           <div class="price-input-wrapper">
-            <input type="number" id="formMaxDiscount" class="form-control" placeholder="25000" min="0" step="1000">
+            <input type="number" id="formMaxDiscount" class="form-control" placeholder="25000" min="1" step="1">
             <span class="price-currency-tag">VNĐ</span>
           </div>
         </div>
@@ -206,7 +210,7 @@
       <div class="form-group">
         <label for="formMinOrder">Giá trị đơn hàng tối thiểu (VNĐ)</label>
         <div class="price-input-wrapper">
-          <input type="number" id="formMinOrder" class="form-control" placeholder="80000" min="0" step="5000">
+          <input type="number" id="formMinOrder" class="form-control" placeholder="80000" min="0" step="1">
           <span class="price-currency-tag">VNĐ</span>
         </div>
         <span class="field-hint">Đơn hàng phải đạt giá trị này trở lên mới được dùng mã.</span>
@@ -215,28 +219,29 @@
       <div class="form-row">
         <div class="form-group flex-1">
           <label for="formStartDate">Bắt đầu áp dụng</label>
-          <input type="datetime-local" id="formStartDate" class="form-control">
+          <input type="datetime-local" id="formStartDate" class="form-control" required>
         </div>
         <div class="form-group flex-1">
           <label for="formEndDate">Hết hạn áp dụng</label>
-          <input type="datetime-local" id="formEndDate" class="form-control">
+          <input type="datetime-local" id="formEndDate" class="form-control" required>
         </div>
       </div>
 
       <div class="form-row">
         <div class="form-group flex-1">
           <label for="formMaxUsage">Tổng lượt phát hành</label>
-          <input type="number" id="formMaxUsage" class="form-control" placeholder="500" min="1">
+          <input type="number" id="formMaxUsage" class="form-control" placeholder="Không giới hạn" min="1" step="1">
         </div>
         <div class="form-group flex-1">
           <label for="formPerCustomerLimit">Lượt / mỗi khách</label>
-          <input type="number" id="formPerCustomerLimit" class="form-control" placeholder="1" min="1" value="1">
+          <input type="number" id="formPerCustomerLimit" class="form-control" placeholder="Không giới hạn" min="1" step="1">
         </div>
       </div>
+      <span class="field-hint">Để trống giới hạn lượt sử dụng nếu mã không bị giới hạn.</span>
 
       <div class="form-group">
         <label for="formPromoDesc">Ghi chú & Điều kiện chi tiết</label>
-        <textarea id="formPromoDesc" class="form-control" rows="2" placeholder="VD: Áp dụng từ 10:30 đến 13:30 các ngày trong tuần..."></textarea>
+        <textarea id="formPromoDesc" class="form-control" rows="2" maxlength="500" placeholder="VD: Áp dụng từ 10:30 đến 13:30 các ngày trong tuần..."></textarea>
       </div>
 
       <!-- Interactive discount validator widget -->
@@ -270,14 +275,14 @@
 
   <!-- Panel Footer Actions -->
   <div class="panel-footer" style="flex-direction: column; gap: 8px;">
-    <button type="button" class="btn-save" id="btnSavePromo" style="width: 100%;" onclick="document.getElementById('promoForm').requestSubmit()">
+    <button type="button" class="btn-save" id="btnSavePromo" style="width: 100%;" onclick="document.getElementById('promoForm').requestSubmit()" disabled>
       <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
         <path d="M15 9H5V5H15M12 19A3 3 0 0 1 9 16A3 3 0 0 1 12 13A3 3 0 0 1 15 16A3 3 0 0 1 12 19M17 3H5C3.89 3 3 3.9 3 5V19A2 2 0 0 0 5 21H19A2 2 0 0 0 21 19V7L17 3Z"/>
       </svg>
       <span id="btnSavePromoText">Lưu khuyến mãi</span>
     </button>
 
-    <div id="existingPromoActions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%;">
+    <div id="existingPromoActions" style="display: none; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%;">
       <button type="button" class="btn-secondary" style="height: 40px; justify-content: center; font-weight: 700; font-size: 13px;" onclick="quickToggleCurrentPromo()">
         <span id="btnToggleStatusText">Tắt mã</span>
       </button>
@@ -289,7 +294,7 @@
       </button>
     </div>
 
-    <button type="button" class="btn-secondary" id="btnCancelPromoCreate" style="display: none; width: 100%; height: 40px; justify-content: center; font-weight: 700; font-size: 13px;" onclick="cancelPromoCreate()">
+    <button type="button" class="btn-secondary" id="btnCancelPromoCreate" style="display: none; width: 100%; height: 40px; justify-content: center; font-weight: 700; font-size: 13px;" onclick="cancelPromoCreate()" disabled>
       Hủy tạo mới
     </button>
   </div>
@@ -310,7 +315,7 @@
             Bạn có chắc chắn muốn xóa mã khuyến mãi?
           </div>
           <p style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; margin: 0;">
-            Khách hàng sẽ không thể nhập mã này khi đặt cơm nữa. Các đơn hàng cũ đã sử dụng mã này vẫn được bảo lưu số tiền thực thu chính xác.
+            Mã đã được dùng trong đơn hàng sẽ không thể xóa để bảo toàn lịch sử; hãy tạm tắt mã trong trường hợp đó.
           </p>
         </div>
       </div>
@@ -323,5 +328,5 @@
 </div>
 
 @section Scripts {
-    <script src="~/js/promotions.js" asp-append-version="true"></script>
+    <script src="~/js/promotions-management.js" asp-append-version="true"></script>
 }

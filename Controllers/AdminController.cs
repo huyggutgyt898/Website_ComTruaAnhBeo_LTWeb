@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 
 namespace ComTruaAnhBeo.Controllers;
@@ -198,6 +199,47 @@ public sealed class AdminController : Controller
                 ? null
                 : GetDeliveryStatusLabel(order.VanChuyen.TrangThai)
         });
+    }
+
+    [HttpPost("api/orders/{orderId:int}/cancel")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CancelOrder(
+        int orderId,
+        [FromBody] CancelOrderRequest? request,
+        CancellationToken cancellationToken)
+    {
+        var reason = request?.Reason?.Trim();
+        var details = request?.Details?.Trim();
+        if (string.IsNullOrWhiteSpace(reason))
+        {
+            return BadRequest(new { message = "Vui lòng chọn lý do hủy đơn hàng." });
+        }
+
+        var cancellationReason = string.IsNullOrWhiteSpace(details)
+            ? reason
+            : $"{reason}: {details}";
+        if (cancellationReason.Length > 255)
+        {
+            return BadRequest(new { message = "Lý do hủy đơn không được vượt quá 255 ký tự." });
+        }
+
+        var updatedCount = await _db.DonHangs
+            .Where(order => order.MaDon == orderId && order.TrangThai == "ChoXacNhan")
+            .ExecuteUpdateAsync(
+                setters => setters
+                    .SetProperty(order => order.TrangThai, "DaHuy")
+                    .SetProperty(order => order.LyDoHuy, cancellationReason),
+                cancellationToken);
+        if (updatedCount == 0)
+        {
+            var orderExists = await _db.DonHangs
+                .AnyAsync(order => order.MaDon == orderId, cancellationToken);
+            return orderExists
+                ? Conflict(new { message = "Chỉ có thể hủy đơn trước khi quán xác nhận. Vui lòng tải lại danh sách." })
+                : NotFound(new { message = "Không tìm thấy đơn hàng." });
+        }
+
+        return Ok(new { status = "CANCELED" });
     }
 
     [HttpPost("api/orders/{orderId:int}/delivery")]
@@ -412,6 +454,256 @@ public sealed class AdminController : Controller
         return View();
     }
 
+    [HttpGet("api/promotions")]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public async Task<IActionResult> PromotionData(CancellationToken cancellationToken)
+    {
+        var promotions = await _db.KhuyenMais
+            .AsNoTracking()
+            .OrderBy(promotion => promotion.MaCode)
+            .Select(promotion => new
+            {
+                promotion.MaCode,
+                promotion.TenChuongTrinh,
+                promotion.GhiChu,
+                promotion.IsActive,
+                promotion.ApDungCho,
+                promotion.LoaiGiam,
+                promotion.GiaTri,
+                promotion.GiamToiDa,
+                promotion.DonToiThieu,
+                promotion.NgayBatDau,
+                promotion.NgayKetThuc,
+                promotion.TongLuotToiDa,
+                promotion.LuotToiDaMoiSdt,
+                UsageCount = _db.DonHangs.Count(order =>
+                    order.MaCode == promotion.MaCode &&
+                    order.TrangThai != "Huy" &&
+                    order.TrangThai != "DaHuy"),
+                OrderCount = _db.DonHangs.Count(order => order.MaCode == promotion.MaCode)
+            })
+            .ToListAsync(cancellationToken);
+
+        return Ok(promotions.Select(promotion => new
+        {
+            id = promotion.MaCode,
+            code = promotion.MaCode,
+            name = promotion.TenChuongTrinh,
+            description = promotion.GhiChu,
+            discountType = MapPromotionType(promotion.LoaiGiam, promotion.ApDungCho),
+            discountValue = promotion.GiaTri,
+            maxDiscount = promotion.GiamToiDa,
+            minOrderValue = promotion.DonToiThieu,
+            startDate = promotion.NgayBatDau,
+            endDate = promotion.NgayKetThuc,
+            usageCount = promotion.UsageCount,
+            orderCount = promotion.OrderCount,
+            maxUsage = promotion.TongLuotToiDa,
+            perCustomerLimit = promotion.LuotToiDaMoiSdt,
+            isActive = promotion.IsActive
+        }));
+    }
+
+    [HttpPost("api/promotions")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreatePromotion(
+        [FromBody] PromotionUpsertRequest? request,
+        CancellationToken cancellationToken)
+    {
+        var validationError = ValidatePromotionRequest(request);
+        if (validationError is not null)
+        {
+            return BadRequest(new { message = validationError });
+        }
+
+        var code = request!.Code.Trim().ToUpperInvariant();
+        if (await _db.KhuyenMais.AnyAsync(promotion => promotion.MaCode == code, cancellationToken))
+        {
+            return Conflict(new { message = $"Mã voucher {code} đã tồn tại." });
+        }
+
+        var promotion = new KhuyenMai
+        {
+            MaCode = code,
+            TenChuongTrinh = request.Name.Trim(),
+            GhiChu = string.IsNullOrWhiteSpace(request.Description) ? null : request.Description.Trim(),
+            IsActive = request.IsActive,
+            LoaiGiam = ToStoredPromotionType(request.DiscountType),
+            GiaTri = request.DiscountValue,
+            GiamToiDa = request.DiscountType == "PERCENT" ? request.MaxDiscount : null,
+            DonToiThieu = request.MinOrderValue,
+            ApDungCho = request.DiscountType == "SHIPPING" ? "PhiShip" : "TienMon",
+            NgayBatDau = request.StartDate!.Value,
+            NgayKetThuc = request.EndDate!.Value,
+            TongLuotToiDa = request.MaxUsage,
+            LuotToiDaMoiSdt = request.PerCustomerLimit
+        };
+
+        _db.KhuyenMais.Add(promotion);
+        await _db.SaveChangesAsync(cancellationToken);
+
+        return StatusCode(StatusCodes.Status201Created, new { code });
+    }
+
+    [HttpPut("api/promotions/{code}")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdatePromotion(
+        string code,
+        [FromBody] PromotionUpsertRequest? request,
+        CancellationToken cancellationToken)
+    {
+        var validationError = ValidatePromotionRequest(request);
+        if (validationError is not null)
+        {
+            return BadRequest(new { message = validationError });
+        }
+
+        var normalizedCode = code.Trim().ToUpperInvariant();
+        if (!string.Equals(request!.Code.Trim(), normalizedCode, StringComparison.OrdinalIgnoreCase))
+        {
+            return BadRequest(new { message = "Không thể đổi mã voucher sau khi tạo." });
+        }
+
+        var promotion = await _db.KhuyenMais
+            .FirstOrDefaultAsync(item => item.MaCode == normalizedCode, cancellationToken);
+        if (promotion is null)
+        {
+            return NotFound(new { message = "Không tìm thấy mã khuyến mãi." });
+        }
+
+        promotion.TenChuongTrinh = request.Name.Trim();
+        promotion.GhiChu = string.IsNullOrWhiteSpace(request.Description) ? null : request.Description.Trim();
+        promotion.IsActive = request.IsActive;
+        promotion.LoaiGiam = ToStoredPromotionType(request.DiscountType);
+        promotion.GiaTri = request.DiscountValue;
+        promotion.GiamToiDa = request.DiscountType == "PERCENT" ? request.MaxDiscount : null;
+        promotion.DonToiThieu = request.MinOrderValue;
+        promotion.ApDungCho = request.DiscountType == "SHIPPING" ? "PhiShip" : "TienMon";
+        promotion.NgayBatDau = request.StartDate!.Value;
+        promotion.NgayKetThuc = request.EndDate!.Value;
+        promotion.TongLuotToiDa = request.MaxUsage;
+        promotion.LuotToiDaMoiSdt = request.PerCustomerLimit;
+
+        await _db.SaveChangesAsync(cancellationToken);
+        return Ok(new { code = normalizedCode });
+    }
+
+    [HttpPut("api/promotions/{code}/status")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SetPromotionStatus(
+        string code,
+        [FromBody] PromotionStatusRequest? request,
+        CancellationToken cancellationToken)
+    {
+        if (request?.IsActive is null)
+        {
+            return BadRequest(new { message = "Trạng thái khuyến mãi không hợp lệ." });
+        }
+
+        var normalizedCode = code.Trim().ToUpperInvariant();
+        var promotion = await _db.KhuyenMais
+            .FirstOrDefaultAsync(item => item.MaCode == normalizedCode, cancellationToken);
+        if (promotion is null)
+        {
+            return NotFound(new { message = "Không tìm thấy mã khuyến mãi." });
+        }
+
+        promotion.IsActive = request.IsActive.Value;
+        await _db.SaveChangesAsync(cancellationToken);
+        return Ok(new { code = normalizedCode, isActive = promotion.IsActive });
+    }
+
+    [HttpDelete("api/promotions/{code}")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeletePromotion(string code, CancellationToken cancellationToken)
+    {
+        var normalizedCode = code.Trim().ToUpperInvariant();
+        var promotion = await _db.KhuyenMais
+            .FirstOrDefaultAsync(item => item.MaCode == normalizedCode, cancellationToken);
+        if (promotion is null)
+        {
+            return NotFound(new { message = "Không tìm thấy mã khuyến mãi." });
+        }
+
+        if (await _db.DonHangs.AnyAsync(order => order.MaCode == normalizedCode, cancellationToken))
+        {
+            return Conflict(new
+            {
+                message = "Mã này đã được dùng trong đơn hàng nên không thể xóa. Hãy tạm tắt mã để giữ lịch sử đơn hàng."
+            });
+        }
+
+        _db.KhuyenMais.Remove(promotion);
+        await _db.SaveChangesAsync(cancellationToken);
+        return NoContent();
+    }
+
+    private string? ValidatePromotionRequest(PromotionUpsertRequest? request)
+    {
+        if (request is null)
+        {
+            return "Dữ liệu khuyến mãi không hợp lệ.";
+        }
+
+        if (!TryValidateModel(request))
+        {
+            return ModelState.Values
+                .SelectMany(value => value.Errors)
+                .Select(error => error.ErrorMessage)
+                .FirstOrDefault(message => !string.IsNullOrWhiteSpace(message))
+                ?? "Vui lòng kiểm tra lại thông tin khuyến mãi.";
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Name))
+        {
+            return "Vui lòng nhập tên chương trình ưu đãi.";
+        }
+
+        if (request.DiscountValue != decimal.Truncate(request.DiscountValue) ||
+            request.MinOrderValue != decimal.Truncate(request.MinOrderValue) ||
+            (request.MaxDiscount is decimal maxDiscountValue &&
+                maxDiscountValue != decimal.Truncate(maxDiscountValue)))
+        {
+            return "Các mức tiền và phần trăm phải là số nguyên.";
+        }
+
+        if (request.DiscountType == "PERCENT" &&
+            (request.DiscountValue > 100 || request.MaxDiscount is null or <= 0))
+        {
+            return "Mức giảm theo phần trăm phải từ 1% đến 100% và có mức giảm tối đa hợp lệ.";
+        }
+
+        if (request.StartDate >= request.EndDate)
+        {
+            return "Thời điểm kết thúc phải sau thời điểm bắt đầu.";
+        }
+
+        return null;
+    }
+
+    private static string ToStoredPromotionType(string type) => type switch
+    {
+        "PERCENT" => "PERCENT",
+        "FIXED_AMOUNT" => "FIXED",
+        "SHIPPING" => "SHIPPING",
+        _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unsupported promotion type.")
+    };
+
+    private static string MapPromotionType(string type, string appliesTo)
+    {
+        if (type.Trim().Equals("SHIPPING", StringComparison.OrdinalIgnoreCase) ||
+            appliesTo.Trim().Equals("PHISHIP", StringComparison.OrdinalIgnoreCase) ||
+            appliesTo.Trim().Equals("PHIGIAO", StringComparison.OrdinalIgnoreCase))
+        {
+            return "SHIPPING";
+        }
+
+        return type.Trim().Equals("PERCENT", StringComparison.OrdinalIgnoreCase) ||
+            type.Trim().Equals("PHANTRAM", StringComparison.OrdinalIgnoreCase)
+            ? "PERCENT"
+            : "FIXED_AMOUNT";
+    }
+
     [HttpGet("accounts")]
     public IActionResult Accounts()
     {
@@ -553,19 +845,24 @@ public sealed class AdminController : Controller
                 "Mã chuyến Lalamove trả về vượt quá giới hạn lưu trữ.");
         }
 
-        var delivery = new VanChuyen
+        var delivery = order.VanChuyen;
+        if (delivery is null)
         {
-            MaDon = order.MaDon,
-            LalamoveOrderId = dispatch.OrderId,
-            PhiThucTe = 0,
-            LinkTheoDoi = dispatch.TrackingUrl ?? "",
-            TenTaiXe = dispatch.DriverName ?? "",
-            SdttaiXe = NormalizeDriverPhone(dispatch.DriverPhone),
-            TrangThai = "TimTaiXe"
-        };
+            delivery = new VanChuyen
+            {
+                MaDon = order.MaDon,
+                PhiThucTe = 0
+            };
+            _db.VanChuyens.Add(delivery);
+            order.VanChuyen = delivery;
+        }
+
+        delivery.LalamoveOrderId = dispatch.OrderId;
+        delivery.LinkTheoDoi = dispatch.TrackingUrl ?? "";
+        delivery.TenTaiXe = dispatch.DriverName ?? "";
+        delivery.SdttaiXe = NormalizeDriverPhone(dispatch.DriverPhone);
+        delivery.TrangThai = "TimTaiXe";
         ApplyDeliveryStatus(order, delivery, dispatch.Status);
-        _db.VanChuyens.Add(delivery);
-        order.VanChuyen = delivery;
         try
         {
             await _db.SaveChangesAsync(cancellationToken);
@@ -683,4 +980,50 @@ public sealed class AdminController : Controller
         "COD" => "Tiền mặt khi nhận (COD)",
         _ => string.IsNullOrWhiteSpace(paymentMethod) ? "Chưa xác định" : paymentMethod
     };
+}
+
+public sealed record CancelOrderRequest(string? Reason, string? Details);
+
+public sealed class PromotionUpsertRequest
+{
+    [Required, StringLength(30), RegularExpression(@"^[A-Za-z0-9_-]+$")]
+    public string Code { get; init; } = "";
+
+    [Required, StringLength(150)]
+    public string Name { get; init; } = "";
+
+    [StringLength(500)]
+    public string? Description { get; init; }
+
+    [Required, RegularExpression("^(PERCENT|FIXED_AMOUNT|SHIPPING)$")]
+    public string DiscountType { get; init; } = "";
+
+    [Range(typeof(decimal), "1", "999999999999")]
+    public decimal DiscountValue { get; init; }
+
+    [Range(typeof(decimal), "1", "999999999999")]
+    public decimal? MaxDiscount { get; init; }
+
+    [Range(typeof(decimal), "0", "999999999999")]
+    public decimal MinOrderValue { get; init; }
+
+    [Required]
+    public DateTime? StartDate { get; init; }
+
+    [Required]
+    public DateTime? EndDate { get; init; }
+
+    [Range(1, int.MaxValue)]
+    public int? MaxUsage { get; init; }
+
+    [Range(1, int.MaxValue)]
+    public int? PerCustomerLimit { get; init; }
+
+    public bool IsActive { get; init; }
+}
+
+public sealed class PromotionStatusRequest
+{
+    [Required]
+    public bool? IsActive { get; init; }
 }

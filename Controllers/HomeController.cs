@@ -391,6 +391,11 @@ namespace ComTruaAnhBeo.Controllers
                 return PromotionDiscountResult.Failed("Mã giảm giá không tồn tại.");
             }
 
+            if (!promotion.IsActive)
+            {
+                return PromotionDiscountResult.Failed("Mã giảm giá hiện đang tạm tắt.");
+            }
+
             var now = DateTime.Now;
             if (now < promotion.NgayBatDau || now > promotion.NgayKetThuc)
             {
@@ -407,7 +412,11 @@ namespace ComTruaAnhBeo.Controllers
             {
                 var usageCount = await _db.DonHangs
                     .AsNoTracking()
-                    .CountAsync(order => order.MaCode == promotion.MaCode && order.TrangThai != "Huy", cancellationToken);
+                    .CountAsync(
+                        order => order.MaCode == promotion.MaCode &&
+                            order.TrangThai != "Huy" &&
+                            order.TrangThai != "DaHuy",
+                        cancellationToken);
                 if (usageCount >= maxUses)
                 {
                     return PromotionDiscountResult.Failed("Mã giảm giá đã hết lượt sử dụng.");
@@ -421,7 +430,8 @@ namespace ComTruaAnhBeo.Controllers
                     .CountAsync(
                         order => order.MaCode == promotion.MaCode &&
                             order.Sdt == phone &&
-                            order.TrangThai != "Huy",
+                            order.TrangThai != "Huy" &&
+                            order.TrangThai != "DaHuy",
                         cancellationToken);
                 if (phoneUsageCount >= maxUsesPerPhone)
                 {

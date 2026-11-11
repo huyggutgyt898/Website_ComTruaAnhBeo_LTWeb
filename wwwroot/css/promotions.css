@@ -297,6 +297,33 @@
 }
 
 /* Status Badges */
+.badge-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.badge-status .status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background: currentColor;
+}
+
+.badge-available {
+  background: var(--success-bg);
+  color: var(--success);
+  border-color: rgba(22, 128, 58, 0.2);
+}
+
 .badge-status-inactive {
   background: #FFF8E1;
   color: #F57F17;
@@ -314,9 +341,6 @@
   color: #616161;
   border: 1px solid #DEDEDE;
 }
-<<<<<<< HEAD
-=======
-
 /* ==========================================================================
    SAFETY FALLBACKS & MODALS
    ========================================================================== */
@@ -347,4 +371,135 @@
 .admin-modal-backdrop.active {
   display: flex !important;
 }
->>>>>>> 645e0e89fd537b30660a43f39ecf022914d59563
+
+.promo-load-state {
+  display: flex;
+  min-height: 180px;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.promo-load-state[hidden],
+#promoTableContainer[hidden],
+.empty-state-card[hidden] {
+  display: none !important;
+}
+
+.promo-load-error {
+  flex-direction: column;
+  color: var(--danger);
+}
+
+#promoEmptyState {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  padding: 40px 24px;
+  text-align: center;
+}
+
+#promoEmptyState .btn-save {
+  width: auto;
+  padding: 0 18px;
+}
+
+#promoEmptyState .empty-state-icon {
+  font-size: 32px;
+}
+
+#promoEmptyState .empty-state-title {
+  color: var(--brand-burgundy);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+#promoEmptyState .empty-state-desc {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+#promoTable tbody tr.selected-row {
+  background: #fff8e6;
+  box-shadow: inset 3px 0 var(--brand-burgundy);
+}
+
+.promo-name {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--brand-burgundy);
+}
+
+.promo-secondary-text {
+  margin-top: 4px;
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+.promo-status-cell {
+  text-align: center;
+}
+
+.promo-actions-cell {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.action-icon-btn {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--brand-burgundy);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.action-icon-btn:hover {
+  border-color: var(--brand-burgundy);
+  background: var(--brand-burgundy);
+  color: var(--white);
+}
+
+.action-icon-btn.danger:hover {
+  border-color: var(--danger);
+  background: var(--danger);
+}
+
+.action-icon-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.action-icon-btn:disabled:hover {
+  border-color: var(--border-light);
+  background: var(--white);
+  color: var(--brand-burgundy);
+}
+
+.action-icon-btn svg {
+  width: 15px;
+  height: 15px;
+  fill: currentColor;
+}
+
+.promo-no-results {
+  padding: 40px !important;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+#formPromoCode:disabled {
+  background: #f3efe9;
+  color: var(--text-secondary);
+  cursor: not-allowed;
+}

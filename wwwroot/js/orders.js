@@ -676,8 +676,35 @@ async function executeBulkAction(actionType) {
   } else if (actionType === "PRINT") {
     showToast("Chức năng in phiếu hàng loạt chưa được hỗ trợ.", "warning");
   } else if (actionType === "CANCEL") {
-    if (confirm(`Bạn có chắc chắn muốn hủy hàng loạt ${count} đơn hàng đã chọn?`)) {
-      showToast(`Hủy ${count} đơn hàng chưa được kết nối với cơ sở dữ liệu; không đơn nào bị thay đổi.`, "warning");
+    const ordersToCancel = orders.filter(order => checkedOrderIds.has(order.id) && order.status === "PENDING");
+    if (ordersToCancel.length === 0) {
+      showToast("Chỉ có thể hủy các đơn đang chờ xác nhận.", "warning");
+      return;
+    }
+
+    if (!confirm(`Bạn có chắc chắn muốn hủy ${ordersToCancel.length} đơn đang chờ xác nhận?`)) {
+      return;
+    }
+
+    let canceledCount = 0;
+    const cancellationErrors = [];
+    for (const order of ordersToCancel) {
+      try {
+        await cancelOrderRequest(order.id, "Quản trị viên hủy hàng loạt", "");
+        canceledCount++;
+      } catch (error) {
+        cancellationErrors.push(error instanceof Error ? error.message : "Lỗi không xác định.");
+      }
+    }
+
+    checkedOrderIds.clear();
+    await loadOrders(false);
+    if (canceledCount === ordersToCancel.length) {
+      showToast(`Đã hủy ${canceledCount} đơn hàng.`, "success");
+    } else {
+      showToast(
+        `Đã hủy ${canceledCount}/${ordersToCancel.length} đơn. ${cancellationErrors[0] || "Hãy tải lại danh sách để kiểm tra các đơn còn lại."}`,
+        "warning");
     }
   }
 }
@@ -934,9 +961,6 @@ function renderContextualActions(order) {
       <button class="btn-order-action btn-secondary-action" onclick="openPrintTicketModal()">
         🖨️ In phiếu bếp
       </button>
-      <button class="btn-order-action btn-danger-outline" onclick="openCancelOrderModal()">
-        ✕ Hủy đơn hàng
-      </button>
     `;
   } else if (order.status === "PREPARING") {
     buttonsHtml += `
@@ -950,18 +974,12 @@ function renderContextualActions(order) {
       <button class="btn-order-action btn-secondary-action" onclick="openPrintTicketModal()">
         🖨️ In lại phiếu bếp
       </button>
-      <button class="btn-order-action btn-danger-outline" onclick="openCancelOrderModal()">
-        ✕ Hủy đơn hàng
-      </button>
     `;
   } else if (order.status === "FINDING_DRIVER") {
     buttonsHtml += `
       <p class="payment-confirmation-required" role="status">
         Đang tìm tài xế Lalamove. Trạng thái sẽ tự cập nhật theo hệ thống tài xế.
       </p>
-      <button class="btn-order-action btn-danger-outline" onclick="openCancelOrderModal()">
-        ✕ Hủy đơn hàng
-      </button>
     `;
   } else if (order.status === "DRIVER_ASSIGNED" || order.status === "DELIVERING") {
     buttonsHtml += `
@@ -1140,6 +1158,24 @@ function getAntiforgeryToken() {
   return token;
 }
 
+async function cancelOrderRequest(orderId, reason, details) {
+  const response = await fetch(`/admin/api/orders/${encodeURIComponent(orderId)}/cancel`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      RequestVerificationToken: getAntiforgeryToken()
+    },
+    body: JSON.stringify({ reason, details }),
+    cache: "no-store"
+  });
+  const result = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw new Error(result?.message || `Không thể hủy đơn hàng (HTTP ${response.status}).`);
+  }
+  return result;
+}
+
 /* 8. MODALS (CANCEL ORDER & KITCHEN TICKET PRINT) */
 function openCancelOrderModal() {
   if (!selectedOrderId) return;
@@ -1147,6 +1183,11 @@ function openCancelOrderModal() {
   if (!modal) return;
 
   const order = orders.find(item => item.id === selectedOrderId);
+  if (!order || order.status !== "PENDING") {
+    showToast("Chỉ có thể hủy đơn trước khi quán xác nhận.", "warning");
+    return;
+  }
+
   document.getElementById("cancelOrderIdTarget").textContent = `#${order?.trackingCode || selectedOrderId}`;
   document.getElementById("cancelReasonSelect").value = "";
   document.getElementById("cancelReasonDetails").value = "";
@@ -1159,7 +1200,7 @@ function closeCancelOrderModal() {
   if (modal) modal.classList.remove("active");
 }
 
-function submitCancelOrder() {
+async function submitCancelOrder() {
   const reasonSelect = document.getElementById("cancelReasonSelect");
   const reasonDetails = document.getElementById("cancelReasonDetails");
 
@@ -1173,7 +1214,27 @@ function submitCancelOrder() {
   const order = orders.find(o => o.id === selectedOrderId);
   if (!order) return;
 
-  showToast(`Hủy đơn #${order.trackingCode || order.id} chưa được kết nối với cơ sở dữ liệu; đơn hàng chưa bị thay đổi.`, "warning");
+  if (order.status !== "PENDING") {
+    closeCancelOrderModal();
+    showToast("Chỉ có thể hủy đơn trước khi quán xác nhận.", "warning");
+    await loadOrders(false);
+    return;
+  }
+
+  const submitButton = document.querySelector("#cancelOrderModal .admin-modal-footer .bulk-btn-cancel");
+  if (submitButton) submitButton.disabled = true;
+
+  try {
+    await cancelOrderRequest(order.id, reasonSelect.value, reasonDetails.value);
+    closeCancelOrderModal();
+    await loadOrders(false);
+    showToast(`Đã hủy đơn #${order.trackingCode || order.id}.`, "success");
+  } catch (error) {
+    showToast(error instanceof Error ? error.message : "Không thể hủy đơn hàng.", "danger");
+    await loadOrders(false);
+  } finally {
+    if (submitButton) submitButton.disabled = false;
+  }
 }
 
 // Print Kitchen Ticket Modal

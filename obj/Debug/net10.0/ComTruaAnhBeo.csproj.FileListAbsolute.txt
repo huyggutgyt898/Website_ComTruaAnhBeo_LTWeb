@@ -162,14 +162,12 @@ D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\lv
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\al2gpypzg0-{0}-vno4k61jvy-vno4k61jvy.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\vmkjom0rlv-{0}-rrn5qdxdws-rrn5qdxdws.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\6s385t1rky-{0}-xj9r3qvjfu-xj9r3qvjfu.gz
-D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\rwfj4q0wj4-{0}-taiihpo8ey-taiihpo8ey.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\4y4sbug701-{0}-b9sayid5wm-b9sayid5wm.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\fni68rqyfp-{0}-2cfw7fjuat-2cfw7fjuat.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\vcfdyi48iz-{0}-61n19gt1b8-61n19gt1b8.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\sdq4hy4o41-{0}-mjpeuguiwk-mjpeuguiwk.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\j85yiowp77-{0}-ue42l13n71-ue42l13n71.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\oowzqmoojz-{0}-nkbj9n9zwu-nkbj9n9zwu.gz
-D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\h7cnx0ojbb-{0}-znqq73u7h7-znqq73u7h7.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\me7m76g5bk-{0}-xtxxf3hu2r-xtxxf3hu2r.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\b5466zazxr-{0}-ftv2fid77z-ftv2fid77z.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\3lk1c416tp-{0}-bqjiyaj88i-bqjiyaj88i.gz
@@ -515,7 +513,6 @@ D:\Subject\Web development\Project\ComTruaAnhBeo\bin\Debug\net10.0\MimeKit.dll
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\3npk5z6x7d-{0}-zk5xhuw7wp-zk5xhuw7wp.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\sgbxgy3bbn-{0}-7rx7usvlxt-7rx7usvlxt.gz
 D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\45g7q2e8jt-{0}-1701w9i71o-1701w9i71o.gz
-D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\udf4nsjn5i-{0}-a9w5xdokee-a9w5xdokee.gz
 C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-502-validation\appsettings.Development.json
 C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-502-validation\appsettings.json
 C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-502-validation\efpt.config.json
@@ -536,4 +533,26 @@ C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-lalamove-check\ComTruaAnhBeo.deps
 C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-lalamove-check\ComTruaAnhBeo.runtimeconfig.json
 C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-lalamove-check\ComTruaAnhBeo.dll
 C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-lalamove-check\ComTruaAnhBeo.pdb
-D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\staticwebassets.upToDateCheck.txt
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\udf4nsjn5i-{0}-vuyseb9bl4-vuyseb9bl4.gz
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-promo-build\appsettings.Development.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-promo-build\appsettings.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-promo-build\efpt.config.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-promo-build\ComTruaAnhBeo.staticwebassets.runtime.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-promo-build\ComTruaAnhBeo.staticwebassets.endpoints.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-promo-build\ComTruaAnhBeo.exe
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-promo-build\ComTruaAnhBeo.deps.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-promo-build\ComTruaAnhBeo.runtimeconfig.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-promo-build\ComTruaAnhBeo.dll
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-promo-build\ComTruaAnhBeo.pdb
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-promo-build-final\appsettings.Development.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-promo-build-final\appsettings.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-promo-build-final\efpt.config.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-promo-build-final\ComTruaAnhBeo.staticwebassets.runtime.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-promo-build-final\ComTruaAnhBeo.staticwebassets.endpoints.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-promo-build-final\ComTruaAnhBeo.exe
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-promo-build-final\ComTruaAnhBeo.deps.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-promo-build-final\ComTruaAnhBeo.runtimeconfig.json
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-promo-build-final\ComTruaAnhBeo.dll
+C:\Users\ASUS\AppData\Local\Temp\ComTruaAnhBeo-promo-build-final\ComTruaAnhBeo.pdb
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\rwfj4q0wj4-{0}-sgp4892muh-sgp4892muh.gz
+D:\Subject\Web development\Project\ComTruaAnhBeo\obj\Debug\net10.0\compressed\ij3wrjtnkh-{0}-625y6aatmi-625y6aatmi.gz

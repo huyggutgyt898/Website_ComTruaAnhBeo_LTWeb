@@ -1,0 +1,26 @@
+-- Run once against the application's SQL Server database before deploying.
+SET XACT_ABORT ON;
+
+IF OBJECT_ID(N'dbo.KHUYEN_MAI', N'U') IS NULL
+    THROW 50000, 'Table dbo.KHUYEN_MAI was not found.', 1;
+
+BEGIN TRANSACTION;
+
+IF COL_LENGTH(N'dbo.KHUYEN_MAI', N'TenChuongTrinh') IS NULL
+BEGIN
+    ALTER TABLE dbo.KHUYEN_MAI ADD TenChuongTrinh NVARCHAR(150) NULL;
+    UPDATE dbo.KHUYEN_MAI
+    SET TenChuongTrinh = MaCode
+    WHERE TenChuongTrinh IS NULL;
+    ALTER TABLE dbo.KHUYEN_MAI ALTER COLUMN TenChuongTrinh NVARCHAR(150) NOT NULL;
+END;
+
+IF COL_LENGTH(N'dbo.KHUYEN_MAI', N'GhiChu') IS NULL
+    ALTER TABLE dbo.KHUYEN_MAI ADD GhiChu NVARCHAR(500) NULL;
+
+IF COL_LENGTH(N'dbo.KHUYEN_MAI', N'IsActive') IS NULL
+    ALTER TABLE dbo.KHUYEN_MAI
+        ADD IsActive BIT NOT NULL
+            CONSTRAINT DF_KM_IsActive DEFAULT (1) WITH VALUES;
+
+COMMIT TRANSACTION;

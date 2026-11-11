@@ -1,0 +1,665 @@
+/**
+ * Cơm Trưa Anh Béo - Statistics & Reports Module (Thống kê & Báo cáo)
+ * File: wwwroot/css/statistics.css
+ * Follows AGENTS.md Brand Guidelines & 3-Column Layout
+ */
+
+@import url("admin-common.css");
+
+/* ==========================================================================
+   1. STATS WORKSPACE & MAIN TAB SYSTEM
+   ========================================================================== */
+.stats-tab-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--border-light);
+  overflow-x: auto;
+}
+
+.stats-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.stats-tab-btn:hover {
+  color: var(--brand-burgundy);
+  background: rgba(74, 21, 17, 0.04);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+
+.stats-tab-btn.active {
+  color: var(--brand-burgundy);
+  border-bottom-color: var(--brand-burgundy);
+  background: var(--white);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  box-shadow: 0 -2px 6px rgba(74, 21, 17, 0.04);
+}
+
+.stats-tab-btn svg {
+  width: 18px !important;
+  height: 18px !important;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+.stats-tab-pane {
+  display: none;
+  animation: fadeIn 0.25s ease-in-out;
+}
+
+.stats-tab-pane.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   2. KPI METRIC CARDS
+   ========================================================================== */
+.stats-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stats-kpi-card {
+  background: var(--white);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.stats-kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.stats-kpi-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+}
+
+.kpi-revenue::before    { background: var(--brand-burgundy); }
+.kpi-orders::before     { background: var(--success); }
+.kpi-aov::before        { background: #FF9800; }
+.kpi-subsidy::before    { background: #E91E63; }
+.kpi-extra::before      { background: #9C27B0; }
+.kpi-rating::before     { background: #FFC400; }
+
+.stats-kpi-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+  background: var(--brand-cream);
+}
+
+.stats-kpi-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stats-kpi-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stats-kpi-value {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--brand-burgundy);
+  line-height: 1.2;
+}
+
+.stats-kpi-subtext {
+  font-size: 11px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ==========================================================================
+   3. REVENUE CHART CARD & PERIOD SWITCH
+   ========================================================================== */
+.chart-card-wrapper {
+  background: var(--white);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  padding: 20px 24px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+}
+
+.chart-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.chart-card-title-group h2 {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--brand-burgundy);
+  margin-bottom: 2px;
+}
+
+.chart-card-title-group span {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+
+.chart-period-switch {
+  display: inline-flex;
+  background: var(--brand-cream);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 3px;
+  gap: 4px;
+}
+
+.btn-period-pill {
+  padding: 6px 14px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-period-pill:hover {
+  color: var(--brand-burgundy);
+}
+
+.btn-period-pill.active {
+  background: var(--brand-burgundy);
+  color: var(--white);
+  box-shadow: 0 1px 4px rgba(74, 21, 17, 0.2);
+}
+
+.chart-canvas-container {
+  width: 100%;
+  height: 280px;
+  background: #FCFAF6;
+  border: 1px dashed var(--border-light);
+  border-radius: var(--radius-sm);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-grid-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* ==========================================================================
+   4. BEST SELLING FOOD RANKINGS (TOP DISHES)
+   ========================================================================== */
+.ranking-table-card {
+  background: var(--white);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 24px;
+}
+
+.rank-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--white);
+}
+
+.rank-1 { background: #FFB300; box-shadow: 0 2px 6px rgba(255, 179, 0, 0.4); } /* Gold */
+.rank-2 { background: #9E9E9E; box-shadow: 0 2px 6px rgba(158, 158, 158, 0.4); } /* Silver */
+.rank-3 { background: #CD7F32; box-shadow: 0 2px 6px rgba(205, 127, 50, 0.4); } /* Bronze */
+.rank-other { background: #E0D3C5; color: var(--brand-burgundy); }
+
+.dish-cell-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dish-cell-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  background: var(--brand-cream);
+  border: 1px solid var(--border-light);
+}
+
+.dish-cell-meta strong {
+  display: block;
+  font-size: 13.5px;
+  color: var(--brand-burgundy);
+  font-weight: 700;
+}
+
+.dish-cell-meta span {
+  font-size: 11.5px;
+  color: var(--text-secondary);
+}
+
+.share-bar-container {
+  width: 100%;
+  max-width: 120px;
+  height: 8px;
+  background: #EFE4D4;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.share-bar-fill {
+  height: 100%;
+  background: var(--brand-burgundy);
+  border-radius: 4px;
+}
+
+/* ==========================================================================
+   5. CUSTOMER REVIEWS
+   ========================================================================== */
+.review-rating-hero-card {
+  background: var(--white);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  padding: 20px 24px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.score-display-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.score-huge-num {
+  font-size: 44px;
+  font-weight: 800;
+  color: var(--brand-burgundy);
+  line-height: 1;
+}
+
+.score-stars-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stars-row {
+  display: flex;
+  gap: 3px;
+  color: #FFC400;
+  font-size: 18px;
+}
+
+.score-total-count {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+}
+
+.stars-filter-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.star-filter-chip {
+  padding: 6px 14px;
+  background: var(--brand-cream);
+  border: 1.5px solid var(--border-light);
+  border-radius: 9999px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.star-filter-chip:hover {
+  border-color: var(--brand-burgundy);
+  color: var(--brand-burgundy);
+}
+
+.star-filter-chip.active {
+  background: var(--brand-burgundy);
+  border-color: var(--brand-burgundy);
+  color: var(--white);
+}
+
+.star-filter-chip.active span.star-icon {
+  color: #FFD54F;
+}
+
+.review-item-row {
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.review-item-row:hover {
+  background: #FFFDF9 !important;
+}
+
+.review-item-row.selected {
+  background: #FFF8E6 !important;
+  border-left: 3px solid var(--brand-burgundy);
+}
+
+/* ==========================================================================
+   6. LALAMOVE DELIVERY METRICS & BANNER
+   ========================================================================== */
+.lalamove-notice-banner {
+  background: #FFF8E1;
+  border-left: 4px solid #FFA000;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: #6D4C41;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lalamove-notice-banner svg {
+  width: 20px !important;
+  height: 20px !important;
+  fill: #E65100;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   7. RIGHT FILTER & REPORT PANEL (~390px)
+   ========================================================================== */
+.report-filter-section {
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.section-label-header {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--brand-burgundy);
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.quick-date-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.btn-quick-date {
+  padding: 8px 10px;
+  background: var(--brand-cream);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.btn-quick-date:hover {
+  background: #EFE4D4;
+  color: var(--brand-burgundy);
+}
+
+.btn-quick-date.active {
+  background: var(--brand-burgundy);
+  color: var(--white);
+  border-color: var(--brand-burgundy);
+}
+
+.date-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.date-input-group label {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.date-input-field {
+  width: 100%;
+  height: 38px;
+  padding: 0 12px;
+  background: #FAFAFA;
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--text-primary);
+  font-weight: 600;
+  outline: none;
+}
+
+.date-input-field:focus {
+  border-color: var(--brand-burgundy);
+  background: var(--white);
+}
+
+.btn-apply-filter {
+  width: 100%;
+  height: 40px;
+  background: var(--brand-burgundy);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-apply-filter:hover {
+  background: var(--brand-burgundy-light);
+}
+
+.btn-apply-filter svg {
+  width: 16px !important;
+  height: 16px !important;
+  fill: currentColor;
+}
+
+.report-toggles-card {
+  background: #FCFAF6;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.review-detail-card {
+  background: #FFFDF9;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.review-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.review-detail-cust-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--brand-burgundy);
+}
+
+.review-detail-dish {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.review-detail-quote {
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-left: 3px solid var(--brand-yellow);
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12.5px;
+  color: var(--text-primary);
+  line-height: 1.45;
+  margin-bottom: 12px;
+}
+
+.report-actions-btn-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn-export-excel {
+  width: 100%;
+  height: 40px;
+  background: #107C41; /* Excel green */
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-export-excel:hover {
+  background: #0B582E;
+}
+
+.btn-print-report {
+  width: 100%;
+  height: 40px;
+  background: var(--brand-cream);
+  color: var(--brand-burgundy);
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-print-report:hover {
+  background: #EFE4D4;
+}
+
+/* ==========================================================================
+   8. RESPONSIVE BREAKPOINTS
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .stats-kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+  .chart-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .review-rating-hero-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

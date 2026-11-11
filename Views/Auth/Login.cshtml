@@ -1,0 +1,52 @@
+@model ComTruaAnhBeo.Models.Auth.LoginRequest
+@{
+    ViewData["Title"] = "Đăng nhập quản trị";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - Cơm Trưa Anh Béo</title>
+    <link rel="stylesheet" href="/css/admin-login.css" />
+</head>
+<body>
+    <main class="login-panel">
+        <a class="brand" href="/" aria-label="Cơm Trưa Anh Béo">
+            <span class="brand-mark" aria-hidden="true">AB</span>
+            <span>CƠM TRƯA ANH BÉO</span>
+        </a>
+        <h1>Đăng nhập quản trị</h1>
+        <p class="description">Dùng tài khoản quản trị đã được cấp để tiếp tục.</p>
+
+        <form method="post" action="/admin/login">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+
+            @Html.ValidationSummary(excludePropertyErrors: false, message: null, htmlAttributes: new { @class = "validation-message", role = "alert" })
+
+            <label for="Identifier">Email hoặc số điện thoại</label>
+            <input id="Identifier"
+                   name="Identifier"
+                   type="text"
+                   value="@Model.Identifier"
+                   autocomplete="username"
+                   required
+                   maxlength="150" />
+
+            <label for="Password">Mật khẩu</label>
+            <input id="Password"
+                   name="Password"
+                   type="password"
+                   autocomplete="current-password"
+                   required
+                   maxlength="100" />
+
+            <button type="submit">Đăng nhập</button>
+        </form>
+
+        <a class="back-link" href="/">Quay lại trang khách hàng</a>
+    </main>
+</body>
+</html>

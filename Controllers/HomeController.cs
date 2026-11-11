@@ -391,11 +391,6 @@ namespace ComTruaAnhBeo.Controllers
                 return PromotionDiscountResult.Failed("Mã giảm giá không tồn tại.");
             }
 
-            if (!promotion.IsActive)
-            {
-                return PromotionDiscountResult.Failed("Mã giảm giá hiện đang tạm tắt.");
-            }
-
             var now = DateTime.Now;
             if (now < promotion.NgayBatDau || now > promotion.NgayKetThuc)
             {
@@ -444,7 +439,7 @@ namespace ComTruaAnhBeo.Controllers
             var isShippingDiscount = discountType is "SHIPPING" or "SHIP" or "PHISHIP" ||
                 appliesTo is "PHISHIP" or "PHIGIAO";
             var isPercentageDiscount = discountType is "PERCENT" or "PHANTRAM";
-            var isFixedDiscount = discountType is "FIXED" or "FIXED_AMOUNT" or "TIENMAT" or "AMOUNT";
+            var isFixedDiscount = discountType is "FIXED" or "FIXED_AMOUNT" or "TIENMAT" or "SOTIEN" or "AMOUNT";
 
             if (!isShippingDiscount && !isPercentageDiscount && !isFixedDiscount)
             {

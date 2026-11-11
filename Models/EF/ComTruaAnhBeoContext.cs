@@ -160,13 +160,6 @@ public partial class ComTruaAnhBeoContext : DbContext
             entity.Property(e => e.MaCode)
                 .HasMaxLength(30)
                 .IsUnicode(false);
-            entity.Property(e => e.TenChuongTrinh)
-                .IsRequired()
-                .HasMaxLength(150);
-            entity.Property(e => e.GhiChu)
-                .HasMaxLength(500);
-            entity.Property(e => e.IsActive)
-                .HasDefaultValue(true, "DF_KM_IsActive");
             entity.Property(e => e.ApDungCho)
                 .IsRequired()
                 .HasMaxLength(7)

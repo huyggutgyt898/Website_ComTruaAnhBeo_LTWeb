@@ -464,9 +464,6 @@ public sealed class AdminController : Controller
             .Select(promotion => new
             {
                 promotion.MaCode,
-                promotion.TenChuongTrinh,
-                promotion.GhiChu,
-                promotion.IsActive,
                 promotion.ApDungCho,
                 promotion.LoaiGiam,
                 promotion.GiaTri,
@@ -488,8 +485,6 @@ public sealed class AdminController : Controller
         {
             id = promotion.MaCode,
             code = promotion.MaCode,
-            name = promotion.TenChuongTrinh,
-            description = promotion.GhiChu,
             discountType = MapPromotionType(promotion.LoaiGiam, promotion.ApDungCho),
             discountValue = promotion.GiaTri,
             maxDiscount = promotion.GiamToiDa,
@@ -499,8 +494,7 @@ public sealed class AdminController : Controller
             usageCount = promotion.UsageCount,
             orderCount = promotion.OrderCount,
             maxUsage = promotion.TongLuotToiDa,
-            perCustomerLimit = promotion.LuotToiDaMoiSdt,
-            isActive = promotion.IsActive
+            perCustomerLimit = promotion.LuotToiDaMoiSdt
         }));
     }
 
@@ -525,14 +519,11 @@ public sealed class AdminController : Controller
         var promotion = new KhuyenMai
         {
             MaCode = code,
-            TenChuongTrinh = request.Name.Trim(),
-            GhiChu = string.IsNullOrWhiteSpace(request.Description) ? null : request.Description.Trim(),
-            IsActive = request.IsActive,
             LoaiGiam = ToStoredPromotionType(request.DiscountType),
             GiaTri = request.DiscountValue,
-            GiamToiDa = request.DiscountType == "PERCENT" ? request.MaxDiscount : null,
+            GiamToiDa = request.MaxDiscount,
             DonToiThieu = request.MinOrderValue,
-            ApDungCho = request.DiscountType == "SHIPPING" ? "PhiShip" : "TienMon",
+            ApDungCho = ToStoredPromotionScope(request.DiscountType),
             NgayBatDau = request.StartDate!.Value,
             NgayKetThuc = request.EndDate!.Value,
             TongLuotToiDa = request.MaxUsage,
@@ -571,14 +562,11 @@ public sealed class AdminController : Controller
             return NotFound(new { message = "Không tìm thấy mã khuyến mãi." });
         }
 
-        promotion.TenChuongTrinh = request.Name.Trim();
-        promotion.GhiChu = string.IsNullOrWhiteSpace(request.Description) ? null : request.Description.Trim();
-        promotion.IsActive = request.IsActive;
         promotion.LoaiGiam = ToStoredPromotionType(request.DiscountType);
         promotion.GiaTri = request.DiscountValue;
-        promotion.GiamToiDa = request.DiscountType == "PERCENT" ? request.MaxDiscount : null;
+        promotion.GiamToiDa = request.MaxDiscount;
         promotion.DonToiThieu = request.MinOrderValue;
-        promotion.ApDungCho = request.DiscountType == "SHIPPING" ? "PhiShip" : "TienMon";
+        promotion.ApDungCho = ToStoredPromotionScope(request.DiscountType);
         promotion.NgayBatDau = request.StartDate!.Value;
         promotion.NgayKetThuc = request.EndDate!.Value;
         promotion.TongLuotToiDa = request.MaxUsage;
@@ -586,31 +574,6 @@ public sealed class AdminController : Controller
 
         await _db.SaveChangesAsync(cancellationToken);
         return Ok(new { code = normalizedCode });
-    }
-
-    [HttpPut("api/promotions/{code}/status")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> SetPromotionStatus(
-        string code,
-        [FromBody] PromotionStatusRequest? request,
-        CancellationToken cancellationToken)
-    {
-        if (request?.IsActive is null)
-        {
-            return BadRequest(new { message = "Trạng thái khuyến mãi không hợp lệ." });
-        }
-
-        var normalizedCode = code.Trim().ToUpperInvariant();
-        var promotion = await _db.KhuyenMais
-            .FirstOrDefaultAsync(item => item.MaCode == normalizedCode, cancellationToken);
-        if (promotion is null)
-        {
-            return NotFound(new { message = "Không tìm thấy mã khuyến mãi." });
-        }
-
-        promotion.IsActive = request.IsActive.Value;
-        await _db.SaveChangesAsync(cancellationToken);
-        return Ok(new { code = normalizedCode, isActive = promotion.IsActive });
     }
 
     [HttpDelete("api/promotions/{code}")]
@@ -629,7 +592,7 @@ public sealed class AdminController : Controller
         {
             return Conflict(new
             {
-                message = "Mã này đã được dùng trong đơn hàng nên không thể xóa. Hãy tạm tắt mã để giữ lịch sử đơn hàng."
+                message = "Mã này đã được dùng trong đơn hàng nên không thể xóa để giữ lịch sử đơn hàng."
             });
         }
 
@@ -654,11 +617,6 @@ public sealed class AdminController : Controller
                 ?? "Vui lòng kiểm tra lại thông tin khuyến mãi.";
         }
 
-        if (string.IsNullOrWhiteSpace(request.Name))
-        {
-            return "Vui lòng nhập tên chương trình ưu đãi.";
-        }
-
         if (request.DiscountValue != decimal.Truncate(request.DiscountValue) ||
             request.MinOrderValue != decimal.Truncate(request.MinOrderValue) ||
             (request.MaxDiscount is decimal maxDiscountValue &&
@@ -668,9 +626,14 @@ public sealed class AdminController : Controller
         }
 
         if (request.DiscountType == "PERCENT" &&
-            (request.DiscountValue > 100 || request.MaxDiscount is null or <= 0))
+            request.DiscountValue > 100)
         {
-            return "Mức giảm theo phần trăm phải từ 1% đến 100% và có mức giảm tối đa hợp lệ.";
+            return "Mức giảm theo phần trăm không được vượt quá 100%.";
+        }
+
+        if (request.MaxDiscount is <= 0)
+        {
+            return "Mức giảm tối đa phải lớn hơn 0 hoặc để trống nếu không giới hạn.";
         }
 
         if (request.StartDate >= request.EndDate)
@@ -683,11 +646,13 @@ public sealed class AdminController : Controller
 
     private static string ToStoredPromotionType(string type) => type switch
     {
-        "PERCENT" => "PERCENT",
-        "FIXED_AMOUNT" => "FIXED",
-        "SHIPPING" => "SHIPPING",
+        "PERCENT" => "PhanTram",
+        "FIXED_AMOUNT" or "SHIPPING" => "SoTien",
         _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Unsupported promotion type.")
     };
+
+    private static string ToStoredPromotionScope(string type) =>
+        type == "SHIPPING" ? "PhiGiao" : "TienMon";
 
     private static string MapPromotionType(string type, string appliesTo)
     {
@@ -989,12 +954,6 @@ public sealed class PromotionUpsertRequest
     [Required, StringLength(30), RegularExpression(@"^[A-Za-z0-9_-]+$")]
     public string Code { get; init; } = "";
 
-    [Required, StringLength(150)]
-    public string Name { get; init; } = "";
-
-    [StringLength(500)]
-    public string? Description { get; init; }
-
     [Required, RegularExpression("^(PERCENT|FIXED_AMOUNT|SHIPPING)$")]
     public string DiscountType { get; init; } = "";
 
@@ -1019,11 +978,4 @@ public sealed class PromotionUpsertRequest
     [Range(1, int.MaxValue)]
     public int? PerCustomerLimit { get; init; }
 
-    public bool IsActive { get; init; }
-}
-
-public sealed class PromotionStatusRequest
-{
-    [Required]
-    public bool? IsActive { get; init; }
 }

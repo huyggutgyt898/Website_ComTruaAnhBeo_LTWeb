@@ -54,31 +54,6 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "DeliveryPricingOptions.cs",
-              "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Services\\DeliveryPricingOptions.cs",
-              "RelativeDocumentMoniker": "Services\\DeliveryPricingOptions.cs",
-              "ToolTip": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Services\\DeliveryPricingOptions.cs",
-              "RelativeToolTip": "Services\\DeliveryPricingOptions.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAvAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-11-10T15:57:53.681Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "HomeController.cs",
-              "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Controllers\\HomeController.cs",
-              "RelativeDocumentMoniker": "Controllers\\HomeController.cs",
-              "ToolTip": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Controllers\\HomeController.cs",
-              "RelativeToolTip": "Controllers\\HomeController.cs",
-              "ViewState": "AgIAACgAAAAAAAAAAADwvywAAAAMAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-11-08T09:03:07.64Z"
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 4,
               "Title": "appsettings.Development.json",
               "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\appsettings.Development.json",
@@ -103,6 +78,34 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "HomeController.cs",
+              "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Controllers\\HomeController.cs",
+              "RelativeDocumentMoniker": "Controllers\\HomeController.cs",
+              "ToolTip": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Controllers\\HomeController.cs",
+              "RelativeToolTip": "Controllers\\HomeController.cs",
+              "ViewState": "AgIAACgAAAAAAAAAAADwvywAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-08T09:03:07.64Z"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "DeliveryPricingOptions.cs",
+              "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Services\\DeliveryPricingOptions.cs",
+              "RelativeDocumentMoniker": "Services\\DeliveryPricingOptions.cs",
+              "ToolTip": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Services\\DeliveryPricingOptions.cs",
+              "RelativeToolTip": "Services\\DeliveryPricingOptions.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-10T15:57:53.681Z"
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 5,
               "Title": "Utils.cs",
               "DocumentMoniker": "D:\\Subject\\Web development\\Project\\ComTruaAnhBeo\\Helpers\\Utils.cs",
@@ -112,10 +115,6 @@
               "ViewState": "AgIAAAsCAAAAAAAAAAAuwBkCAAAzAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-11-09T07:44:25.354Z"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
             },
             {
               "$type": "Document",

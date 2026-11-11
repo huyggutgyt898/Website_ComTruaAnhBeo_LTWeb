@@ -9,12 +9,6 @@ public partial class KhuyenMai
 {
     public string MaCode { get; set; }
 
-    public string TenChuongTrinh { get; set; }
-
-    public string GhiChu { get; set; }
-
-    public bool IsActive { get; set; }
-
     public string LoaiGiam { get; set; }
 
     public decimal GiaTri { get; set; }

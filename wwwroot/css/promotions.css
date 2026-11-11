@@ -498,6 +498,30 @@
   text-align: center;
 }
 
+.promo-panel-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: #f0ece5;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.promo-panel-status.badge-available,
+.promo-panel-status.date-status-upcoming,
+.promo-panel-status.badge-status-expired,
+.promo-panel-status.badge-status-exhausted {
+  border: 1px solid currentColor;
+}
+
+.badge-status {
+  cursor: default;
+}
+
 #formPromoCode:disabled {
   background: #f3efe9;
   color: var(--text-secondary);

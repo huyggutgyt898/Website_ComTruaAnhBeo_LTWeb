@@ -41,8 +41,8 @@
     <div class="kpi-pill">
       <div class="kpi-pill-icon kpi-icon-soldout">⏸️</div>
       <div class="kpi-pill-content">
-        <span class="kpi-pill-label">Tạm dừng</span>
-        <span class="kpi-pill-val" id="statPausedPromos">0</span>
+        <span class="kpi-pill-label">Sắp diễn ra</span>
+        <span class="kpi-pill-val" id="statUpcomingPromos">0</span>
       </div>
     </div>
     <div class="kpi-pill">
@@ -60,7 +60,7 @@
       <svg viewBox="0 0 24 24" width="18" height="18" fill="var(--text-muted)">
         <path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/>
       </svg>
-      <input type="text" id="searchPromoInput" class="search-input" placeholder="Tìm theo mã voucher (VD: TRUA15, FREESHIP) hoặc tên chương trình..." oninput="handleFilter()">
+      <input type="text" id="searchPromoInput" class="search-input" placeholder="Tìm theo mã voucher (VD: FREESHIP, GIAM10)..." oninput="handleFilter()">
     </div>
 
     <select id="filterPromoType" class="select-filter" onchange="handleFilter()">
@@ -73,7 +73,6 @@
     <select id="filterPromoStatus" class="select-filter" onchange="handleFilter()">
       <option value="all">Tất cả trạng thái</option>
       <option value="ACTIVE">Đang áp dụng</option>
-      <option value="PAUSED">Tạm dừng</option>
       <option value="UPCOMING">Sắp diễn ra</option>
       <option value="EXPIRED">Hết hạn</option>
       <option value="EXHAUSTED">Hết lượt</option>
@@ -84,7 +83,7 @@
       <option value="discount-desc">Mức giảm cao nhất</option>
       <option value="date-asc">Sắp hết hạn</option>
       <option value="usage-desc">Lượt dùng nhiều nhất</option>
-      <option value="name-asc">Tên mã A-Z</option>
+      <option value="name-asc">Mã voucher A-Z</option>
     </select>
   </div>
 
@@ -106,7 +105,7 @@
       <thead>
         <tr>
           <th>Mã voucher</th>
-          <th>Tên chương trình</th>
+          <th>Phạm vi áp dụng</th>
           <th>Hình thức & Mức giảm</th>
           <th>Đơn tối thiểu</th>
           <th>Hiệu lực áp dụng</th>
@@ -155,16 +154,7 @@
         <div class="coupon-code-pill" id="panelPromoCodeBadge" style="font-size: 15px; padding: 6px 14px;">
           Chưa chọn mã
         </div>
-        <div class="pill-radio-group">
-          <label class="pill-radio-label active-success" id="labelPromoActive">
-            <input type="radio" name="formPromoStatus" id="promoStatusActive" value="ACTIVE" checked onchange="updatePromoRadioPills()">
-            <span>🟢 Đang bật</span>
-          </label>
-          <label class="pill-radio-label" id="labelPromoInactive">
-            <input type="radio" name="formPromoStatus" id="promoStatusInactive" value="INACTIVE" onchange="updatePromoRadioPills()">
-            <span>⚪ Tạm tắt</span>
-          </label>
-        </div>
+        <span class="promo-panel-status" id="promoPanelStatus">Trạng thái theo thời hạn và lượt dùng</span>
       </div>
 
       <!-- Section 1: Basic Information -->
@@ -172,11 +162,6 @@
         <label for="formPromoCode">Mã voucher <span class="required">*</span></label>
         <input type="text" id="formPromoCode" class="form-control" placeholder="VD: TRUA15, FREESHIP" maxlength="30" autocomplete="off" style="text-transform: uppercase; font-family: 'Courier New', monospace; font-weight: 800;" required>
         <span class="field-hint" id="promoCodeHint" hidden>Mã voucher không thể đổi sau khi tạo để bảo toàn liên kết với đơn hàng.</span>
-      </div>
-
-      <div class="form-group">
-        <label for="formPromoName">Tên chiến dịch ưu đãi <span class="required">*</span></label>
-        <input type="text" id="formPromoName" class="form-control" maxlength="150" placeholder="VD: Giảm 15% cơm trưa văn phòng đầu tuần" required>
       </div>
 
       <!-- Section 2: Discount Type & Values -->
@@ -200,7 +185,7 @@
         <div class="form-group flex-1" id="formMaxDiscountGroup">
           <label for="formMaxDiscount">Giảm tối đa (VNĐ)</label>
           <div class="price-input-wrapper">
-            <input type="number" id="formMaxDiscount" class="form-control" placeholder="25000" min="1" step="1">
+            <input type="number" id="formMaxDiscount" class="form-control" placeholder="Không giới hạn" min="1" step="1">
             <span class="price-currency-tag">VNĐ</span>
           </div>
         </div>
@@ -238,11 +223,6 @@
         </div>
       </div>
       <span class="field-hint">Để trống giới hạn lượt sử dụng nếu mã không bị giới hạn.</span>
-
-      <div class="form-group">
-        <label for="formPromoDesc">Ghi chú & Điều kiện chi tiết</label>
-        <textarea id="formPromoDesc" class="form-control" rows="2" maxlength="500" placeholder="VD: Áp dụng từ 10:30 đến 13:30 các ngày trong tuần..."></textarea>
-      </div>
 
       <!-- Interactive discount validator widget -->
       <div class="discount-tester-card">
@@ -282,10 +262,7 @@
       <span id="btnSavePromoText">Lưu khuyến mãi</span>
     </button>
 
-    <div id="existingPromoActions" style="display: none; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%;">
-      <button type="button" class="btn-secondary" style="height: 40px; justify-content: center; font-weight: 700; font-size: 13px;" onclick="quickToggleCurrentPromo()">
-        <span id="btnToggleStatusText">Tắt mã</span>
-      </button>
+    <div id="existingPromoActions" style="display: none; grid-template-columns: 1fr; gap: 8px; width: 100%;">
       <button type="button" class="btn-delete" id="btnDeletePromo" style="height: 40px; justify-content: center;" onclick="triggerDeleteCurrentPromo()">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
           <path d="M19 4H15.5L14.5 3H9.5L8.5 4H5V6H19M6 19A2 2 0 0 0 8 21H16A2 2 0 0 0 18 19V7H6V19Z"/>
@@ -315,7 +292,7 @@
             Bạn có chắc chắn muốn xóa mã khuyến mãi?
           </div>
           <p style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; margin: 0;">
-            Mã đã được dùng trong đơn hàng sẽ không thể xóa để bảo toàn lịch sử; hãy tạm tắt mã trong trường hợp đó.
+            Mã đã được dùng trong đơn hàng không thể xóa để bảo toàn lịch sử.
           </p>
         </div>
       </div>

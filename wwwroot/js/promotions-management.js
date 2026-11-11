@@ -142,10 +142,6 @@ function toDateTimeLocal(value) {
 }
 
 function getPromoStatusMeta(promo) {
-  if (!promo.isActive) {
-    return { status: "PAUSED", label: "Tạm dừng", badgeClass: "badge-status-inactive" };
-  }
-
   const now = Date.now();
   const start = new Date(promo.startDate).getTime();
   const end = new Date(promo.endDate).getTime();
@@ -163,19 +159,19 @@ function getPromoStatusMeta(promo) {
 
 function renderKPIs() {
   let active = 0;
-  let paused = 0;
+  let upcoming = 0;
   let expiredOrExhausted = 0;
 
   promotions.forEach(promo => {
     const status = getPromoStatusMeta(promo).status;
-    if (status === "ACTIVE" || status === "UPCOMING") active += 1;
-    else if (status === "PAUSED") paused += 1;
+    if (status === "ACTIVE") active += 1;
+    else if (status === "UPCOMING") upcoming += 1;
     else expiredOrExhausted += 1;
   });
 
   document.getElementById("statTotalPromos").textContent = promotions.length;
   document.getElementById("statActivePromos").textContent = active;
-  document.getElementById("statPausedPromos").textContent = paused;
+  document.getElementById("statUpcomingPromos").textContent = upcoming;
   document.getElementById("statExpiredPromos").textContent = expiredOrExhausted;
 }
 
@@ -187,7 +183,7 @@ function handleFilter() {
 
   filteredPromotions = promotions.filter(promo => {
     const matchesSearch = promo.code.toLocaleLowerCase("vi").includes(search) ||
-      promo.name.toLocaleLowerCase("vi").includes(search);
+      getPromotionScopeLabel(promo.discountType).toLocaleLowerCase("vi").includes(search);
     if (!matchesSearch || (type !== "all" && promo.discountType !== type)) return false;
 
     if (status === "all") return true;
@@ -202,7 +198,7 @@ function handleFilter() {
   } else if (sort === "usage-desc") {
     filteredPromotions.sort((left, right) => right.usageCount - left.usageCount);
   } else if (sort === "name-asc") {
-    filteredPromotions.sort((left, right) => left.name.localeCompare(right.name, "vi"));
+    filteredPromotions.sort((left, right) => left.code.localeCompare(right.code, "vi"));
   }
 
   if (promotions.length > 0) {
@@ -249,7 +245,7 @@ function renderTable() {
     const nameCell = document.createElement("td");
     const name = document.createElement("strong");
     name.className = "promo-name";
-    name.textContent = promo.name;
+    name.textContent = getPromotionScopeLabel(promo.discountType);
     const typeBadge = document.createElement("span");
     typeBadge.className = `promo-type-badge ${getDiscountTypeClass(promo.discountType)}`;
     typeBadge.textContent = getDiscountTypeLabel(promo.discountType);
@@ -260,7 +256,7 @@ function renderTable() {
     const discount = document.createElement("strong");
     discount.textContent = getDiscountDescription(promo);
     discountCell.appendChild(discount);
-    if (promo.discountType === "PERCENT" && promo.maxDiscount != null) {
+    if (promo.maxDiscount != null) {
       const limit = document.createElement("div");
       limit.className = "promo-secondary-text";
       limit.textContent = `Tối đa ${formatVND(promo.maxDiscount)}`;
@@ -287,16 +283,14 @@ function renderTable() {
     const statusCell = document.createElement("td");
     statusCell.className = "promo-status-cell";
     const status = getPromoStatusMeta(promo);
-    const statusButton = document.createElement("button");
-    statusButton.type = "button";
+    const statusButton = document.createElement("span");
     statusButton.className = `badge-status ${status.badgeClass}`;
     const statusDot = document.createElement("span");
     statusDot.className = "status-dot";
     const statusLabel = document.createElement("span");
     statusLabel.textContent = status.label;
     statusButton.append(statusDot, statusLabel);
-    statusButton.title = promo.isActive ? "Tạm tắt mã" : "Bật mã";
-    statusButton.addEventListener("click", () => quickTogglePromoStatus(promo.code));
+    statusButton.title = "Trạng thái xác định theo thời hạn và giới hạn lượt sử dụng";
     statusCell.appendChild(statusButton);
     row.appendChild(statusCell);
 
@@ -382,6 +376,10 @@ function getDiscountTypeLabel(type) {
   return "Giảm tiền cố định";
 }
 
+function getPromotionScopeLabel(type) {
+  return type === "SHIPPING" ? "Phí giao hàng" : "Tiền món";
+}
+
 function getDiscountDescription(promo) {
   if (promo.discountType === "PERCENT") return `Giảm ${promo.discountValue}%`;
   if (promo.discountType === "SHIPPING") return `Hỗ trợ ${formatVND(promo.discountValue)}`;
@@ -398,10 +396,13 @@ function selectPromotion(code) {
   document.getElementById("panelPromoTitle").textContent = "CHI TIẾT MÃ KHUYẾN MÃI";
   document.getElementById("panelPromoSubtitle").textContent = "Xem và chỉnh sửa điều kiện áp dụng";
   document.getElementById("panelPromoCodeBadge").textContent = `#${promo.code}`;
+  const status = getPromoStatusMeta(promo);
+  const panelStatus = document.getElementById("promoPanelStatus");
+  panelStatus.textContent = status.label;
+  panelStatus.className = `promo-panel-status ${status.badgeClass}`;
   document.getElementById("formPromoCode").value = promo.code;
   document.getElementById("formPromoCode").disabled = true;
   document.getElementById("promoCodeHint").hidden = false;
-  document.getElementById("formPromoName").value = promo.name;
   document.getElementById("formDiscountType").value = promo.discountType;
   document.getElementById("formDiscountValue").value = promo.discountValue;
   document.getElementById("formMaxDiscount").value = promo.maxDiscount ?? "";
@@ -410,19 +411,14 @@ function selectPromotion(code) {
   document.getElementById("formEndDate").value = toDateTimeLocal(promo.endDate);
   document.getElementById("formMaxUsage").value = promo.maxUsage ?? "";
   document.getElementById("formPerCustomerLimit").value = promo.perCustomerLimit ?? "";
-  document.getElementById("formPromoDesc").value = promo.description ?? "";
-  document.getElementById("promoStatusActive").checked = promo.isActive;
-  document.getElementById("promoStatusInactive").checked = !promo.isActive;
   document.getElementById("btnSavePromoText").textContent = "Lưu khuyến mãi";
   document.getElementById("existingPromoActions").style.display = "grid";
   document.getElementById("btnCancelPromoCreate").style.display = "none";
-  document.getElementById("btnToggleStatusText").textContent = promo.isActive ? "Tắt mã" : "Bật mã";
   const deleteCurrentButton = document.getElementById("btnDeletePromo");
   deleteCurrentButton.disabled = promo.orderCount > 0;
   deleteCurrentButton.title = promo.orderCount > 0
-    ? "Mã đã gắn với đơn hàng; hãy tạm tắt thay vì xóa."
+    ? "Mã đã gắn với đơn hàng nên không thể xóa."
     : "Xóa mã khuyến mãi";
-  updatePromoRadioPills();
   handleDiscountTypeChange();
   resetTesterCalculator();
   renderTable();
@@ -434,6 +430,8 @@ function resetPromotionPanel() {
   document.getElementById("panelPromoTitle").textContent = "CHI TIẾT MÃ KHUYẾN MÃI";
   document.getElementById("panelPromoSubtitle").textContent = "Chọn một mã trong bảng hoặc tạo mã mới.";
   document.getElementById("panelPromoCodeBadge").textContent = "Chưa chọn mã";
+  document.getElementById("promoPanelStatus").textContent = "Trạng thái theo thời hạn và lượt dùng";
+  document.getElementById("promoPanelStatus").className = "promo-panel-status";
   document.getElementById("promoForm").reset();
   document.getElementById("formPromoCode").disabled = true;
   document.getElementById("promoCodeHint").hidden = true;
@@ -453,11 +451,13 @@ function triggerAddNewPromotion() {
   document.getElementById("panelPromoTitle").textContent = "TẠO MÃ KHUYẾN MÃI MỚI";
   document.getElementById("panelPromoSubtitle").textContent = "Nhập thông tin và thiết lập điều kiện áp dụng.";
   document.getElementById("panelPromoCodeBadge").textContent = "#MỚI";
+  document.getElementById("promoPanelStatus").textContent = "Trạng thái theo thời hạn và lượt dùng";
+  document.getElementById("promoPanelStatus").className = "promo-panel-status";
   document.getElementById("formPromoCode").disabled = false;
   document.getElementById("promoCodeHint").hidden = true;
   document.getElementById("formDiscountType").value = "PERCENT";
   document.getElementById("formDiscountValue").value = 15;
-  document.getElementById("formMaxDiscount").value = 25000;
+  document.getElementById("formMaxDiscount").value = "";
   document.getElementById("formMinOrder").value = 80000;
   document.getElementById("formMaxUsage").value = "";
   document.getElementById("formPerCustomerLimit").value = "";
@@ -466,12 +466,9 @@ function triggerAddNewPromotion() {
   endDate.setDate(endDate.getDate() + 30);
   document.getElementById("formStartDate").value = toDateTimeLocal(now);
   document.getElementById("formEndDate").value = toDateTimeLocal(endDate);
-  document.getElementById("promoStatusActive").checked = true;
-  document.getElementById("promoStatusInactive").checked = false;
   document.getElementById("btnSavePromoText").textContent = "Tạo mã khuyến mãi";
   document.getElementById("existingPromoActions").style.display = "none";
   document.getElementById("btnCancelPromoCreate").style.display = "flex";
-  updatePromoRadioPills();
   handleDiscountTypeChange();
   resetTesterCalculator();
   renderTable();
@@ -502,24 +499,14 @@ function handleDiscountTypeChange() {
   if (type === "PERCENT") {
     label.innerHTML = 'Phần trăm giảm (%) <span class="required">*</span>';
     suffix.textContent = "%";
-    maxDiscountGroup.style.display = "";
-    maxDiscountInput.required = true;
   } else {
     label.innerHTML = type === "SHIPPING"
       ? 'Mức hỗ trợ phí giao hàng (VNĐ) <span class="required">*</span>'
       : 'Số tiền giảm (VNĐ) <span class="required">*</span>';
     suffix.textContent = "VNĐ";
-    maxDiscountGroup.style.display = "none";
-    maxDiscountInput.required = false;
   }
-}
-
-function updatePromoRadioPills() {
-  const active = document.getElementById("promoStatusActive").checked;
-  document.getElementById("labelPromoActive").className =
-    `pill-radio-label${active ? " active-success" : ""}`;
-  document.getElementById("labelPromoInactive").className =
-    `pill-radio-label${active ? "" : " active-danger"}`;
+  maxDiscountGroup.style.display = "";
+  maxDiscountInput.required = false;
 }
 
 function readPromotionForm() {
@@ -530,28 +517,27 @@ function readPromotionForm() {
   const type = document.getElementById("formDiscountType").value;
   const data = {
     code: document.getElementById("formPromoCode").value.trim().toUpperCase(),
-    name: document.getElementById("formPromoName").value.trim(),
-    description: document.getElementById("formPromoDesc").value.trim() || null,
     discountType: type,
     discountValue: numberValue("formDiscountValue"),
-    maxDiscount: type === "PERCENT" ? numberValue("formMaxDiscount") : null,
+    maxDiscount: numberValue("formMaxDiscount"),
     minOrderValue: numberValue("formMinOrder") ?? 0,
     startDate: document.getElementById("formStartDate").value,
     endDate: document.getElementById("formEndDate").value,
     maxUsage: numberValue("formMaxUsage"),
-    perCustomerLimit: numberValue("formPerCustomerLimit"),
-    isActive: document.getElementById("promoStatusActive").checked
+    perCustomerLimit: numberValue("formPerCustomerLimit")
   };
 
   if (!/^[A-Z0-9_-]{1,30}$/.test(data.code)) {
     throw new Error("Mã voucher chỉ được gồm chữ không dấu, số, dấu gạch ngang hoặc gạch dưới (tối đa 30 ký tự).");
   }
-  if (!data.name) throw new Error("Vui lòng nhập tên chương trình ưu đãi.");
   if (!Number.isInteger(data.discountValue) || data.discountValue <= 0) {
     throw new Error("Mức giảm phải là số nguyên lớn hơn 0.");
   }
-  if (type === "PERCENT" && (data.discountValue > 100 || !Number.isInteger(data.maxDiscount) || data.maxDiscount <= 0)) {
-    throw new Error("Phần trăm giảm tối đa là 100% và cần có mức giảm trần hợp lệ.");
+  if (type === "PERCENT" && data.discountValue > 100) {
+    throw new Error("Phần trăm giảm không được vượt quá 100%.");
+  }
+  if (data.maxDiscount !== null && (!Number.isInteger(data.maxDiscount) || data.maxDiscount <= 0)) {
+    throw new Error("Mức giảm tối đa phải lớn hơn 0 hoặc để trống nếu không giới hạn.");
   }
   if (!Number.isInteger(data.minOrderValue) || data.minOrderValue < 0) {
     throw new Error("Giá trị đơn tối thiểu phải là số nguyên không âm.");
@@ -605,33 +591,12 @@ async function handlePromoFormSubmit(event) {
   }
 }
 
-async function quickTogglePromoStatus(code) {
-  const promo = promotions.find(item => item.code === code);
-  if (!promo) return;
-
-  try {
-    await sendPromotionRequest(
-      `${promotionApiUrl}/${encodeURIComponent(code)}/status`,
-      "PUT",
-      { isActive: !promo.isActive }
-    );
-    await loadPromotions();
-    showToast(`Đã ${promo.isActive ? "tạm tắt" : "bật"} mã ${code}.`, "success");
-  } catch (error) {
-    showToast(getErrorMessage(error, "Không thể đổi trạng thái mã khuyến mãi."), "danger");
-  }
-}
-
-function quickToggleCurrentPromo() {
-  if (selectedPromoCode) quickTogglePromoStatus(selectedPromoCode);
-}
-
 function prepareDeletePromo(code) {
   promoCodeToDelete = code;
   const promo = promotions.find(item => item.code === code);
   if (!promo) return;
   document.getElementById("deletePromoModalDesc").textContent =
-    `Bạn có chắc chắn muốn xóa mã ${promo.code} (${promo.name})?`;
+    `Bạn có chắc chắn muốn xóa mã ${promo.code}?`;
   document.getElementById("deletePromoModalBackdrop").classList.add("active");
 }
 
@@ -689,8 +654,7 @@ function testApplyCurrentPromo() {
   const selected = promotions.find(promo => promo.code === selectedPromoCode);
 
   let error = "";
-  if (!document.getElementById("promoStatusActive").checked) error = "Mã đang tạm tắt.";
-  else if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) error = "Hãy nhập thời hạn hợp lệ.";
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) error = "Hãy nhập thời hạn hợp lệ.";
   else if (Date.now() < start.getTime()) error = `Mã bắt đầu lúc ${formatDisplayDate(start)}.`;
   else if (Date.now() > end.getTime()) error = `Mã đã hết hạn từ ${formatDisplayDate(end)}.`;
   else if (selected?.maxUsage != null && selected.usageCount >= selected.maxUsage) error = "Mã đã hết lượt sử dụng.";
@@ -705,7 +669,7 @@ function testApplyCurrentPromo() {
 
   const base = type === "SHIPPING" ? shipping : amount;
   let discount = type === "PERCENT" ? Math.floor(base * value / 100) : value;
-  if (type === "PERCENT" && cap > 0) discount = Math.min(discount, cap);
+  if (cap > 0) discount = Math.min(discount, cap);
   discount = Math.min(discount, base);
   const total = Math.max(0, amount + shipping - discount);
   result.className = "tester-result-box valid";

@@ -27,11 +27,6 @@ builder.Services.AddMemoryCache();
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Email"));
 builder.Services.AddTransient<IEmailSender, SmtpEmailSender>();
 
-// Đăng ký dịch vụ Vận chuyển (OpenRouteService, Lalamove, VanChuyenService)
-builder.Services.AddHttpClient<IOpenRouteService, OpenRouteService>();
-builder.Services.AddHttpClient<ILalamoveService, LalamoveService>();
-builder.Services.AddScoped<IVanChuyenService, VanChuyenService>();
-
 // Đăng ký dịch vụ Quản lý Khách hàng
 builder.Services.AddScoped<IKhachHangService, KhachHangService>();
 

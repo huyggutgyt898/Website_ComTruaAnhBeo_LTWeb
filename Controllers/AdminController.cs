@@ -62,12 +62,6 @@ public sealed class AdminController : Controller
         return View();
     }
 
-    [HttpGet("delivery")]
-    public IActionResult Delivery()
-    {
-        return View();
-    }
-
     [HttpGet("{page}.html")]
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Page(string page)
@@ -79,7 +73,6 @@ public sealed class AdminController : Controller
             "promotions" => RedirectToActionPermanent(nameof(Promotions)),
             "accounts" => RedirectToActionPermanent(nameof(Accounts)),
             "statistics" => RedirectToActionPermanent(nameof(Statistics)),
-            "delivery" => RedirectToActionPermanent(nameof(Delivery)),
             _ => NotFound()
         };
     }

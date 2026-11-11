@@ -1,7 +1,6 @@
 let promotions = [];
 let filteredPromotions = [];
 let selectedPromoCode = null;
-let promoCodeToDelete = null;
 let isCreateMode = false;
 let isSaving = false;
 
@@ -14,7 +13,6 @@ const vndFormatter = new Intl.NumberFormat("vi-VN", {
 
 document.addEventListener("DOMContentLoaded", () => {
   setupDiscountTypeListener();
-  setupDeleteModal();
   loadPromotions();
 });
 
@@ -109,7 +107,7 @@ function setFormEnabled(enabled) {
     .forEach(element => {
       element.disabled = !enabled;
     });
-  document.querySelectorAll("#existingPromoActions button, #btnCancelPromoCreate")
+  document.querySelectorAll("#btnCancelPromoCreate")
     .forEach(element => {
       element.disabled = !enabled;
     });
@@ -218,7 +216,7 @@ function renderTable() {
   if (filteredPromotions.length === 0) {
     const row = document.createElement("tr");
     const cell = document.createElement("td");
-    cell.colSpan = 8;
+    cell.colSpan = 6;
     cell.className = "promo-no-results";
     cell.textContent = "Không tìm thấy mã khuyến mãi phù hợp. Hãy thử từ khóa hoặc bộ lọc khác.";
     row.appendChild(cell);
@@ -231,11 +229,20 @@ function renderTable() {
   filteredPromotions.forEach(promo => {
     const row = document.createElement("tr");
     if (!isCreateMode && promo.code === selectedPromoCode) row.classList.add("selected-row");
-    row.addEventListener("click", event => {
-      if (!event.target.closest("button")) selectPromotion(promo.code);
+    row.tabIndex = 0;
+    row.setAttribute("aria-label", `Xem chi tiết mã ${promo.code}`);
+    row.addEventListener("click", () => {
+      selectPromotion(promo.code);
+    });
+    row.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        selectPromotion(promo.code);
+      }
     });
 
     const codeCell = document.createElement("td");
+    codeCell.className = "promo-code-cell";
     const codePill = document.createElement("span");
     codePill.className = "coupon-code-pill";
     codePill.textContent = promo.code;
@@ -268,14 +275,6 @@ function renderTable() {
     minimumCell.textContent = formatVND(promo.minOrderValue);
     row.appendChild(minimumCell);
 
-    const dateCell = document.createElement("td");
-    dateCell.className = "date-meta-cell";
-    dateCell.append(
-      makeDateRow("Bắt đầu", promo.startDate),
-      makeDateRow("Kết thúc", promo.endDate)
-    );
-    row.appendChild(dateCell);
-
     const usageCell = document.createElement("td");
     usageCell.appendChild(makeUsageCell(promo));
     row.appendChild(usageCell);
@@ -294,36 +293,11 @@ function renderTable() {
     statusCell.appendChild(statusButton);
     row.appendChild(statusCell);
 
-    const actionsCell = document.createElement("td");
-    actionsCell.className = "promo-actions-cell";
-    const editButton = makeIconButton("Xem chi tiết và chỉnh sửa", "view", () => selectPromotion(promo.code));
-    const canDelete = (promo.orderCount ?? 0) === 0;
-    const deleteButton = makeIconButton(
-      canDelete ? "Xóa mã" : "Mã đã gắn với đơn hàng; hãy tạm tắt thay vì xóa",
-      "delete",
-      () => prepareDeletePromo(promo.code)
-    );
-    deleteButton.classList.add("danger");
-    deleteButton.disabled = !canDelete;
-    actionsCell.append(editButton, deleteButton);
-    row.appendChild(actionsCell);
-
     tbody.appendChild(row);
   });
 
   document.getElementById("promoSummaryText").textContent =
     `Hiển thị ${filteredPromotions.length} trong tổng số ${promotions.length} mã khuyến mãi.`;
-}
-
-function makeDateRow(label, value) {
-  const row = document.createElement("div");
-  row.className = "date-row-item";
-  const labelElement = document.createElement("span");
-  labelElement.textContent = `${label}:`;
-  const dateElement = document.createElement("span");
-  dateElement.textContent = formatDisplayDate(value);
-  row.append(labelElement, dateElement);
-  return row;
 }
 
 function makeUsageCell(promo) {
@@ -349,19 +323,6 @@ function makeUsageCell(promo) {
     wrap.appendChild(bar);
   }
   return wrap;
-}
-
-function makeIconButton(title, icon, onClick) {
-  const button = document.createElement("button");
-  button.type = "button";
-  button.className = "action-icon-btn";
-  button.title = title;
-  button.setAttribute("aria-label", title);
-  button.innerHTML = icon === "view"
-    ? '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.5C7 4.5 2.73 7.61 1 12C2.73 16.39 7 19.5 12 19.5C17 19.5 21.27 16.39 23 12C21.27 7.61 17 4.5 12 4.5ZM12 17C9.24 17 7 14.76 7 12C7 9.24 9.24 7 12 7C14.76 7 17 9.24 17 12C17 14.76 14.76 17 12 17ZM12 9C10.34 9 9 10.34 9 12C9 13.66 10.34 15 12 15C13.66 15 15 13.66 15 12C15 10.34 13.66 9 12 9Z"/></svg>'
-    : '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 4H15.5L14.5 3H9.5L8.5 4H5V6H19M6 19A2 2 0 0 0 8 21H16A2 2 0 0 0 18 19V7H6V19Z"/></svg>';
-  button.addEventListener("click", onClick);
-  return button;
 }
 
 function getDiscountTypeClass(type) {
@@ -412,13 +373,7 @@ function selectPromotion(code) {
   document.getElementById("formMaxUsage").value = promo.maxUsage ?? "";
   document.getElementById("formPerCustomerLimit").value = promo.perCustomerLimit ?? "";
   document.getElementById("btnSavePromoText").textContent = "Lưu khuyến mãi";
-  document.getElementById("existingPromoActions").style.display = "grid";
   document.getElementById("btnCancelPromoCreate").style.display = "none";
-  const deleteCurrentButton = document.getElementById("btnDeletePromo");
-  deleteCurrentButton.disabled = promo.orderCount > 0;
-  deleteCurrentButton.title = promo.orderCount > 0
-    ? "Mã đã gắn với đơn hàng nên không thể xóa."
-    : "Xóa mã khuyến mãi";
   handleDiscountTypeChange();
   resetTesterCalculator();
   renderTable();
@@ -435,7 +390,6 @@ function resetPromotionPanel() {
   document.getElementById("promoForm").reset();
   document.getElementById("formPromoCode").disabled = true;
   document.getElementById("promoCodeHint").hidden = true;
-  document.getElementById("existingPromoActions").style.display = "none";
   document.getElementById("btnCancelPromoCreate").style.display = "none";
   document.getElementById("btnSavePromoText").textContent = "Lưu khuyến mãi";
   setFormEnabled(false);
@@ -467,7 +421,6 @@ function triggerAddNewPromotion() {
   document.getElementById("formStartDate").value = toDateTimeLocal(now);
   document.getElementById("formEndDate").value = toDateTimeLocal(endDate);
   document.getElementById("btnSavePromoText").textContent = "Tạo mã khuyến mãi";
-  document.getElementById("existingPromoActions").style.display = "none";
   document.getElementById("btnCancelPromoCreate").style.display = "flex";
   handleDiscountTypeChange();
   resetTesterCalculator();
@@ -589,48 +542,6 @@ async function handlePromoFormSubmit(event) {
       saveButton.disabled = !isCreateMode && !selectedPromoCode;
     }
   }
-}
-
-function prepareDeletePromo(code) {
-  promoCodeToDelete = code;
-  const promo = promotions.find(item => item.code === code);
-  if (!promo) return;
-  document.getElementById("deletePromoModalDesc").textContent =
-    `Bạn có chắc chắn muốn xóa mã ${promo.code}?`;
-  document.getElementById("deletePromoModalBackdrop").classList.add("active");
-}
-
-function triggerDeleteCurrentPromo() {
-  if (selectedPromoCode) prepareDeletePromo(selectedPromoCode);
-}
-
-function closeDeletePromoModal() {
-  document.getElementById("deletePromoModalBackdrop").classList.remove("active");
-  promoCodeToDelete = null;
-}
-
-async function confirmDeletePromo() {
-  if (!promoCodeToDelete) return;
-  const code = promoCodeToDelete;
-  try {
-    await sendPromotionRequest(`${promotionApiUrl}/${encodeURIComponent(code)}`, "DELETE");
-    closeDeletePromoModal();
-    selectedPromoCode = null;
-    await loadPromotions();
-    showToast(`Đã xóa mã ${code}.`, "success");
-  } catch (error) {
-    showToast(getErrorMessage(error, "Không thể xóa mã khuyến mãi."), "danger");
-  }
-}
-
-function setupDeleteModal() {
-  const backdrop = document.getElementById("deletePromoModalBackdrop");
-  backdrop.addEventListener("click", event => {
-    if (event.target === backdrop) closeDeletePromoModal();
-  });
-  document.addEventListener("keydown", event => {
-    if (event.key === "Escape") closeDeletePromoModal();
-  });
 }
 
 function resetTesterCalculator() {

@@ -101,44 +101,9 @@
   background: var(--danger);
 }
 
-/* ==========================================================================
-   DATE & TIME DISPLAY
-   ========================================================================== */
-.date-meta-cell {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  font-size: 12.5px;
-}
-
-.date-row-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--text-secondary);
-}
-
-.date-status-pill {
-  font-size: 10.5px;
-  font-weight: 700;
-  padding: 1px 6px;
-  border-radius: 4px;
-  width: fit-content;
-}
-
-.date-status-running {
-  background: #E8F5E9;
-  color: #1B5E20;
-}
-
 .date-status-upcoming {
   background: #E3F2FD;
   color: #0D47A1;
-}
-
-.date-status-expired {
-  background: #FFEBEE;
-  color: #B71C1C;
 }
 
 /* ==========================================================================
@@ -444,54 +409,6 @@
   text-align: center;
 }
 
-.promo-actions-cell {
-  display: flex;
-  justify-content: flex-end;
-  gap: 6px;
-}
-
-.action-icon-btn {
-  display: inline-flex;
-  width: 32px;
-  height: 32px;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-sm);
-  background: var(--white);
-  color: var(--brand-burgundy);
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.action-icon-btn:hover {
-  border-color: var(--brand-burgundy);
-  background: var(--brand-burgundy);
-  color: var(--white);
-}
-
-.action-icon-btn.danger:hover {
-  border-color: var(--danger);
-  background: var(--danger);
-}
-
-.action-icon-btn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.action-icon-btn:disabled:hover {
-  border-color: var(--border-light);
-  background: var(--white);
-  color: var(--brand-burgundy);
-}
-
-.action-icon-btn svg {
-  width: 15px;
-  height: 15px;
-  fill: currentColor;
-}
-
 .promo-no-results {
   padding: 40px !important;
   color: var(--text-secondary);
@@ -526,4 +443,356 @@
   background: #f3efe9;
   color: var(--text-secondary);
   cursor: not-allowed;
+}
+
+/* Page layout */
+body[data-active-nav="promotions"] .center-workspace {
+  min-width: 0;
+  max-width: calc(100vw - var(--sidebar-width) - var(--right-panel-width));
+}
+
+body[data-active-nav="promotions"] .right-action-panel {
+  min-width: var(--right-panel-width);
+}
+
+.kpi-pills-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.kpi-pill {
+  display: flex;
+  min-width: 0;
+  min-height: 64px;
+  align-items: center;
+  padding: 12px 14px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  background: var(--white);
+}
+
+.kpi-pill-content {
+  display: flex;
+  min-width: 0;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.kpi-pill-label {
+  min-width: 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.kpi-pill-val {
+  flex: 0 0 auto;
+  color: var(--brand-burgundy);
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.search-filter-card {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.7fr) repeat(3, minmax(120px, 1fr));
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+}
+
+.search-filter-card .search-box {
+  width: 100%;
+  min-width: 0;
+}
+
+.search-filter-card .search-input,
+.select-filter {
+  width: 100%;
+  min-width: 0;
+  height: 40px;
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background-color: var(--white);
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.select-filter {
+  padding: 0 30px 0 10px;
+  cursor: pointer;
+}
+
+.select-filter:focus,
+.search-filter-card .search-input:focus {
+  border-color: var(--brand-burgundy);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(74, 21, 17, 0.08);
+}
+
+.promo-summary {
+  display: flex;
+  min-height: 20px;
+  align-items: center;
+  margin-top: 10px;
+  color: var(--text-secondary);
+  font-size: 12.5px;
+}
+
+.table-container {
+  max-width: 100%;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  overscroll-behavior-x: contain;
+}
+
+.data-table {
+  min-width: 820px;
+}
+
+.promo-code-cell,
+.promo-code-cell .coupon-code-pill {
+  white-space: nowrap;
+}
+
+#promoTable tbody tr {
+  cursor: pointer;
+}
+
+#promoTable tbody tr:focus-visible {
+  outline: 2px solid var(--brand-burgundy);
+  outline-offset: -2px;
+}
+
+.promo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.promo-form .form-group {
+  min-width: 0;
+  margin-bottom: 0;
+  gap: 6px;
+}
+
+.promo-form .form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  min-width: 0;
+  margin: 0;
+}
+
+.promo-form .form-row .flex-1 {
+  min-width: 0;
+  flex: initial;
+}
+
+.promo-form .form-row label {
+  min-height: 34px;
+  line-height: 1.35;
+}
+
+.promo-form .form-control {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  height: 40px;
+  font-size: 13px;
+}
+
+.promo-code-input {
+  font-family: "Courier New", Courier, monospace;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.promo-form .price-input-wrapper {
+  width: 100%;
+  min-width: 0;
+}
+
+.promo-form .field-hint {
+  color: var(--text-secondary);
+  font-size: 11.5px;
+  line-height: 1.4;
+}
+
+.promo-overview-card {
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.promo-panel-status {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.coupon-code-pill {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.panel-header {
+  gap: 12px;
+}
+
+.panel-header-title-group {
+  min-width: 0;
+}
+
+.panel-header-title-group h2,
+.panel-header-title-group span {
+  overflow-wrap: anywhere;
+}
+
+.panel-header .btn-create-dish {
+  min-height: 40px;
+  flex: 0 0 auto;
+  justify-content: center;
+}
+
+.promo-panel-footer {
+  flex-direction: column;
+  gap: 8px;
+}
+
+.promo-panel-footer .btn-save,
+.promo-panel-footer .promo-cancel-button {
+  width: 100%;
+  min-height: 40px;
+  height: 40px;
+  flex: none;
+  justify-content: center;
+}
+
+.promo-panel-footer .btn-save:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.tester-field-group input {
+  height: 40px;
+  font-size: 13px;
+}
+
+.btn-test-calculator {
+  height: 40px;
+}
+
+.btn-test-calculator:hover {
+  transform: none;
+}
+
+@media (max-width: 1300px) {
+  .search-filter-card {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .search-filter-card .search-box {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1200px) {
+  body[data-active-nav="promotions"] .center-workspace {
+    max-width: calc(100vw - var(--sidebar-width) - 340px);
+  }
+
+  body[data-active-nav="promotions"] .right-action-panel {
+    width: 340px;
+    min-width: 340px;
+    max-width: 340px;
+  }
+
+  .promo-date-row {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+}
+
+@media (max-width: 900px) {
+  body[data-active-nav="promotions"] .center-workspace {
+    width: 100%;
+    max-width: 100%;
+    overflow: visible;
+  }
+
+  body[data-active-nav="promotions"] .right-action-panel {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    height: auto;
+    max-height: none;
+    position: relative;
+    top: auto;
+  }
+
+  .kpi-pills-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .center-workspace {
+    padding: 20px 16px;
+  }
+
+  .workspace-top-bar {
+    margin-bottom: 16px;
+  }
+
+  .page-heading-group h1 {
+    font-size: 20px;
+  }
+
+  .page-heading-group p {
+    line-height: 1.5;
+  }
+
+  .search-filter-card {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .search-filter-card .search-box {
+    grid-column: auto;
+  }
+
+  .promo-form .form-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .promo-form .form-row label {
+    min-height: 0;
+  }
+
+  .promo-form .form-control {
+    height: 44px;
+    font-size: 16px;
+  }
+
+  .select-filter,
+  .search-filter-card .search-input {
+    height: 44px;
+    font-size: 16px;
+  }
+
+  .panel-header,
+  .panel-body,
+  .panel-footer {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
 }

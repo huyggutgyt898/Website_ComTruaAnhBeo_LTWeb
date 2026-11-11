@@ -476,8 +476,7 @@ public sealed class AdminController : Controller
                 UsageCount = _db.DonHangs.Count(order =>
                     order.MaCode == promotion.MaCode &&
                     order.TrangThai != "Huy" &&
-                    order.TrangThai != "DaHuy"),
-                OrderCount = _db.DonHangs.Count(order => order.MaCode == promotion.MaCode)
+                    order.TrangThai != "DaHuy")
             })
             .ToListAsync(cancellationToken);
 
@@ -492,7 +491,6 @@ public sealed class AdminController : Controller
             startDate = promotion.NgayBatDau,
             endDate = promotion.NgayKetThuc,
             usageCount = promotion.UsageCount,
-            orderCount = promotion.OrderCount,
             maxUsage = promotion.TongLuotToiDa,
             perCustomerLimit = promotion.LuotToiDaMoiSdt
         }));
@@ -574,31 +572,6 @@ public sealed class AdminController : Controller
 
         await _db.SaveChangesAsync(cancellationToken);
         return Ok(new { code = normalizedCode });
-    }
-
-    [HttpDelete("api/promotions/{code}")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeletePromotion(string code, CancellationToken cancellationToken)
-    {
-        var normalizedCode = code.Trim().ToUpperInvariant();
-        var promotion = await _db.KhuyenMais
-            .FirstOrDefaultAsync(item => item.MaCode == normalizedCode, cancellationToken);
-        if (promotion is null)
-        {
-            return NotFound(new { message = "Không tìm thấy mã khuyến mãi." });
-        }
-
-        if (await _db.DonHangs.AnyAsync(order => order.MaCode == normalizedCode, cancellationToken))
-        {
-            return Conflict(new
-            {
-                message = "Mã này đã được dùng trong đơn hàng nên không thể xóa để giữ lịch sử đơn hàng."
-            });
-        }
-
-        _db.KhuyenMais.Remove(promotion);
-        await _db.SaveChangesAsync(cancellationToken);
-        return NoContent();
     }
 
     private string? ValidatePromotionRequest(PromotionUpsertRequest? request)

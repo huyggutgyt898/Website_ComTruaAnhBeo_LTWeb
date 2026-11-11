@@ -22,37 +22,33 @@
     </div>
   </div>
 
-  <!-- KPI Quick Summary Badges -->
-  <div class="kpi-pills-row">
+  <!-- KPI Quick Summary -->
+  <section class="kpi-pills-row" aria-label="Tổng quan khuyến mãi">
     <div class="kpi-pill">
-      <div class="kpi-pill-icon kpi-icon-total">🏷️</div>
       <div class="kpi-pill-content">
         <span class="kpi-pill-label">Tổng mã ưu đãi</span>
         <span class="kpi-pill-val" id="statTotalPromos">0</span>
       </div>
     </div>
     <div class="kpi-pill">
-      <div class="kpi-pill-icon kpi-icon-active">🟢</div>
       <div class="kpi-pill-content">
         <span class="kpi-pill-label">Đang áp dụng</span>
         <span class="kpi-pill-val" id="statActivePromos">0</span>
       </div>
     </div>
     <div class="kpi-pill">
-      <div class="kpi-pill-icon kpi-icon-soldout">⏸️</div>
       <div class="kpi-pill-content">
         <span class="kpi-pill-label">Sắp diễn ra</span>
         <span class="kpi-pill-val" id="statUpcomingPromos">0</span>
       </div>
     </div>
     <div class="kpi-pill">
-      <div class="kpi-pill-icon kpi-icon-hidden">🔴</div>
       <div class="kpi-pill-content">
         <span class="kpi-pill-label">Hết hạn / Hết lượt</span>
         <span class="kpi-pill-val" id="statExpiredPromos">0</span>
       </div>
     </div>
-  </div>
+  </section>
 
   <!-- Search & Filters Toolbar -->
   <div class="search-filter-card">
@@ -63,14 +59,14 @@
       <input type="text" id="searchPromoInput" class="search-input" placeholder="Tìm theo mã voucher (VD: FREESHIP, GIAM10)..." oninput="handleFilter()">
     </div>
 
-    <select id="filterPromoType" class="select-filter" onchange="handleFilter()">
+    <select id="filterPromoType" class="select-filter" aria-label="Lọc theo hình thức giảm giá" onchange="handleFilter()">
       <option value="all">Tất cả hình thức</option>
       <option value="PERCENT">Giảm phần trăm (%)</option>
       <option value="FIXED_AMOUNT">Giảm tiền (VNĐ)</option>
       <option value="SHIPPING">Miễn/Giảm phí ship</option>
     </select>
 
-    <select id="filterPromoStatus" class="select-filter" onchange="handleFilter()">
+    <select id="filterPromoStatus" class="select-filter" aria-label="Lọc theo trạng thái" onchange="handleFilter()">
       <option value="all">Tất cả trạng thái</option>
       <option value="ACTIVE">Đang áp dụng</option>
       <option value="UPCOMING">Sắp diễn ra</option>
@@ -78,7 +74,7 @@
       <option value="EXHAUSTED">Hết lượt</option>
     </select>
 
-    <select id="sortPromoOrder" class="select-filter" onchange="handleFilter()">
+    <select id="sortPromoOrder" class="select-filter" aria-label="Sắp xếp khuyến mãi" onchange="handleFilter()">
       <option value="default">Sắp xếp mặc định</option>
       <option value="discount-desc">Mức giảm cao nhất</option>
       <option value="date-asc">Sắp hết hạn</option>
@@ -108,10 +104,8 @@
           <th>Phạm vi áp dụng</th>
           <th>Hình thức & Mức giảm</th>
           <th>Đơn tối thiểu</th>
-          <th>Hiệu lực áp dụng</th>
           <th>Lượt dùng</th>
           <th>Trạng thái</th>
-          <th style="text-align: right;">Thao tác</th>
         </tr>
       </thead>
       <tbody id="promoTableBody">
@@ -121,14 +115,13 @@
   </div>
 
   <!-- Summary info below table -->
-  <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 12.5px; color: var(--text-secondary);">
+  <div class="promo-summary">
     <span id="promoSummaryText"></span>
   </div>
 </main>
 
 <!-- =======================================================================
-     COLUMN 3: DEDICATED RIGHT ACTION & DETAIL PANEL (~390px)
-     CRITICAL RULE: ALL ACTIONS, ADDS, EDITS, TOGGLES, DELETES RESIDE HERE
+     COLUMN 3: PROMOTION DETAILS & FORM
      ======================================================================= -->
 <aside class="right-action-panel">
   <!-- Panel Header -->
@@ -147,7 +140,7 @@
 
   <!-- Panel Scrollable Form Body -->
   <div class="panel-body">
-    <form id="promoForm" onsubmit="handlePromoFormSubmit(event)">
+    <form id="promoForm" class="promo-form" onsubmit="handlePromoFormSubmit(event)">
 
       <!-- Top Badge Card: Code & Status Indicator -->
       <div class="promo-overview-card">
@@ -160,21 +153,21 @@
       <!-- Section 1: Basic Information -->
       <div class="form-group">
         <label for="formPromoCode">Mã voucher <span class="required">*</span></label>
-        <input type="text" id="formPromoCode" class="form-control" placeholder="VD: TRUA15, FREESHIP" maxlength="30" autocomplete="off" style="text-transform: uppercase; font-family: 'Courier New', monospace; font-weight: 800;" required>
+        <input type="text" id="formPromoCode" class="form-control promo-code-input" placeholder="VD: TRUA15, FREESHIP" maxlength="30" autocomplete="off" required>
         <span class="field-hint" id="promoCodeHint" hidden>Mã voucher không thể đổi sau khi tạo để bảo toàn liên kết với đơn hàng.</span>
       </div>
 
       <!-- Section 2: Discount Type & Values -->
       <div class="form-group">
         <label for="formDiscountType">Hình thức giảm giá <span class="required">*</span></label>
-        <select id="formDiscountType" class="form-control" onchange="handleDiscountTypeChange()">
+        <select id="formDiscountType" class="form-control">
           <option value="PERCENT">Giảm theo tỷ lệ phần trăm (%)</option>
           <option value="FIXED_AMOUNT">Giảm số tiền cố định (VNĐ)</option>
           <option value="SHIPPING">Miễn / Giảm phí giao hàng (VNĐ)</option>
         </select>
       </div>
 
-      <div class="form-row">
+      <div class="form-row promo-form-row">
         <div class="form-group flex-1" id="formDiscountValueGroup">
           <label for="formDiscountValue" id="formDiscountValLabel">Phần trăm giảm (%) <span class="required">*</span></label>
           <div class="price-input-wrapper">
@@ -201,28 +194,28 @@
         <span class="field-hint">Đơn hàng phải đạt giá trị này trở lên mới được dùng mã.</span>
       </div>
 
-      <div class="form-row">
+      <div class="form-row promo-form-row promo-date-row">
         <div class="form-group flex-1">
-          <label for="formStartDate">Bắt đầu áp dụng</label>
+          <label for="formStartDate">Bắt đầu áp dụng <span class="required">*</span></label>
           <input type="datetime-local" id="formStartDate" class="form-control" required>
         </div>
         <div class="form-group flex-1">
-          <label for="formEndDate">Hết hạn áp dụng</label>
+          <label for="formEndDate">Hết hạn áp dụng <span class="required">*</span></label>
           <input type="datetime-local" id="formEndDate" class="form-control" required>
         </div>
       </div>
 
-      <div class="form-row">
+      <div class="form-row promo-form-row promo-usage-row">
         <div class="form-group flex-1">
           <label for="formMaxUsage">Tổng lượt phát hành</label>
           <input type="number" id="formMaxUsage" class="form-control" placeholder="Không giới hạn" min="1" step="1">
+          <span class="field-hint">Để trống nếu mã không giới hạn lượt sử dụng.</span>
         </div>
         <div class="form-group flex-1">
           <label for="formPerCustomerLimit">Lượt / mỗi khách</label>
           <input type="number" id="formPerCustomerLimit" class="form-control" placeholder="Không giới hạn" min="1" step="1">
         </div>
       </div>
-      <span class="field-hint">Để trống giới hạn lượt sử dụng nếu mã không bị giới hạn.</span>
 
       <!-- Interactive discount validator widget -->
       <div class="discount-tester-card">
@@ -245,7 +238,7 @@
           </div>
         </div>
         <button type="button" class="btn-test-calculator" onclick="testApplyCurrentPromo()">
-          ⚡ Tính thử tiền thanh toán
+          Tính thử tiền thanh toán
         </button>
         <div class="tester-result-box" id="testerResultBox"></div>
       </div>
@@ -254,55 +247,19 @@
   </div>
 
   <!-- Panel Footer Actions -->
-  <div class="panel-footer" style="flex-direction: column; gap: 8px;">
-    <button type="button" class="btn-save" id="btnSavePromo" style="width: 100%;" onclick="document.getElementById('promoForm').requestSubmit()" disabled>
+  <div class="panel-footer promo-panel-footer">
+    <button type="submit" form="promoForm" class="btn-save" id="btnSavePromo" disabled>
       <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
         <path d="M15 9H5V5H15M12 19A3 3 0 0 1 9 16A3 3 0 0 1 12 13A3 3 0 0 1 15 16A3 3 0 0 1 12 19M17 3H5C3.89 3 3 3.9 3 5V19A2 2 0 0 0 5 21H19A2 2 0 0 0 21 19V7L17 3Z"/>
       </svg>
       <span id="btnSavePromoText">Lưu khuyến mãi</span>
     </button>
 
-    <div id="existingPromoActions" style="display: none; grid-template-columns: 1fr; gap: 8px; width: 100%;">
-      <button type="button" class="btn-delete" id="btnDeletePromo" style="height: 40px; justify-content: center;" onclick="triggerDeleteCurrentPromo()">
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-          <path d="M19 4H15.5L14.5 3H9.5L8.5 4H5V6H19M6 19A2 2 0 0 0 8 21H16A2 2 0 0 0 18 19V7H6V19Z"/>
-        </svg>
-        <span>Xóa mã</span>
-      </button>
-    </div>
-
-    <button type="button" class="btn-secondary" id="btnCancelPromoCreate" style="display: none; width: 100%; height: 40px; justify-content: center; font-weight: 700; font-size: 13px;" onclick="cancelPromoCreate()" disabled>
+    <button type="button" class="btn-secondary promo-cancel-button" id="btnCancelPromoCreate" style="display: none;" onclick="cancelPromoCreate()" disabled>
       Hủy tạo mới
     </button>
   </div>
 </aside>
-
-<!-- Delete Confirmation Modal (Fixed overlay, outside flex container flow) -->
-<div class="admin-modal-backdrop" id="deletePromoModalBackdrop">
-  <div class="admin-modal-box" style="max-width: 480px;">
-    <div class="admin-modal-header">
-      <h3>XÁC NHẬN XÓA MÃ KHUYẾN MÃI</h3>
-      <button type="button" class="btn-modal-close" onclick="closeDeletePromoModal()">✕</button>
-    </div>
-    <div class="admin-modal-body">
-      <div style="display: flex; gap: 14px; align-items: flex-start;">
-        <span style="font-size: 32px; line-height: 1;">⚠️</span>
-        <div style="flex: 1;">
-          <div id="deletePromoModalDesc" style="font-size: 14px; font-weight: 700; color: var(--danger); margin-bottom: 8px;">
-            Bạn có chắc chắn muốn xóa mã khuyến mãi?
-          </div>
-          <p style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; margin: 0;">
-            Mã đã được dùng trong đơn hàng không thể xóa để bảo toàn lịch sử.
-          </p>
-        </div>
-      </div>
-    </div>
-    <div class="admin-modal-footer">
-      <button type="button" class="bulk-action-btn bulk-btn-print" onclick="closeDeletePromoModal()">Hủy bỏ</button>
-      <button type="button" class="bulk-action-btn bulk-btn-cancel" onclick="confirmDeletePromo()">Đồng ý xóa</button>
-    </div>
-  </div>
-</div>
 
 @section Scripts {
     <script src="~/js/promotions-management.js" asp-append-version="true"></script>

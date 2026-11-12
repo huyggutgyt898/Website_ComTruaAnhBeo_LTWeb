@@ -34,6 +34,12 @@ builder.Services.AddHttpClient<DeliveryPricingService>(client =>
 });
 builder.Services.AddTransient<IEmailSender, SmtpEmailSender>();
 builder.Services.AddHostedService<OnlinePaymentExpiryWorker>();
+
+// Đăng ký dịch vụ Quản lý Khách hàng
+builder.Services.AddScoped<IKhachHangService, KhachHangService>();
+
+// Đăng ký dịch vụ Thống kê & Báo cáo
+builder.Services.AddScoped<IStatisticsService, StatisticsService>();
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;

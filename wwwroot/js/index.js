@@ -1568,11 +1568,7 @@
           }
 
           const result = await response.json();
-          if (result.user?.role === "Admin") {
-            window.location.assign("/admin");
-            return;
-          }
-          currentUser = result.user?.role === "KhachHang" ? result.user : null;
+          currentUser = result.user || null;
           updateAuthHeaderState();
         } catch (error) {
           console.error("Không thể tải trạng thái tài khoản:", error);

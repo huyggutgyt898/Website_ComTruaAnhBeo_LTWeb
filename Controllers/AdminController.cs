@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 
@@ -24,17 +25,20 @@ public sealed class AdminController : Controller
     private readonly IPasswordHasher<TaiKhoan> _passwordHasher;
     private readonly DeliveryPricingService _deliveryPricing;
     private readonly ILogger<AdminController> _logger;
+    private readonly IWebHostEnvironment _environment;
 
     public AdminController(
         ComTruaAnhBeoContext db,
         IPasswordHasher<TaiKhoan> passwordHasher,
         DeliveryPricingService deliveryPricing,
-        ILogger<AdminController> logger)
+        ILogger<AdminController> logger,
+        IWebHostEnvironment environment)
     {
         _db = db;
         _passwordHasher = passwordHasher;
         _deliveryPricing = deliveryPricing;
         _logger = logger;
+        _environment = environment;
     }
 
     [HttpGet("")]
@@ -45,6 +49,221 @@ public sealed class AdminController : Controller
     public IActionResult Products()
     {
         return View();
+    }
+
+    [HttpGet("api/products")]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public async Task<IActionResult> GetProductsApi(CancellationToken cancellationToken)
+    {
+        var products = await _db.MonAns
+            .AsNoTracking()
+            .OrderBy(dish => dish.MaMon)
+            .Select(dish => new
+            {
+                rawId = dish.MaMon,
+                name = dish.TenMon,
+                category = dish.DanhMuc,
+                price = dish.Gia,
+                desc = dish.MoTa ?? "",
+                image = dish.HinhAnh,
+                available = dish.ConMon
+            })
+            .ToListAsync(cancellationToken);
+
+        return Ok(products.Select(dish => new
+        {
+            id = $"MON-{dish.rawId:D3}",
+            dish.rawId,
+            dish.name,
+            dish.category,
+            dish.price,
+            dish.desc,
+            image = string.IsNullOrWhiteSpace(dish.image) ? "/images/thumb_suon.jpg" : dish.image,
+            dish.available,
+            visible = true
+        }));
+    }
+
+    [HttpPost("api/products/save")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SaveProductApi(
+        [FromBody] DishUpsertRequest? request,
+        CancellationToken cancellationToken)
+    {
+        if (request is null || !TryValidateModel(request))
+        {
+            return BadRequest(new { message = "Vui lòng kiểm tra lại thông tin món ăn." });
+        }
+
+        var name = request.Name.Trim();
+        var category = request.Category.Trim();
+        var duplicateName = await _db.MonAns.AnyAsync(
+            dish => dish.TenMon == name && dish.MaMon != request.Id,
+            cancellationToken);
+        if (duplicateName)
+        {
+            return Conflict(new { message = "Tên món ăn này đã tồn tại." });
+        }
+
+        MonAn? dish;
+        if (request.Id == 0)
+        {
+            dish = new MonAn();
+            _db.MonAns.Add(dish);
+        }
+        else
+        {
+            dish = await _db.MonAns.FirstOrDefaultAsync(
+                item => item.MaMon == request.Id,
+                cancellationToken);
+            if (dish is null)
+            {
+                return NotFound(new { message = "Không tìm thấy món ăn cần cập nhật." });
+            }
+        }
+
+        dish.TenMon = name;
+        dish.DanhMuc = category;
+        dish.LoaiMon = category.StartsWith("Canh", StringComparison.OrdinalIgnoreCase) ? "Phu" : "Chinh";
+        dish.Gia = request.Price;
+        dish.MoTa = request.Desc?.Trim() ?? "";
+        dish.HinhAnh = string.IsNullOrWhiteSpace(request.Image)
+            ? "/images/thumb_suon.jpg"
+            : request.Image.Trim();
+        dish.ConMon = request.Available;
+
+        try
+        {
+            await _db.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException exception)
+        {
+            _logger.LogError(exception, "Unable to save product {ProductId}.", request.Id);
+            return Conflict(new { message = "Không thể lưu món ăn. Vui lòng kiểm tra tên món và thử lại." });
+        }
+
+        return Ok(new
+        {
+            success = true,
+            message = request.Id == 0 ? "Đã thêm món ăn." : "Đã cập nhật món ăn.",
+            newId = dish.MaMon
+        });
+    }
+
+    [HttpPost("api/products/images")]
+    [ValidateAntiForgeryToken]
+    [RequestSizeLimit(3_200_000)]
+    public async Task<IActionResult> UploadProductImage(
+        [FromForm] IFormFile? image,
+        CancellationToken cancellationToken)
+    {
+        if (image is null || image.Length == 0 || image.Length > 3_000_000)
+        {
+            return BadRequest(new { message = "Ảnh phải có dung lượng từ 1 byte đến 3 MB." });
+        }
+
+        var extension = image.ContentType.ToLowerInvariant() switch
+        {
+            "image/jpeg" => ".jpg",
+            "image/png" => ".png",
+            "image/webp" => ".webp",
+            _ => null
+        };
+        if (extension is null)
+        {
+            return BadRequest(new { message = "Chỉ chấp nhận ảnh JPG, PNG hoặc WebP." });
+        }
+
+        await using var source = image.OpenReadStream();
+        var header = new byte[12];
+        var headerLength = await source.ReadAsync(header, cancellationToken);
+        var isValidImage = extension switch
+        {
+            ".jpg" => headerLength >= 3 && header[0] == 0xFF && header[1] == 0xD8 && header[2] == 0xFF,
+            ".png" => headerLength >= 8 &&
+                header.AsSpan(0, 8).SequenceEqual(new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A }),
+            ".webp" => headerLength >= 12 &&
+                header.AsSpan(0, 4).SequenceEqual("RIFF"u8) &&
+                header.AsSpan(8, 4).SequenceEqual("WEBP"u8),
+            _ => false
+        };
+        if (!isValidImage)
+        {
+            return BadRequest(new { message = "Tệp không phải ảnh hợp lệ hoặc phần mở rộng không khớp." });
+        }
+
+        source.Position = 0;
+        var webRoot = _environment.WebRootPath ?? Path.Combine(_environment.ContentRootPath, "wwwroot");
+        var uploadDirectory = Path.Combine(webRoot, "uploads", "dishes");
+        Directory.CreateDirectory(uploadDirectory);
+        var fileName = $"{Convert.ToHexStringLower(RandomNumberGenerator.GetBytes(16))}{extension}";
+        var filePath = Path.Combine(uploadDirectory, fileName);
+
+        await using (var destination = new FileStream(
+            filePath,
+            FileMode.CreateNew,
+            FileAccess.Write,
+            FileShare.None,
+            bufferSize: 81920,
+            useAsync: true))
+        {
+            await source.CopyToAsync(destination, cancellationToken);
+        }
+
+        return Ok(new { imageUrl = $"/uploads/dishes/{fileName}" });
+    }
+
+    [HttpPost("api/products/toggle-status/{id:int}")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ToggleProductStatus(int id, CancellationToken cancellationToken)
+    {
+        var dish = await _db.MonAns.FirstOrDefaultAsync(item => item.MaMon == id, cancellationToken);
+        if (dish is null)
+        {
+            return NotFound(new { message = "Không tìm thấy món ăn." });
+        }
+
+        dish.ConMon = !dish.ConMon;
+        await _db.SaveChangesAsync(cancellationToken);
+        return Ok(new { success = true, available = dish.ConMon });
+    }
+
+    [HttpPost("api/products/delete/{id:int}")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteProduct(int id, CancellationToken cancellationToken)
+    {
+        var dish = await _db.MonAns.FirstOrDefaultAsync(item => item.MaMon == id, cancellationToken);
+        if (dish is null)
+        {
+            return NotFound(new { message = "Không tìm thấy món ăn." });
+        }
+
+        var hasOrderHistory = await _db.CtDonHangs.AnyAsync(
+            detail => detail.MaMon == id,
+            cancellationToken);
+        if (hasOrderHistory)
+        {
+            dish.ConMon = false;
+            await _db.SaveChangesAsync(cancellationToken);
+            return Ok(new
+            {
+                success = true,
+                message = "Món đã có trong đơn hàng cũ nên được chuyển sang trạng thái hết món."
+            });
+        }
+
+        _db.MonAns.Remove(dish);
+        try
+        {
+            await _db.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException exception)
+        {
+            _logger.LogError(exception, "Unable to delete product {ProductId}.", id);
+            return Conflict(new { message = "Không thể xóa món ăn đang được dữ liệu khác sử dụng." });
+        }
+
+        return Ok(new { success = true, message = "Đã xóa món ăn." });
     }
 
     [HttpGet("orders")]
@@ -944,4 +1163,27 @@ public sealed class PromotionUpsertRequest
     [Range(1, int.MaxValue)]
     public int? PerCustomerLimit { get; init; }
 
+}
+
+public sealed class DishUpsertRequest
+{
+    [Range(0, int.MaxValue)]
+    public int Id { get; init; }
+
+    [Required, StringLength(100)]
+    public string Name { get; init; } = "";
+
+    [Required, StringLength(50)]
+    public string Category { get; init; } = "";
+
+    [Range(typeof(decimal), "0", "999999999999")]
+    public decimal Price { get; init; }
+
+    [StringLength(500)]
+    public string? Desc { get; init; }
+
+    [StringLength(255)]
+    public string? Image { get; init; }
+
+    public bool Available { get; init; }
 }

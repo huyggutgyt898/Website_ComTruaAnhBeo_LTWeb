@@ -210,6 +210,7 @@
   <!-- Scrollable Form Container -->
   <div class="panel-body">
     <form id="foodItemForm" onsubmit="event.preventDefault();">
+      @Html.AntiForgeryToken()
       
       <!-- Image Upload & Preview Card -->
       <div class="image-uploader-card">

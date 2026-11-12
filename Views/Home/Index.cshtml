@@ -404,9 +404,68 @@
     </section>
 
     <section id="view-reviews" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div class="rounded-2xl border border-stone-200 bg-white p-6 sm:p-8">
-        <h1 class="font-brand text-2xl font-black uppercase text-plt-brown">Đánh giá quán</h1>
-        <p class="mt-2 text-sm text-stone-600">Khu vực dành cho đánh giá của khách hàng.</p>
+      <div class="space-y-6">
+        <div>
+          <h1 class="font-brand text-2xl font-black uppercase text-plt-brown">Đánh giá quán</h1>
+          <p class="mt-1 text-sm text-stone-600">Cảm nhận của khách hàng về Cơm Trưa Anh Béo.</p>
+        </div>
+
+        <div class="grid gap-6 lg:grid-cols-3">
+          <section class="space-y-4 rounded-2xl border border-stone-200 bg-white p-6">
+            <div class="flex items-center gap-4">
+              <div id="reviewAvgScore" class="font-brand text-5xl font-black text-plt-brown">0.0</div>
+              <div>
+                <div id="reviewAvgStars" class="text-xl tracking-wide text-amber-500" aria-hidden="true">☆☆☆☆☆</div>
+                <div id="reviewTotalText" class="text-xs text-stone-500">Chưa có lượt đánh giá</div>
+              </div>
+            </div>
+            <div id="reviewDistribution" class="space-y-1.5"></div>
+          </section>
+
+          <section class="rounded-2xl border border-stone-200 bg-white p-6 lg:col-span-2">
+            <h2 class="font-extrabold text-plt-brown">Gửi đánh giá của bạn</h2>
+            <div id="reviewLoginPrompt" class="mt-3 flex flex-col gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 sm:flex-row sm:items-center">
+              <p class="flex-1 text-sm text-stone-700">Vui lòng đăng nhập để gửi đánh giá về quán.</p>
+              <button id="btnReviewLogin" type="button" class="rounded-xl bg-plt-brown px-4 py-2.5 text-xs font-bold uppercase text-plt-gold">
+                Đăng nhập
+              </button>
+            </div>
+            <form id="formReview" class="mt-3 hidden space-y-3" novalidate>
+              <div>
+                <div class="mb-1 text-xs font-bold uppercase text-stone-700">Bạn chấm quán mấy sao? *</div>
+                <div class="flex items-center gap-1" role="radiogroup" aria-label="Chọn số sao">
+                  <button type="button" data-star="1" class="review-star-btn text-3xl leading-none text-stone-300" role="radio" aria-checked="false" aria-label="1 sao">★</button>
+                  <button type="button" data-star="2" class="review-star-btn text-3xl leading-none text-stone-300" role="radio" aria-checked="false" aria-label="2 sao">★</button>
+                  <button type="button" data-star="3" class="review-star-btn text-3xl leading-none text-stone-300" role="radio" aria-checked="false" aria-label="3 sao">★</button>
+                  <button type="button" data-star="4" class="review-star-btn text-3xl leading-none text-stone-300" role="radio" aria-checked="false" aria-label="4 sao">★</button>
+                  <button type="button" data-star="5" class="review-star-btn text-3xl leading-none text-stone-300" role="radio" aria-checked="false" aria-label="5 sao">★</button>
+                  <span id="reviewStarHint" class="ml-2 text-xs font-semibold text-stone-500"></span>
+                </div>
+              </div>
+              <div>
+                <label for="reviewComment" class="mb-1 block text-xs font-bold uppercase text-stone-700">Nhận xét (không bắt buộc)</label>
+                <textarea id="reviewComment" rows="3" maxlength="500" class="w-full rounded-xl border border-stone-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-plt-brown"></textarea>
+                <div class="text-right text-[11px] text-stone-400"><span id="reviewCommentCount">0</span>/500</div>
+              </div>
+              <div id="reviewFormError" class="text-xs font-semibold text-red-600" role="alert"></div>
+              <button id="btnSubmitReview" type="submit" class="rounded-xl bg-amber-500 px-5 py-2.5 text-xs font-bold uppercase text-stone-900 disabled:opacity-60">
+                Gửi đánh giá
+              </button>
+            </form>
+          </section>
+        </div>
+
+        <section class="rounded-2xl border border-stone-200 bg-white p-6">
+          <h2 class="mb-4 font-extrabold text-plt-brown">Khách hàng nói gì về quán</h2>
+          <div id="reviewListError" class="mb-3 hidden text-sm text-red-600" role="alert"></div>
+          <div id="reviewEmptyState" class="hidden py-8 text-center text-sm text-stone-500">Chưa có đánh giá nào.</div>
+          <div id="reviewList" class="divide-y divide-stone-100"></div>
+          <div class="mt-4 text-center">
+            <button id="btnLoadMoreReviews" type="button" class="hidden rounded-xl bg-stone-100 px-5 py-2.5 text-xs font-bold uppercase text-stone-700">
+              Xem thêm đánh giá
+            </button>
+          </div>
+        </section>
       </div>
     </section>
 
@@ -441,8 +500,59 @@
         <div class="text-xs text-stone-600 space-y-1">
           <div>📧 Email: <strong id="profileEmailDisplay">--</strong></div>
           <div>📞 SĐT: <strong id="profilePhoneDisplay">--</strong></div>
+          <div>📍 Địa chỉ: <strong id="profileAddressDisplay">--</strong></div>
           <div>🔑 Vai trò: <strong id="profileRoleDisplay">--</strong></div>
         </div>
+        <button id="btnEditProfile" type="button" class="w-full rounded-xl bg-plt-brown py-2.5 text-xs font-bold uppercase text-plt-gold">
+          Chỉnh sửa thông tin
+        </button>
+        <form id="formEditProfile" class="hidden space-y-3 rounded-xl border border-amber-200 bg-white p-3" novalidate>
+          <label class="block text-xs font-bold uppercase text-stone-700" for="editProfileName">Họ và tên
+            <input id="editProfileName" name="FullName" type="text" required maxlength="100" autocomplete="name" class="mt-1 w-full rounded-xl border border-stone-300 px-3.5 py-2.5 text-sm">
+          </label>
+          <label class="block text-xs font-bold uppercase text-stone-700" for="editProfilePhone">Số điện thoại
+            <input id="editProfilePhone" name="Phone" type="tel" required maxlength="10" inputmode="numeric" autocomplete="tel" placeholder="0xxxxxxxxx" class="mt-1 w-full rounded-xl border border-stone-300 px-3.5 py-2.5 text-sm">
+          </label>
+          <label class="block text-xs font-bold uppercase text-stone-700" for="editProfileAddress">Địa chỉ nhận hàng
+            <input id="editProfileAddress" name="Address" type="text" required maxlength="255" autocomplete="street-address" class="mt-1 w-full rounded-xl border border-stone-300 px-3.5 py-2.5 text-sm">
+          </label>
+          <p class="text-[11px] text-stone-500">Email đăng nhập không thể thay đổi.</p>
+          <div id="editProfileError" class="text-xs font-semibold text-red-600" role="alert"></div>
+          <div class="grid grid-cols-2 gap-2">
+            <button id="btnCancelEditProfile" type="button" class="rounded-xl bg-stone-200 py-2.5 text-xs font-bold uppercase text-stone-700">Hủy</button>
+            <button id="btnSaveProfile" type="submit" class="rounded-xl bg-amber-500 py-2.5 text-xs font-bold uppercase text-stone-900">Lưu thay đổi</button>
+          </div>
+        </form>
+        <button id="btnChangePassword" type="button" class="w-full rounded-xl bg-stone-700 py-2.5 text-xs font-bold uppercase text-white">
+          Đổi mật khẩu
+        </button>
+        <form id="cpForm" class="hidden space-y-3 rounded-xl border border-amber-200 bg-white p-3" novalidate>
+          <div id="cpStep1" class="space-y-3">
+            <p class="text-xs text-stone-700">Mã xác nhận sẽ được gửi tới <strong id="cpEmailDisplay">--</strong>.</p>
+            <div class="grid grid-cols-2 gap-2">
+              <button id="cpCancelBtn" type="button" class="rounded-xl bg-stone-200 py-2.5 text-xs font-bold uppercase text-stone-700">Hủy</button>
+              <button id="cpSendBtn" type="submit" class="rounded-xl bg-amber-500 py-2.5 text-xs font-bold uppercase text-stone-900">Gửi mã</button>
+            </div>
+          </div>
+          <div id="cpStep2" class="hidden space-y-3">
+            <div id="cpNotice" class="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-stone-700"></div>
+            <label class="block text-xs font-bold uppercase text-stone-700" for="cpCode">Mã xác nhận
+              <input id="cpCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" class="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2.5 text-center text-lg tracking-[0.4em]">
+            </label>
+            <label class="block text-xs font-bold uppercase text-stone-700" for="cpNewPassword">Mật khẩu mới
+              <input id="cpNewPassword" type="password" autocomplete="new-password" maxlength="100" class="mt-1 w-full rounded-xl border border-stone-300 px-3.5 py-2.5 text-sm">
+            </label>
+            <label class="block text-xs font-bold uppercase text-stone-700" for="cpConfirmPassword">Nhập lại mật khẩu mới
+              <input id="cpConfirmPassword" type="password" autocomplete="new-password" maxlength="100" class="mt-1 w-full rounded-xl border border-stone-300 px-3.5 py-2.5 text-sm">
+            </label>
+            <div class="flex items-center justify-between text-xs">
+              <button id="cpBackBtn" type="button" class="font-bold text-stone-500">&larr; Quay lại</button>
+              <button id="cpResendBtn" type="button" disabled class="font-bold text-stone-400"><span id="cpResendLabel">Gửi lại sau 1:00</span></button>
+            </div>
+            <button id="cpSubmitBtn" type="submit" class="w-full rounded-xl bg-plt-brown py-3 text-sm font-extrabold uppercase text-plt-gold">Đổi mật khẩu</button>
+          </div>
+          <div id="cpError" class="text-xs font-semibold text-red-600" role="alert"></div>
+        </form>
         <a id="btnGoToAdminPanel" href="/admin" class="hidden w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-stone-900 font-bold text-xs uppercase transition text-center block">
           ⚙️ Quay lại trang Quản trị Admin
         </a>
@@ -553,11 +663,35 @@
         </div>
       </form>
 
-      <!-- TAB 3: KHÔI PHỤC MẬT KHẨU (CHƯA TRIỂN KHAI) -->
+      <!-- TAB 3: QUÊN MẬT KHẨU -->
       <div id="formForgotBox" class="hidden space-y-4">
-        <div class="bg-amber-50 p-4 rounded-xl border border-amber-200 text-sm text-stone-700">
-          Tính năng khôi phục mật khẩu chưa được triển khai. Vui lòng liên hệ cửa hàng để được hỗ trợ.
-        </div>
+        <form id="fpForm" class="space-y-3" novalidate>
+          <div id="fpStep1" class="space-y-3">
+            <p class="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-stone-700">Nhập email đã đăng ký để nhận mã đặt lại mật khẩu.</p>
+            <label class="block text-xs font-bold uppercase text-stone-700" for="fpEmail">Email đã đăng ký
+              <input id="fpEmail" type="email" autocomplete="email" maxlength="150" class="mt-1 w-full rounded-xl border border-stone-300 px-3.5 py-2.5 text-sm">
+            </label>
+            <button id="fpSendBtn" type="submit" class="w-full rounded-xl bg-amber-500 py-3 text-sm font-extrabold uppercase text-stone-900">Gửi mã xác nhận</button>
+          </div>
+          <div id="fpStep2" class="hidden space-y-3">
+            <div id="fpNotice" class="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-stone-700"></div>
+            <label class="block text-xs font-bold uppercase text-stone-700" for="fpCode">Mã xác nhận
+              <input id="fpCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" class="mt-1 w-full rounded-xl border border-stone-300 px-3 py-2.5 text-center text-lg tracking-[0.4em]">
+            </label>
+            <label class="block text-xs font-bold uppercase text-stone-700" for="fpNewPassword">Mật khẩu mới
+              <input id="fpNewPassword" type="password" autocomplete="new-password" maxlength="100" class="mt-1 w-full rounded-xl border border-stone-300 px-3.5 py-2.5 text-sm">
+            </label>
+            <label class="block text-xs font-bold uppercase text-stone-700" for="fpConfirmPassword">Nhập lại mật khẩu mới
+              <input id="fpConfirmPassword" type="password" autocomplete="new-password" maxlength="100" class="mt-1 w-full rounded-xl border border-stone-300 px-3.5 py-2.5 text-sm">
+            </label>
+            <div class="flex items-center justify-between text-xs">
+              <button id="fpBackBtn" type="button" class="font-bold text-stone-500">&larr; Quay lại</button>
+              <button id="fpResendBtn" type="button" disabled class="font-bold text-stone-400"><span id="fpResendLabel">Gửi lại sau 1:00</span></button>
+            </div>
+            <button id="fpSubmitBtn" type="submit" class="w-full rounded-xl bg-plt-brown py-3 text-sm font-extrabold uppercase text-plt-gold">Đặt lại mật khẩu</button>
+          </div>
+          <div id="fpError" class="text-xs font-semibold text-red-600" role="alert"></div>
+        </form>
         <button id="btnBackLoginFromForgot" type="button"
                 class="w-full py-3 rounded-xl bg-plt-brown hover:bg-amber-900 text-plt-gold font-brand font-extrabold text-sm uppercase transition">
           Quay lại đăng nhập

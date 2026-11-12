@@ -302,7 +302,355 @@ public sealed class AuthController : Controller
         var tokens = _antiforgery.GetAndStoreTokens(HttpContext);
         return Ok(new { token = tokens.RequestToken });
     }
+    // GET /auth/profile: đọc hồ sơ mới nhất từ DB của khách đang đăng nhập
+    [HttpGet("profile")]
+    [Authorize(Roles = CustomerRole)]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public async Task<IActionResult> GetProfile()
+    {
+        var account = await FindCurrentCustomerAsync();
+        if (account is null)
+        {
+            return await RejectInactiveSessionAsync();
+        }
 
+        return Ok(new { user = ToClientUser(account) });
+    }
+
+    // POST /auth/profile: khách tự cập nhật họ tên, số điện thoại, địa chỉ (email không đổi được)
+    [HttpPost("profile")]
+    [Authorize(Roles = CustomerRole)]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
+
+        var account = await FindCurrentCustomerAsync();
+        if (account is null)
+        {
+            return await RejectInactiveSessionAsync();
+        }
+
+        var phone = request.Phone.Trim();
+        if (await _db.TaiKhoans.AnyAsync(a => a.Sdt == phone && a.MaTk != account.MaTk))
+        {
+            return Conflict(new { message = "Số điện thoại này đã được dùng cho tài khoản khác." });
+        }
+
+        account.HoTen = request.FullName.Trim();
+        account.Sdt = phone;
+        account.DiaChi = request.Address.Trim();
+
+        try
+        {
+            await _db.SaveChangesAsync();
+        }
+        catch (DbUpdateException exception) when (IsDuplicateKeyViolation(exception))
+        {
+            return Conflict(new { message = "Số điện thoại này đã được dùng cho tài khoản khác." });
+        }
+
+        // Đăng nhập lại để cookie chứa thông tin mới (tên, SĐT, địa chỉ)
+        await SignInAccountAsync(account);
+        return Ok(new { message = "Đã cập nhật thông tin tài khoản.", user = ToClientUser(account) });
+    }
+
+    private async Task<TaiKhoan?> FindCurrentCustomerAsync()
+    {
+        if (!int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var accountId))
+        {
+            return null;
+        }
+
+        return await _db.TaiKhoans.FirstOrDefaultAsync(account =>
+            account.MaTk == accountId &&
+            account.VaiTro == CustomerRole &&
+            account.HoatDong);
+    }
+
+    // Tài khoản đã bị admin khóa/xóa trong lúc đang đăng nhập: đăng xuất khỏi phiên hiện tại
+    private async Task<IActionResult> RejectInactiveSessionAsync()
+    {
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        return Unauthorized(new { message = "Tài khoản không còn hoạt động. Vui lòng đăng nhập lại." });
+    }
+    // ========================================================================
+    // QUÊN MẬT KHẨU & ĐỔI MẬT KHẨU QUA EMAIL
+    // Luồng: gửi mã 6 số qua email -> nhập mã + mật khẩu mới.
+    //  - Quên mật khẩu (chưa đăng nhập): forgot/send-code -> forgot/reset
+    //  - Đổi mật khẩu (đã đăng nhập):    change/send-code -> change
+    // ========================================================================
+    private const string PurposeForgot = "forgot";
+    private const string PurposeChange = "change";
+
+    // POST /auth/password/forgot/send-code  { "email": "..." }
+    [HttpPost("password/forgot/send-code")]
+    [AllowAnonymous]
+    [ValidateAntiForgeryToken]
+    [EnableRateLimiting("password-reset-send")]
+    public async Task<IActionResult> SendForgotPasswordCode([FromBody] ForgotPasswordRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
+
+        var email = request.Email.Trim().ToLowerInvariant();
+        var account = await _db.TaiKhoans.FirstOrDefaultAsync(a =>
+            a.Email == email &&
+            a.VaiTro == CustomerRole &&
+            a.HoatDong);
+
+        // Luôn trả lời giống nhau dù email có tồn tại hay không (tránh dò email)
+        return await IssuePasswordCodeAsync(PurposeForgot, email, account);
+    }
+
+    // POST /auth/password/forgot/reset  { "challengeId", "code", "newPassword" }
+    [HttpPost("password/forgot/reset")]
+    [AllowAnonymous]
+    [ValidateAntiForgeryToken]
+    [EnableRateLimiting("password-reset-verify")]
+    public async Task<IActionResult> ResetForgottenPassword([FromBody] ResetPasswordRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
+
+        var (pending, error) = ConsumePasswordCode(PurposeForgot, request);
+        if (error is not null)
+        {
+            return error;
+        }
+
+        var account = await _db.TaiKhoans.FirstOrDefaultAsync(a =>
+            a.MaTk == pending!.AccountId &&
+            a.VaiTro == CustomerRole &&
+            a.HoatDong);
+
+        if (account is null)
+        {
+            return BadRequest(new { message = "Không thể đặt lại mật khẩu cho tài khoản này." });
+        }
+
+        account.MatKhauHash = _passwordHasher.HashPassword(account, request.NewPassword);
+        await _db.SaveChangesAsync();
+
+        return Ok(new
+        {
+            message = "Đặt lại mật khẩu thành công. Vui lòng đăng nhập bằng mật khẩu mới.",
+            email = account.Email
+        });
+    }
+
+    // POST /auth/password/change/send-code  (khách đã đăng nhập, mã gửi tới email của chính tài khoản)
+    [HttpPost("password/change/send-code")]
+    [Authorize(Roles = CustomerRole)]
+    [ValidateAntiForgeryToken]
+    [EnableRateLimiting("password-reset-send")]
+    public async Task<IActionResult> SendChangePasswordCode()
+    {
+        var account = await FindCurrentCustomerAsync();
+        if (account is null)
+        {
+            return await RejectInactiveSessionAsync();
+        }
+
+        return await IssuePasswordCodeAsync(PurposeChange, account.Email.Trim().ToLowerInvariant(), account);
+    }
+
+    // POST /auth/password/change  { "challengeId", "code", "newPassword" }
+    [HttpPost("password/change")]
+    [Authorize(Roles = CustomerRole)]
+    [ValidateAntiForgeryToken]
+    [EnableRateLimiting("password-reset-verify")]
+    public async Task<IActionResult> ChangePassword([FromBody] ResetPasswordRequest request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return ValidationProblem(ModelState);
+        }
+
+        var account = await FindCurrentCustomerAsync();
+        if (account is null)
+        {
+            return await RejectInactiveSessionAsync();
+        }
+
+        var (_, error) = ConsumePasswordCode(PurposeChange, request, account.MaTk);
+        if (error is not null)
+        {
+            return error;
+        }
+
+        account.MatKhauHash = _passwordHasher.HashPassword(account, request.NewPassword);
+        await _db.SaveChangesAsync();
+
+        return Ok(new { message = "Đổi mật khẩu thành công." });
+    }
+
+    private async Task<IActionResult> IssuePasswordCodeAsync(string purpose, string email, TaiKhoan? account)
+    {
+        var emailKey = GetEmailKey(email);
+        var cooldownKey = GetPasswordCooldownKey(purpose, emailKey);
+        if (_cache.TryGetValue(cooldownKey, out _))
+        {
+            return StatusCode(StatusCodes.Status429TooManyRequests, new
+            {
+                message = "Vui lòng đợi 1 phút trước khi gửi lại mã."
+            });
+        }
+
+        var activeKey = GetPasswordActiveKey(purpose, emailKey);
+        if (_cache.TryGetValue<string>(activeKey, out var oldChallengeId) && oldChallengeId is not null)
+        {
+            _cache.Remove(GetPasswordChallengeKey(oldChallengeId));
+        }
+
+        var challengeId = Microsoft.AspNetCore.WebUtilities.WebEncoders.Base64UrlEncode(
+            RandomNumberGenerator.GetBytes(32));
+        var code = RandomNumberGenerator.GetInt32(0, 1_000_000).ToString("D6");
+
+        // account == null (email không tồn tại / bị khóa): vẫn tạo phiên giả để phản hồi giống hệt,
+        // nhưng không gửi email và phiên này không bao giờ xác nhận thành công (AccountId = 0)
+        var pending = new PendingPasswordCode(
+            purpose,
+            account?.MaTk ?? 0,
+            emailKey,
+            HashCode(challengeId, code),
+            DateTimeOffset.UtcNow.Add(VerificationCodeLifetime));
+
+        _cache.Set(GetPasswordChallengeKey(challengeId), pending, VerificationCodeLifetime);
+        _cache.Set(activeKey, challengeId, VerificationCodeLifetime);
+        _cache.Set(cooldownKey, true, VerificationResendInterval);
+
+        if (account is not null)
+        {
+            try
+            {
+                await _emailSender.SendPasswordResetCodeAsync(
+                    email,
+                    account.HoTen,
+                    code,
+                    HttpContext.RequestAborted);
+            }
+            catch (EmailSenderConfigurationException exception)
+            {
+                RemovePendingPasswordCode(challengeId, purpose, emailKey);
+                _cache.Remove(cooldownKey);
+                _logger.LogError(exception, "Email sending is not configured.");
+                return StatusCode(StatusCodes.Status503ServiceUnavailable, new
+                {
+                    message = "Ứng dụng chưa nạp đủ cấu hình SMTP. Hãy chạy scripts/Configure-EmailSecrets.ps1 rồi khởi động lại ứng dụng."
+                });
+            }
+            catch (SmtpException exception)
+            {
+                RemovePendingPasswordCode(challengeId, purpose, emailKey);
+                _cache.Remove(cooldownKey);
+                _logger.LogError(exception, "Failed to send a password reset email.");
+                return StatusCode(StatusCodes.Status503ServiceUnavailable, new
+                {
+                    message = "Gmail SMTP từ chối gửi email. Kiểm tra Gmail và App Password; xem log ứng dụng để biết lỗi kết nối."
+                });
+            }
+        }
+
+        return Ok(new
+        {
+            message = "Nếu thông tin hợp lệ, mã xác nhận đã được gửi qua email.",
+            challengeId,
+            expiresInSeconds = (int)VerificationCodeLifetime.TotalSeconds,
+            resendAfterSeconds = (int)VerificationResendInterval.TotalSeconds
+        });
+    }
+
+    // Kiểm tra mã. Thành công thì xóa phiên (mã chỉ dùng được 1 lần) và trả về phiên đó.
+    private (PendingPasswordCode? Pending, IActionResult? Error) ConsumePasswordCode(
+        string purpose,
+        ResetPasswordRequest request,
+        int? requiredAccountId = null)
+    {
+        if (!_cache.TryGetValue<PendingPasswordCode>(GetPasswordChallengeKey(request.ChallengeId), out var pending) ||
+            pending is null ||
+            pending.Purpose != purpose ||
+            pending.ExpiresAtUtc <= DateTimeOffset.UtcNow)
+        {
+            return (null, BadRequest(new { message = "Mã xác nhận đã hết hạn. Vui lòng gửi mã mới." }));
+        }
+
+        if (requiredAccountId is not null && pending.AccountId != requiredAccountId)
+        {
+            return (null, BadRequest(new { message = "Mã xác nhận không hợp lệ. Vui lòng gửi mã mới." }));
+        }
+
+        if (pending.FailedAttempts >= MaxVerificationAttempts)
+        {
+            RemovePendingPasswordCode(request.ChallengeId, purpose, pending.EmailKey);
+            return (null, StatusCode(StatusCodes.Status429TooManyRequests, new
+            {
+                message = "Bạn đã nhập sai mã quá nhiều lần. Vui lòng gửi mã mới."
+            }));
+        }
+
+        var codeMatches = CryptographicOperations.FixedTimeEquals(
+            pending.CodeHash,
+            HashCode(request.ChallengeId, request.Code));
+
+        // AccountId == 0 là phiên giả (email không tồn tại): không bao giờ được chấp nhận
+        if (!codeMatches || pending.AccountId == 0)
+        {
+            pending.FailedAttempts++;
+            if (pending.FailedAttempts >= MaxVerificationAttempts)
+            {
+                RemovePendingPasswordCode(request.ChallengeId, purpose, pending.EmailKey);
+                return (null, StatusCode(StatusCodes.Status429TooManyRequests, new
+                {
+                    message = "Bạn đã nhập sai mã quá nhiều lần. Vui lòng gửi mã mới."
+                }));
+            }
+
+            return (null, BadRequest(new { message = "Mã xác nhận chưa đúng. Vui lòng kiểm tra email." }));
+        }
+
+        RemovePendingPasswordCode(request.ChallengeId, purpose, pending.EmailKey);
+        return (pending, null);
+    }
+
+    private void RemovePendingPasswordCode(string challengeId, string purpose, string emailKey)
+    {
+        _cache.Remove(GetPasswordChallengeKey(challengeId));
+        var activeKey = GetPasswordActiveKey(purpose, emailKey);
+        if (_cache.TryGetValue<string>(activeKey, out var activeChallengeId) &&
+            string.Equals(activeChallengeId, challengeId, StringComparison.Ordinal))
+        {
+            _cache.Remove(activeKey);
+        }
+    }
+
+    private static string GetPasswordChallengeKey(string challengeId) => $"password:challenge:{challengeId}";
+
+    private static string GetPasswordActiveKey(string purpose, string emailKey) => $"password:active:{purpose}:{emailKey}";
+
+    private static string GetPasswordCooldownKey(string purpose, string emailKey) => $"password:cooldown:{purpose}:{emailKey}";
+
+    private sealed class PendingPasswordCode(
+        string purpose,
+        int accountId,
+        string emailKey,
+        byte[] codeHash,
+        DateTimeOffset expiresAtUtc)
+    {
+        public string Purpose { get; } = purpose;
+        public int AccountId { get; } = accountId;
+        public string EmailKey { get; } = emailKey;
+        public byte[] CodeHash { get; } = codeHash;
+        public DateTimeOffset ExpiresAtUtc { get; } = expiresAtUtc;
+        public int FailedAttempts { get; set; }
+    }
     private IActionResult InvalidCredentials() =>
         Unauthorized(new { message = "Email/SĐT hoặc mật khẩu không chính xác." });
 

@@ -660,7 +660,180 @@
     }
 
     // =========================================================================
-    // 6. CHUYỂN ĐỔI VIEW / TAB TRONG TRANG WEB
+    // 6. ĐÁNH GIÁ QUÁN
+    // =========================================================================
+    const reviewPageSize = 10;
+    const reviewState = { skip: 0, hasMore: false, loading: false, stars: 0 };
+
+    function reviewStarText(stars) {
+      const score = Math.max(0, Math.min(5, Number(stars) || 0));
+      return "★".repeat(score) + "☆".repeat(5 - score);
+    }
+
+    function updateReviewFormState() {
+      const canReview = currentUser?.role === "KhachHang";
+      const loginButton = document.getElementById("btnReviewLogin");
+      document.getElementById("formReview").classList.toggle("hidden", !canReview);
+      document.getElementById("reviewLoginPrompt").classList.toggle("hidden", canReview);
+      loginButton.classList.toggle("hidden", Boolean(currentUser));
+      if (!canReview) {
+        document.querySelector("#reviewLoginPrompt p").textContent = currentUser
+          ? "Chỉ khách hàng mới có thể gửi đánh giá."
+          : "Vui lòng đăng nhập để gửi đánh giá về quán.";
+      }
+    }
+
+    function renderReviewSummary(summary) {
+      const total = Number(summary?.total) || 0;
+      const average = Number(summary?.average) || 0;
+      document.getElementById("reviewAvgScore").textContent = average.toFixed(1);
+      document.getElementById("reviewAvgStars").textContent = reviewStarText(Math.round(average));
+      document.getElementById("reviewTotalText").textContent =
+        total === 0 ? "Chưa có lượt đánh giá" : `${total} lượt đánh giá`;
+
+      const distribution = summary?.distribution || {};
+      document.getElementById("reviewDistribution").innerHTML = [5, 4, 3, 2, 1].map(stars => {
+        const count = Number(distribution[String(stars)]) || 0;
+        const percent = total > 0 ? Math.min(100, Math.round(count / total * 100)) : 0;
+        return `<div class="flex items-center gap-2 text-xs">
+          <span class="w-7 text-stone-600">${stars} ★</span>
+          <div class="h-2 flex-1 overflow-hidden rounded-full bg-stone-100">
+            <div class="h-full rounded-full bg-amber-400" style="width:${percent}%"></div>
+          </div>
+          <span class="w-6 text-right text-stone-500">${count}</span>
+        </div>`;
+      }).join("");
+    }
+
+    function renderReviewItems(items, append) {
+      const list = document.getElementById("reviewList");
+      if (!append) list.replaceChildren();
+      const rows = Array.isArray(items) ? items : [];
+      rows.forEach(item => {
+        const stars = Math.max(1, Math.min(5, Number(item.stars) || 0));
+        const row = document.createElement("article");
+        row.className = "py-4 first:pt-0 last:pb-0";
+        row.innerHTML = `<div class="flex flex-wrap items-center justify-between gap-2">
+          <div class="font-bold text-stone-800">${escapeHtml(item.name || "Khách hàng")}</div>
+          <time class="text-xs text-stone-400">${escapeHtml(item.date || "")}</time>
+        </div>
+        <div class="mt-1 text-sm tracking-wide text-amber-500" aria-label="${stars} trên 5 sao">${reviewStarText(stars)}</div>
+        ${item.comment ? `<p class="mt-2 whitespace-pre-wrap text-sm leading-6 text-stone-600">${escapeHtml(item.comment)}</p>` : ""}`;
+        list.appendChild(row);
+      });
+
+      const empty = reviewState.skip === 0 && rows.length === 0;
+      document.getElementById("reviewEmptyState").classList.toggle("hidden", !empty);
+      document.getElementById("btnLoadMoreReviews").classList.toggle("hidden", !reviewState.hasMore);
+    }
+
+    async function loadReviews(append) {
+      if (reviewState.loading) return;
+      reviewState.loading = true;
+      const errorBox = document.getElementById("reviewListError");
+      errorBox.classList.add("hidden");
+      try {
+        const response = await fetch(`/reviews?skip=${append ? reviewState.skip : 0}&take=${reviewPageSize}`, {
+          cache: "no-store",
+          credentials: "same-origin"
+        });
+        const result = await response.json().catch(() => null);
+        if (!response.ok || !result) {
+          throw new Error(result?.message || `Không thể tải đánh giá (HTTP ${response.status}).`);
+        }
+        renderReviewSummary(result.summary);
+        if (!append) reviewState.skip = 0;
+        const items = Array.isArray(result.items) ? result.items : [];
+        reviewState.skip += items.length;
+        reviewState.hasMore = Boolean(result.hasMore);
+        renderReviewItems(items, append);
+      } catch (error) {
+        errorBox.textContent = error.message || "Không thể tải đánh giá. Vui lòng thử lại.";
+        errorBox.classList.remove("hidden");
+      } finally {
+        reviewState.loading = false;
+      }
+    }
+
+    function initReviewSection() {
+      const form = document.getElementById("formReview");
+      document.querySelectorAll(".review-star-btn").forEach(button => {
+        button.addEventListener("click", () => {
+          reviewState.stars = Number(button.dataset.star);
+          document.querySelectorAll(".review-star-btn").forEach(starButton => {
+            const active = Number(starButton.dataset.star) <= reviewState.stars;
+            starButton.classList.toggle("text-amber-500", active);
+            starButton.classList.toggle("text-stone-300", !active);
+            starButton.setAttribute("aria-checked", String(Number(starButton.dataset.star) === reviewState.stars));
+          });
+          document.getElementById("reviewStarHint").textContent = `${reviewState.stars} sao`;
+          document.getElementById("reviewFormError").textContent = "";
+        });
+      });
+      document.getElementById("reviewComment").addEventListener("input", event => {
+        document.getElementById("reviewCommentCount").textContent = event.currentTarget.value.length;
+      });
+      document.getElementById("btnReviewLogin").addEventListener("click", () => {
+        document.getElementById("modalAuth").classList.remove("hidden");
+      });
+      document.getElementById("btnLoadMoreReviews").addEventListener("click", () => loadReviews(true));
+      form.addEventListener("submit", async event => {
+        event.preventDefault();
+        const errorBox = document.getElementById("reviewFormError");
+        const submitButton = document.getElementById("btnSubmitReview");
+        if (reviewState.stars < 1 || reviewState.stars > 5) {
+          errorBox.textContent = "Vui lòng chọn số sao trước khi gửi.";
+          return;
+        }
+        submitButton.disabled = true;
+        errorBox.textContent = "";
+        try {
+          const tokenResponse = await fetch("/auth/antiforgery", {
+            cache: "no-store",
+            credentials: "same-origin"
+          });
+          const tokenResult = await tokenResponse.json().catch(() => null);
+          if (!tokenResponse.ok || !tokenResult?.token) {
+            throw new Error("Không lấy được mã bảo vệ yêu cầu. Vui lòng tải lại trang.");
+          }
+          const response = await fetch("/reviews", {
+            method: "POST",
+            credentials: "same-origin",
+            headers: {
+              "Content-Type": "application/json",
+              "RequestVerificationToken": tokenResult.token
+            },
+            body: JSON.stringify({
+              stars: reviewState.stars,
+              comment: document.getElementById("reviewComment").value
+            })
+          });
+          const result = await response.json().catch(() => null);
+          if (!response.ok) {
+            const validationMessage = result?.errors ? Object.values(result.errors).flat()[0] : null;
+            throw new Error(result?.message || validationMessage || `Không thể gửi đánh giá (HTTP ${response.status}).`);
+          }
+          form.reset();
+          reviewState.stars = 0;
+          document.getElementById("reviewCommentCount").textContent = "0";
+          document.getElementById("reviewStarHint").textContent = "";
+          document.querySelectorAll(".review-star-btn").forEach(button => {
+            button.classList.remove("text-amber-500");
+            button.classList.add("text-stone-300");
+            button.setAttribute("aria-checked", "false");
+          });
+          showToast(result.message || "Cảm ơn bạn đã gửi đánh giá!");
+          await loadReviews(false);
+        } catch (error) {
+          errorBox.textContent = error.message || "Không thể gửi đánh giá. Vui lòng thử lại.";
+        } finally {
+          submitButton.disabled = false;
+        }
+      });
+    }
+
+    // =========================================================================
+    // 7. CHUYỂN ĐỔI VIEW / TAB TRONG TRANG WEB
     // =========================================================================
     function switchView(viewName, scrollToMenu = false) {
       const actualView = viewName === "menu" ? "home" : viewName;
@@ -694,6 +867,7 @@
       document.getElementById("floatingContactLinks").classList.toggle("hidden", actualView === "checkout");
 
       if (viewName === "reviews") {
+        loadReviews(false);
         setTimeout(() => {
           document.getElementById("view-reviews").scrollIntoView({ behavior: "smooth" });
         }, 60);
@@ -726,6 +900,7 @@
       renderMenuGrid();
       loadMenuItems();
       updateCartAndCheckoutUI();
+      initReviewSection();
 
       setCheckoutStep(1);
 
@@ -1137,6 +1312,9 @@
         document.getElementById("formLogin").classList.toggle("hidden", tabName !== "login");
         document.getElementById("formRegister").classList.toggle("hidden", tabName !== "register");
         document.getElementById("formForgotBox").classList.toggle("hidden", tabName !== "forgot");
+        if (tabName !== "forgot" && forgotPasswordFlow) {
+          forgotPasswordFlow.reset();
+        }
       }
 
       document.getElementById("btnHeaderAuth").addEventListener("click", () => {
@@ -1144,6 +1322,7 @@
       });
       document.getElementById("btnCloseAuthModal").addEventListener("click", () => {
         modalAuth.classList.add("hidden");
+        if (forgotPasswordFlow) forgotPasswordFlow.reset();
       });
       document.querySelectorAll(".auth-tab-btn").forEach(btn => {
         btn.addEventListener("click", () => setAuthTab(btn.getAttribute("data-authtab")));
@@ -1175,7 +1354,11 @@
           document.getElementById("profileNameDisplay").textContent = currentUser.name;
           document.getElementById("profileEmailDisplay").textContent = currentUser.email;
           document.getElementById("profilePhoneDisplay").textContent = currentUser.phone;
+          document.getElementById("profileAddressDisplay").textContent = currentUser.address || "--";
           document.getElementById("profileRoleDisplay").textContent = currentUser.role;
+          const isCustomer = currentUser.role === "KhachHang";
+          document.getElementById("btnEditProfile").classList.toggle("hidden", !isCustomer);
+          document.getElementById("btnChangePassword").classList.toggle("hidden", !isCustomer);
 
           const adminLink = document.getElementById("btnGoToAdminPanel");
           if (adminLink) {
@@ -1193,12 +1376,14 @@
           document.getElementById("orderAddress").value = currentUser.address || "";
           selectedDeliveryLocation = null;
           updateCartAndCheckoutUI();
+          updateReviewFormState();
         } else {
           label.textContent = "Đăng nhập";
           authButton.setAttribute("aria-label", "Đăng nhập");
           profileBox.classList.add("hidden");
           authTabs.classList.remove("hidden");
           setAuthTab("login");
+          updateReviewFormState();
         }
       }
 
@@ -1219,6 +1404,251 @@
         });
         return data.token;
       }
+
+      async function authJsonRequest(url, method, body) {
+        const headers = { "Content-Type": "application/json" };
+        if (method === "POST") {
+          const token = await refreshFormTokens();
+          if (!token) throw new Error("Không thể xác thực yêu cầu. Vui lòng tải lại trang.");
+          headers.RequestVerificationToken = token;
+        }
+        const response = await fetch(url, {
+          method,
+          headers,
+          credentials: "same-origin",
+          cache: "no-store",
+          body: body === undefined ? undefined : JSON.stringify(body)
+        });
+        const result = await response.json().catch(() => null);
+        if (!response.ok) {
+          const validationMessage = result?.errors ? Object.values(result.errors).flat()[0] : null;
+          throw new Error(result?.message || validationMessage || `Yêu cầu thất bại (HTTP ${response.status}).`);
+        }
+        return result;
+      }
+
+      const editProfileForm = document.getElementById("formEditProfile");
+      const editProfileError = document.getElementById("editProfileError");
+      const btnEditProfile = document.getElementById("btnEditProfile");
+
+      function closeProfileEditor() {
+        editProfileForm.classList.add("hidden");
+        btnEditProfile.classList.remove("hidden");
+        editProfileError.textContent = "";
+      }
+
+      btnEditProfile.addEventListener("click", async () => {
+        editProfileError.textContent = "";
+        try {
+          const result = await authJsonRequest("/auth/profile", "GET");
+          currentUser = result.user;
+          updateAuthHeaderState();
+          document.getElementById("editProfileName").value = currentUser.name || "";
+          document.getElementById("editProfilePhone").value = currentUser.phone || "";
+          document.getElementById("editProfileAddress").value = currentUser.address || "";
+          editProfileForm.classList.remove("hidden");
+          btnEditProfile.classList.add("hidden");
+        } catch (error) {
+          editProfileError.textContent = error.message;
+        }
+      });
+
+      document.getElementById("btnCancelEditProfile").addEventListener("click", closeProfileEditor);
+      editProfileForm.addEventListener("submit", async event => {
+        event.preventDefault();
+        const fullName = document.getElementById("editProfileName").value.trim();
+        const phone = document.getElementById("editProfilePhone").value.trim();
+        const address = document.getElementById("editProfileAddress").value.trim();
+        if (!fullName || !address || !/^0\d{9}$/.test(phone)) {
+          editProfileError.textContent = "Vui lòng nhập họ tên, địa chỉ và số điện thoại gồm 10 chữ số bắt đầu bằng 0.";
+          return;
+        }
+        const saveButton = document.getElementById("btnSaveProfile");
+        saveButton.disabled = true;
+        editProfileError.textContent = "";
+        try {
+          const result = await authJsonRequest("/auth/profile", "POST", { fullName, phone, address });
+          currentUser = result.user;
+          updateAuthHeaderState();
+          closeProfileEditor();
+          showToast(result.message || "Đã cập nhật thông tin tài khoản.");
+        } catch (error) {
+          editProfileError.textContent = error.message;
+        } finally {
+          saveButton.disabled = false;
+        }
+      });
+
+      function createPasswordFlow(prefix, settings) {
+        const form = document.getElementById(`${prefix}Form`);
+        const step1 = document.getElementById(`${prefix}Step1`);
+        const step2 = document.getElementById(`${prefix}Step2`);
+        const errorBox = document.getElementById(`${prefix}Error`);
+        const resendButton = document.getElementById(`${prefix}ResendBtn`);
+        const resendLabel = document.getElementById(`${prefix}ResendLabel`);
+        let challengeId = null;
+        let countdown = null;
+        let busy = false;
+
+        function reset() {
+          if (countdown) clearInterval(countdown);
+          countdown = null;
+          challengeId = null;
+          form.reset();
+          step1.classList.remove("hidden");
+          step2.classList.add("hidden");
+          errorBox.textContent = "";
+          resendButton.disabled = true;
+          resendLabel.textContent = "Gửi lại sau 1:00";
+        }
+
+        function startCountdown(seconds) {
+          if (countdown) clearInterval(countdown);
+          let remaining = Number(seconds) || 60;
+          resendButton.disabled = true;
+          const tick = () => {
+            if (remaining <= 0) {
+              clearInterval(countdown);
+              countdown = null;
+              resendButton.disabled = false;
+              resendLabel.textContent = "Gửi lại mã";
+              return;
+            }
+            const minutes = Math.floor(remaining / 60);
+            const secondsLeft = String(remaining % 60).padStart(2, "0");
+            resendLabel.textContent = `Gửi lại sau ${minutes}:${secondsLeft}`;
+            remaining -= 1;
+          };
+          tick();
+          countdown = setInterval(tick, 1000);
+        }
+
+        async function sendCode() {
+          if (busy) return;
+          errorBox.textContent = "";
+          if (settings.emailId) {
+            const email = document.getElementById(settings.emailId).value.trim();
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+              errorBox.textContent = "Vui lòng nhập địa chỉ email hợp lệ.";
+              return;
+            }
+          }
+          const sendButton = document.getElementById(`${prefix}SendBtn`);
+          busy = true;
+          sendButton.disabled = true;
+          resendButton.disabled = true;
+          try {
+            const body = settings.emailId
+              ? { email: document.getElementById(settings.emailId).value.trim() }
+              : undefined;
+            const result = await authJsonRequest(settings.sendUrl, "POST", body);
+            challengeId = result.challengeId;
+            if (settings.emailId) {
+              document.getElementById(`${prefix}Notice`).textContent =
+                `Nếu email hợp lệ, mã xác nhận đã được gửi. Mã có hiệu lực trong 10 phút.`;
+            } else {
+              document.getElementById(`${prefix}Notice`).textContent =
+                `Mã xác nhận đã được gửi đến ${currentUser.email}. Mã có hiệu lực trong 10 phút.`;
+            }
+            step1.classList.add("hidden");
+            step2.classList.remove("hidden");
+            startCountdown(result.resendAfterSeconds);
+            document.getElementById(`${prefix}Code`).focus();
+          } catch (error) {
+            errorBox.textContent = error.message;
+          } finally {
+            busy = false;
+            sendButton.disabled = false;
+            if (challengeId && !countdown) resendButton.disabled = false;
+          }
+        }
+
+        form.addEventListener("submit", async event => {
+          event.preventDefault();
+          if (busy) return;
+          if (!challengeId) {
+            await sendCode();
+            return;
+          }
+          const code = document.getElementById(`${prefix}Code`).value.trim();
+          const newPassword = document.getElementById(`${prefix}NewPassword`).value;
+          const confirmPassword = document.getElementById(`${prefix}ConfirmPassword`).value;
+          if (!/^\d{6}$/.test(code)) {
+            errorBox.textContent = "Vui lòng nhập đủ 6 chữ số trong mã xác nhận.";
+            return;
+          }
+          if (newPassword.length < 8) {
+            errorBox.textContent = "Mật khẩu mới cần có ít nhất 8 ký tự.";
+            return;
+          }
+          if (newPassword !== confirmPassword) {
+            errorBox.textContent = "Mật khẩu nhập lại chưa khớp.";
+            return;
+          }
+          const submitButton = document.getElementById(`${prefix}SubmitBtn`);
+          busy = true;
+          submitButton.disabled = true;
+          errorBox.textContent = "";
+          try {
+            const result = await authJsonRequest(settings.verifyUrl, "POST", {
+              challengeId,
+              code,
+              newPassword
+            });
+            reset();
+            if (settings.onSuccess) settings.onSuccess(result);
+          } catch (error) {
+            errorBox.textContent = error.message;
+          } finally {
+            busy = false;
+            submitButton.disabled = false;
+          }
+        });
+
+        resendButton.addEventListener("click", sendCode);
+        document.getElementById(`${prefix}BackBtn`).addEventListener("click", () => {
+          if (countdown) clearInterval(countdown);
+          countdown = null;
+          challengeId = null;
+          step2.classList.add("hidden");
+          step1.classList.remove("hidden");
+          errorBox.textContent = "";
+        });
+        return { reset };
+      }
+
+      let forgotPasswordFlow = null;
+      forgotPasswordFlow = createPasswordFlow("fp", {
+        emailId: "fpEmail",
+        sendUrl: "/auth/password/forgot/send-code",
+        verifyUrl: "/auth/password/forgot/reset",
+        onSuccess: result => {
+          setAuthTab("login");
+          showToast(result.message || "Đặt lại mật khẩu thành công. Vui lòng đăng nhập.");
+        }
+      });
+
+      const changePasswordFlow = createPasswordFlow("cp", {
+        sendUrl: "/auth/password/change/send-code",
+        verifyUrl: "/auth/password/change",
+        onSuccess: result => {
+          changePasswordFlow.reset();
+          document.getElementById("cpForm").classList.add("hidden");
+          document.getElementById("btnChangePassword").classList.remove("hidden");
+          showToast(result.message || "Đổi mật khẩu thành công.");
+        }
+      });
+      document.getElementById("btnChangePassword").addEventListener("click", () => {
+        closeProfileEditor();
+        document.getElementById("cpEmailDisplay").textContent = currentUser?.email || "--";
+        document.getElementById("cpForm").classList.remove("hidden");
+        document.getElementById("btnChangePassword").classList.add("hidden");
+      });
+      document.getElementById("cpCancelBtn").addEventListener("click", () => {
+        changePasswordFlow.reset();
+        document.getElementById("cpForm").classList.add("hidden");
+        document.getElementById("btnChangePassword").classList.remove("hidden");
+      });
 
       async function postAuthFormData(formData, url) {
         let response = await fetch(url, {

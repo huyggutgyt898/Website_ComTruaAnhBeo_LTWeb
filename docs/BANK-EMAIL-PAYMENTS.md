@@ -37,6 +37,12 @@ secret của máy chủ; không thêm mật khẩu vào `appsettings*.json` hay 
 repository. Nếu đổi App password, cập nhật cả `Email:Password` nếu ứng dụng vẫn
 dùng SMTP gửi email.
 
+Đăng ký tài khoản và các luồng quên/đổi mật khẩu gửi mã xác nhận qua SMTP. Để
+cấu hình Gmail SMTP local, chạy
+`pwsh -ExecutionPolicy Bypass -File scripts\Configure-EmailSecrets.ps1` và nhập
+email Gmail cùng App password khi được nhắc. Script lưu cấu hình trong User
+Secrets của project, không ghi mật khẩu vào repository.
+
 Khởi động lại ứng dụng sau khi lưu cấu hình. Trong Visual Studio, chọn
 **View → Output → ASP.NET Core Web Server** (hoặc cửa sổ Output khi chạy) để xem
 worker khởi động và lỗi kết nối IMAP. Nếu Gmail từ chối đăng nhập, kiểm tra lại

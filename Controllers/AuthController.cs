@@ -257,7 +257,6 @@ public sealed class AuthController : Controller
         var identifier = request.Identifier.Trim();
         var accounts = await _db.TaiKhoans
             .Where(account =>
-                account.HoatDong &&
                 (account.VaiTro == CustomerRole || account.VaiTro == AdminController.AdminRole) &&
                 (account.Email == identifier || account.Sdt == identifier))
             .OrderBy(account => account.MaTk)
@@ -274,6 +273,14 @@ public sealed class AuthController : Controller
         if (!AccountPasswordVerifier.VerifyAndUpgrade(account, request.Password, _passwordHasher))
         {
             return InvalidCredentials();
+        }
+
+        if (!account.HoatDong)
+        {
+            return StatusCode(StatusCodes.Status403Forbidden, new
+            {
+                message = "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên để được hỗ trợ."
+            });
         }
 
         if (!string.Equals(account.MatKhauHash, previousHash, StringComparison.Ordinal))

@@ -1785,6 +1785,19 @@
         submitAuthForm(event, "/auth/login", (user) => `👋 Đăng nhập thành công: Xin chào ${user.name}!`);
       });
 
+      const loginPassword = document.getElementById("loginPassword");
+      const toggleLoginPassword = document.getElementById("toggleLoginPassword");
+      const loginPasswordEye = document.getElementById("loginPasswordEye");
+      const loginPasswordEyeOff = document.getElementById("loginPasswordEyeOff");
+      toggleLoginPassword.addEventListener("click", () => {
+        const isVisible = loginPassword.type === "text";
+        loginPassword.type = isVisible ? "password" : "text";
+        toggleLoginPassword.setAttribute("aria-label", isVisible ? "Hiện mật khẩu" : "Ẩn mật khẩu");
+        toggleLoginPassword.setAttribute("aria-pressed", String(!isVisible));
+        loginPasswordEye.classList.toggle("hidden", !isVisible);
+        loginPasswordEyeOff.classList.toggle("hidden", isVisible);
+      });
+
       const registrationForm = document.getElementById("formRegister");
       const registrationOtpInputs = [...document.querySelectorAll("[data-registration-otp]")];
       const registrationVerification = document.getElementById("registrationVerification");

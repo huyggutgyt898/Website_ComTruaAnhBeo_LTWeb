@@ -541,7 +541,9 @@ public sealed class AdminController : Controller
         var updatedCount = await _db.DonHangs
             .Where(order =>
                 order.MaDon == orderId &&
-                (order.TrangThai == "DangChuanBi" || order.TrangThai == "ThatBai"))
+                (order.TrangThai == "DangGiao" ||
+                 order.TrangThai == "DangChuanBi" ||
+                 order.TrangThai == "ThatBai"))
             .ExecuteUpdateAsync(
                 setters => setters.SetProperty(order => order.TrangThai, "HoanThanh"),
                 cancellationToken);

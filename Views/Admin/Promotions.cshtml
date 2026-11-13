@@ -1,0 +1,266 @@
+@{
+    ViewData["Title"] = "Quản lý khuyến mãi";
+    ViewData["ActiveNav"] = "promotions";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/promotions.css" asp-append-version="true" />
+}
+
+<div hidden>@Html.AntiForgeryToken()</div>
+
+<!-- =======================================================================
+     COLUMN 2: CENTRAL WORKSPACE (WARM CREAM BACKGROUND, LARGEST AREA)
+     ======================================================================= -->
+<main class="center-workspace">
+  <!-- Top Bar & Headline -->
+  <div class="workspace-top-bar">
+    <div class="page-heading-group">
+      <h1>QUẢN LÝ KHUYẾN MÃI</h1>
+      <p>Quản lý toàn diện mã giảm giá, voucher chiết khấu và ưu đãi phí giao hàng</p>
+    </div>
+  </div>
+
+  <!-- KPI Quick Summary -->
+  <section class="kpi-pills-row" aria-label="Tổng quan khuyến mãi">
+    <div class="kpi-pill">
+      <div class="kpi-pill-content">
+        <span class="kpi-pill-label">Tổng mã ưu đãi</span>
+        <span class="kpi-pill-val" id="statTotalPromos">0</span>
+      </div>
+    </div>
+    <div class="kpi-pill">
+      <div class="kpi-pill-content">
+        <span class="kpi-pill-label">Đang áp dụng</span>
+        <span class="kpi-pill-val" id="statActivePromos">0</span>
+      </div>
+    </div>
+    <div class="kpi-pill">
+      <div class="kpi-pill-content">
+        <span class="kpi-pill-label">Sắp diễn ra</span>
+        <span class="kpi-pill-val" id="statUpcomingPromos">0</span>
+      </div>
+    </div>
+    <div class="kpi-pill">
+      <div class="kpi-pill-content">
+        <span class="kpi-pill-label">Hết hạn / Hết lượt</span>
+        <span class="kpi-pill-val" id="statExpiredPromos">0</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Search & Filters Toolbar -->
+  <div class="search-filter-card">
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="var(--text-muted)">
+        <path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/>
+      </svg>
+      <input type="text" id="searchPromoInput" class="search-input" placeholder="Tìm theo mã voucher (VD: FREESHIP, GIAM10)..." oninput="handleFilter()">
+    </div>
+
+    <select id="filterPromoType" class="select-filter" aria-label="Lọc theo hình thức giảm giá" onchange="handleFilter()">
+      <option value="all">Tất cả hình thức</option>
+      <option value="PERCENT">Giảm phần trăm (%)</option>
+      <option value="FIXED_AMOUNT">Giảm tiền (VNĐ)</option>
+      <option value="SHIPPING">Miễn/Giảm phí ship</option>
+    </select>
+
+    <select id="filterPromoStatus" class="select-filter" aria-label="Lọc theo trạng thái" onchange="handleFilter()">
+      <option value="all">Tất cả trạng thái</option>
+      <option value="ACTIVE">Đang áp dụng</option>
+      <option value="UPCOMING">Sắp diễn ra</option>
+      <option value="EXPIRED">Hết hạn</option>
+      <option value="EXHAUSTED">Hết lượt</option>
+    </select>
+
+    <select id="sortPromoOrder" class="select-filter" aria-label="Sắp xếp khuyến mãi" onchange="handleFilter()">
+      <option value="default">Sắp xếp mặc định</option>
+      <option value="discount-desc">Mức giảm cao nhất</option>
+      <option value="date-asc">Sắp hết hạn</option>
+      <option value="usage-desc">Lượt dùng nhiều nhất</option>
+      <option value="name-asc">Mã voucher A-Z</option>
+    </select>
+  </div>
+
+  <!-- Promotions Data Table Container -->
+  <div class="table-container">
+    <div class="promo-load-state" id="promoLoadingState" role="status">Đang tải danh sách khuyến mãi…</div>
+    <div class="promo-load-state promo-load-error" id="promoErrorState" role="alert" hidden>
+      <div id="promoErrorMessage">Không thể tải danh sách khuyến mãi.</div>
+      <button type="button" class="btn-secondary" onclick="loadPromotions()">Thử lại</button>
+    </div>
+    <div class="empty-state-card" id="promoEmptyState" hidden>
+      <div class="empty-state-icon">🏷️</div>
+      <div class="empty-state-title">Chưa có mã khuyến mãi</div>
+      <div class="empty-state-desc">Tạo mã đầu tiên để khách hàng có thể áp dụng khi đặt món.</div>
+      <button type="button" class="btn-save" onclick="triggerAddNewPromotion()">Tạo mã khuyến mãi</button>
+    </div>
+    <div id="promoTableContainer" hidden>
+    <table class="data-table" id="promoTable">
+      <thead>
+        <tr>
+          <th>Mã voucher</th>
+          <th>Phạm vi áp dụng</th>
+          <th>Hình thức & Mức giảm</th>
+          <th>Đơn tối thiểu</th>
+          <th>Lượt dùng</th>
+          <th>Trạng thái</th>
+        </tr>
+      </thead>
+      <tbody id="promoTableBody">
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <!-- Summary info below table -->
+  <div class="promo-summary">
+    <span id="promoSummaryText"></span>
+  </div>
+</main>
+
+<!-- =======================================================================
+     COLUMN 3: PROMOTION DETAILS & FORM
+     ======================================================================= -->
+<aside class="right-action-panel">
+  <!-- Panel Header -->
+  <div class="panel-header">
+    <div class="panel-header-title-group">
+      <h2 id="panelPromoTitle">CHI TIẾT MÃ KHUYẾN MÃI</h2>
+      <span id="panelPromoSubtitle">Chọn một mã trong bảng hoặc tạo mã mới.</span>
+    </div>
+    <button type="button" class="btn-create-dish" id="btnCreatePromo" onclick="triggerAddNewPromotion()">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+        <path d="M19 13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+      </svg>
+      <span>Tạo mã mới</span>
+    </button>
+  </div>
+
+  <!-- Panel Scrollable Form Body -->
+  <div class="panel-body">
+    <form id="promoForm" class="promo-form" onsubmit="handlePromoFormSubmit(event)">
+
+      <!-- Top Badge Card: Code & Status Indicator -->
+      <div class="promo-overview-card">
+        <div class="coupon-code-pill" id="panelPromoCodeBadge" style="font-size: 15px; padding: 6px 14px;">
+          Chưa chọn mã
+        </div>
+        <span class="promo-panel-status" id="promoPanelStatus">Trạng thái theo thời hạn và lượt dùng</span>
+      </div>
+
+      <!-- Section 1: Basic Information -->
+      <div class="form-group">
+        <label for="formPromoCode">Mã voucher <span class="required">*</span></label>
+        <input type="text" id="formPromoCode" class="form-control promo-code-input" placeholder="VD: TRUA15, FREESHIP" maxlength="30" autocomplete="off" required>
+        <span class="field-hint" id="promoCodeHint" hidden>Mã voucher không thể đổi sau khi tạo để bảo toàn liên kết với đơn hàng.</span>
+      </div>
+
+      <!-- Section 2: Discount Type & Values -->
+      <div class="form-group">
+        <label for="formDiscountType">Hình thức giảm giá <span class="required">*</span></label>
+        <select id="formDiscountType" class="form-control">
+          <option value="PERCENT">Giảm theo tỷ lệ phần trăm (%)</option>
+          <option value="FIXED_AMOUNT">Giảm số tiền cố định (VNĐ)</option>
+          <option value="SHIPPING">Miễn / Giảm phí giao hàng (VNĐ)</option>
+        </select>
+      </div>
+
+      <div class="form-row promo-form-row">
+        <div class="form-group flex-1" id="formDiscountValueGroup">
+          <label for="formDiscountValue" id="formDiscountValLabel">Phần trăm giảm (%) <span class="required">*</span></label>
+          <div class="price-input-wrapper">
+            <input type="number" id="formDiscountValue" class="form-control" placeholder="15" min="1" step="1" required>
+            <span class="price-currency-tag" id="formDiscountValSuffix">%</span>
+          </div>
+        </div>
+        <div class="form-group flex-1" id="formMaxDiscountGroup">
+          <label for="formMaxDiscount">Giảm tối đa (VNĐ)</label>
+          <div class="price-input-wrapper">
+            <input type="number" id="formMaxDiscount" class="form-control" placeholder="Không giới hạn" min="1" step="1">
+            <span class="price-currency-tag">VNĐ</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Eligibility & Limits -->
+      <div class="form-group">
+        <label for="formMinOrder">Giá trị đơn hàng tối thiểu (VNĐ)</label>
+        <div class="price-input-wrapper">
+          <input type="number" id="formMinOrder" class="form-control" placeholder="80000" min="0" step="1">
+          <span class="price-currency-tag">VNĐ</span>
+        </div>
+        <span class="field-hint">Đơn hàng phải đạt giá trị này trở lên mới được dùng mã.</span>
+      </div>
+
+      <div class="form-row promo-form-row promo-date-row">
+        <div class="form-group flex-1">
+          <label for="formStartDate">Bắt đầu áp dụng <span class="required">*</span></label>
+          <input type="datetime-local" id="formStartDate" class="form-control" required>
+        </div>
+        <div class="form-group flex-1">
+          <label for="formEndDate">Hết hạn áp dụng <span class="required">*</span></label>
+          <input type="datetime-local" id="formEndDate" class="form-control" required>
+        </div>
+      </div>
+
+      <div class="form-row promo-form-row promo-usage-row">
+        <div class="form-group flex-1">
+          <label for="formMaxUsage">Tổng lượt phát hành</label>
+          <input type="number" id="formMaxUsage" class="form-control" placeholder="Không giới hạn" min="1" step="1">
+          <span class="field-hint">Để trống nếu mã không giới hạn lượt sử dụng.</span>
+        </div>
+        <div class="form-group flex-1">
+          <label for="formPerCustomerLimit">Lượt / mỗi khách</label>
+          <input type="number" id="formPerCustomerLimit" class="form-control" placeholder="Không giới hạn" min="1" step="1">
+        </div>
+      </div>
+
+      <!-- Interactive discount validator widget -->
+      <div class="discount-tester-card">
+        <div class="tester-title-bar">
+          <div class="tester-title-text">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+              <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3M19 19H5V5H19V19M17 17H15V15H17V17M17 13H15V11H17V13M17 9H15V7H17V9M13 17H11V15H13V17M13 13H11V11H13V13M13 9H11V7H13V9M9 17H7V15H9V17M9 13H7V11H9V13M9 9H7V7H9V9Z"/>
+            </svg>
+            <span>Kiểm thử voucher này</span>
+          </div>
+        </div>
+        <div class="tester-input-grid">
+          <div class="tester-field-group">
+            <label for="testOrderAmount">Tiền món ăn (VNĐ)</label>
+            <input type="number" id="testOrderAmount" value="120000" min="0" step="5000">
+          </div>
+          <div class="tester-field-group">
+            <label for="testShippingFee">Phí ship (VNĐ)</label>
+            <input type="number" id="testShippingFee" value="22000" min="0" step="1000">
+          </div>
+        </div>
+        <button type="button" class="btn-test-calculator" onclick="testApplyCurrentPromo()">
+          Tính thử tiền thanh toán
+        </button>
+        <div class="tester-result-box" id="testerResultBox"></div>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Panel Footer Actions -->
+  <div class="panel-footer promo-panel-footer">
+    <button type="submit" form="promoForm" class="btn-save" id="btnSavePromo" disabled>
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+        <path d="M15 9H5V5H15M12 19A3 3 0 0 1 9 16A3 3 0 0 1 12 13A3 3 0 0 1 15 16A3 3 0 0 1 12 19M17 3H5C3.89 3 3 3.9 3 5V19A2 2 0 0 0 5 21H19A2 2 0 0 0 21 19V7L17 3Z"/>
+      </svg>
+      <span id="btnSavePromoText">Lưu khuyến mãi</span>
+    </button>
+
+    <button type="button" class="btn-secondary promo-cancel-button" id="btnCancelPromoCreate" style="display: none;" onclick="cancelPromoCreate()" disabled>
+      Hủy tạo mới
+    </button>
+  </div>
+</aside>
+
+@section Scripts {
+    <script src="~/js/promotions-management.js" asp-append-version="true"></script>
+}

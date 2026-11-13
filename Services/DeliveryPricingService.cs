@@ -1,0 +1,698 @@
+using System.Globalization;
+using System.Net.Http.Headers;
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
+
+namespace ComTruaAnhBeo.Services;
+
+public sealed class DeliveryPricingService
+{
+    private const string QuotationPath = "/v3/quotations";
+    private readonly HttpClient _httpClient;
+    private readonly IMemoryCache _cache;
+    private readonly LalamoveOptions _lalamove;
+    private readonly OpenRouteServiceOptions _openRouteService;
+    private readonly StoreLocationOptions _store;
+
+    public DeliveryPricingService(
+        HttpClient httpClient,
+        IMemoryCache cache,
+        IOptions<LalamoveOptions> lalamove,
+        IOptions<OpenRouteServiceOptions> openRouteService,
+        IOptions<StoreLocationOptions> store)
+    {
+        _httpClient = httpClient;
+        _cache = cache;
+        _lalamove = lalamove.Value;
+        _openRouteService = openRouteService.Value;
+        _store = store.Value;
+    }
+
+    public async Task<DeliveryQuoteResult> GetQuoteAsync(
+        string address,
+        double? latitude,
+        double? longitude,
+        CancellationToken cancellationToken)
+    {
+        ValidateConfiguration();
+
+        var destination = await ResolveDestinationAsync(address, latitude, longitude, cancellationToken);
+        var requestBody = JsonSerializer.Serialize(new
+        {
+            data = new
+            {
+                serviceType = _lalamove.ServiceType,
+                language = _lalamove.Language,
+                stops = new[]
+                {
+                    new
+                    {
+                        coordinates = Coordinates(_store.ViDo, _store.KinhDo),
+                        address = _store.DiaChi
+                    },
+                    new
+                    {
+                        coordinates = Coordinates(destination.Latitude, destination.Longitude),
+                        address = destination.Address
+                    }
+                }
+            }
+        });
+
+        using var request = CreateSignedRequest(HttpMethod.Post, QuotationPath, requestBody);
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new DeliveryPricingException(
+                await GetProviderErrorMessageAsync(
+                    response,
+                    "Lalamove",
+                    "báo giá giao hàng",
+                    cancellationToken));
+        }
+
+        using var document = await JsonDocument.ParseAsync(
+            await response.Content.ReadAsStreamAsync(cancellationToken),
+            cancellationToken: cancellationToken);
+        var data = GetRequiredProperty(document.RootElement, "data");
+        var priceBreakdown = GetRequiredProperty(data, "priceBreakdown");
+        var totalText = GetRequiredString(priceBreakdown, "total");
+        var currency = GetRequiredString(priceBreakdown, "currency");
+        if (!decimal.TryParse(totalText, NumberStyles.Number, CultureInfo.InvariantCulture, out var shippingFee) ||
+            shippingFee < 0)
+        {
+            throw new DeliveryPricingException("Lalamove trả về mức phí giao hàng không hợp lệ.");
+        }
+
+        if (!string.Equals(currency, "VND", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new DeliveryPricingException(
+                $"Báo giá Lalamove trả về loại tiền {currency}, không phải VND. Vui lòng kiểm tra cấu hình thị trường.");
+        }
+
+        var distance = GetRequiredProperty(data, "distance");
+        var distanceValue = GetRequiredNumberText(distance, "value");
+        var distanceUnit = GetRequiredString(distance, "unit");
+        if (!double.TryParse(distanceValue, NumberStyles.Number, CultureInfo.InvariantCulture, out var distanceAmount) ||
+            distanceAmount < 0)
+        {
+            throw new DeliveryPricingException("Lalamove trả về khoảng cách giao hàng không hợp lệ.");
+        }
+
+        var distanceKm = distanceUnit switch
+        {
+            "m" => distanceAmount / 1000d,
+            "km" => distanceAmount,
+            "mi" => distanceAmount * 1.609344d,
+            _ => throw new DeliveryPricingException("Lalamove trả về đơn vị khoảng cách không được hỗ trợ.")
+        };
+
+        var expiresAt = TryGetString(data, "expiresAt", out var expiresAtText) &&
+            DateTimeOffset.TryParse(
+                expiresAtText,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.AssumeUniversal,
+                out var parsedExpiresAt)
+            ? parsedExpiresAt
+            : DateTimeOffset.UtcNow.AddMinutes(5);
+
+        if (expiresAt <= DateTimeOffset.UtcNow)
+        {
+            throw new DeliveryPricingException("Báo giá Lalamove đã hết hạn. Vui lòng yêu cầu báo giá mới.");
+        }
+
+        var quoteToken = Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
+        var quote = new DeliveryQuoteResult(
+            quoteToken,
+            shippingFee,
+            distanceKm,
+            currency,
+            expiresAt,
+            destination.Address,
+            destination.Latitude,
+            destination.Longitude);
+
+        _cache.Set(
+            GetCacheKey(quoteToken),
+            new CachedDeliveryQuote(
+                address.Trim(),
+                destination.Address,
+                latitude,
+                longitude,
+                quote),
+            expiresAt);
+
+        return quote;
+    }
+
+    public bool TryGetValidQuote(
+        string? quoteToken,
+        string address,
+        double? latitude,
+        double? longitude,
+        out DeliveryQuoteResult? quote)
+    {
+        quote = null;
+        if (string.IsNullOrWhiteSpace(quoteToken) ||
+            !_cache.TryGetValue(GetCacheKey(quoteToken), out CachedDeliveryQuote? cached) ||
+            cached is null ||
+            !(string.Equals(cached.RequestAddress, address.Trim(), StringComparison.Ordinal) ||
+                string.Equals(cached.ResolvedAddress, address.Trim(), StringComparison.Ordinal)) ||
+            cached.Latitude != latitude ||
+            cached.Longitude != longitude ||
+            cached.Quote.ExpiresAt <= DateTimeOffset.UtcNow)
+        {
+            return false;
+        }
+
+        quote = cached.Quote;
+        return true;
+    }
+
+    public async Task<LalamoveDispatchResult> CreateOrderAsync(
+        string destinationAddress,
+        double latitude,
+        double longitude,
+        string recipientName,
+        string recipientPhone,
+        string remarks,
+        CancellationToken cancellationToken)
+    {
+        ValidateConfiguration();
+        if (string.IsNullOrWhiteSpace(_store.Ten) || string.IsNullOrWhiteSpace(_store.Sdt))
+        {
+            throw new DeliveryPricingException(
+                "Chưa cấu hình tên và số điện thoại liên hệ của cửa hàng trong User Secrets.");
+        }
+
+        if (string.IsNullOrWhiteSpace(recipientName) || string.IsNullOrWhiteSpace(recipientPhone))
+        {
+            throw new DeliveryPricingException("Đơn hàng thiếu tên hoặc số điện thoại người nhận.");
+        }
+
+        if (string.IsNullOrWhiteSpace(destinationAddress) ||
+            latitude is < -90 or > 90 ||
+            longitude is < -180 or > 180)
+        {
+            throw new DeliveryPricingException("Địa chỉ hoặc vị trí giao hàng không hợp lệ.");
+        }
+
+        var destination = await ResolveDestinationAsync(
+            destinationAddress,
+            latitude,
+            longitude,
+            cancellationToken);
+        var quotationBody = JsonSerializer.Serialize(new
+        {
+            data = new
+            {
+                serviceType = _lalamove.ServiceType,
+                language = _lalamove.Language,
+                stops = new[]
+                {
+                    new
+                    {
+                        coordinates = Coordinates(_store.ViDo, _store.KinhDo),
+                        address = _store.DiaChi
+                    },
+                    new
+                    {
+                        coordinates = Coordinates(destination.Latitude, destination.Longitude),
+                        address = destination.Address
+                    }
+                }
+            }
+        });
+
+        using var quotationRequest = CreateSignedRequest(
+            HttpMethod.Post,
+            QuotationPath,
+            quotationBody);
+        using var quotationResponse = await _httpClient.SendAsync(quotationRequest, cancellationToken);
+        if (!quotationResponse.IsSuccessStatusCode)
+        {
+            throw new DeliveryPricingException(
+                await GetProviderErrorMessageAsync(
+                    quotationResponse,
+                    "Lalamove",
+                    "tạo báo giá giao hàng",
+                    cancellationToken));
+        }
+
+        using var quotationDocument = await JsonDocument.ParseAsync(
+            await quotationResponse.Content.ReadAsStreamAsync(cancellationToken),
+            cancellationToken: cancellationToken);
+        var quotation = GetRequiredProperty(quotationDocument.RootElement, "data");
+        var quotationId = GetRequiredScalarText(quotation, "quotationId");
+        var stopIds = GetRequiredProperty(quotation, "stops");
+        if (stopIds.ValueKind != JsonValueKind.Array || stopIds.GetArrayLength() < 2)
+        {
+            throw new DeliveryPricingException("Lalamove trả về thông tin điểm giao hàng không hợp lệ.");
+        }
+
+        var senderStopId = GetRequiredString(stopIds[0], "stopId");
+        var recipientStopId = GetRequiredString(stopIds[1], "stopId");
+
+        var orderPath = "/v3/orders";
+        var orderBody = JsonSerializer.Serialize(new
+        {
+            data = new
+            {
+                quotationId,
+                sender = new
+                {
+                    stopId = senderStopId,
+                    name = _store.Ten.Trim(),
+                    phone = NormalizeVietnamesePhone(_store.Sdt)
+                },
+                recipients = new[]
+                {
+                    new
+                    {
+                        stopId = recipientStopId,
+                        name = recipientName.Trim(),
+                        phone = NormalizeVietnamesePhone(recipientPhone),
+                        remarks = string.IsNullOrWhiteSpace(remarks) ? "" : remarks.Trim()
+                    }
+                },
+                isPODEnabled = true,
+                isRecipientSMSEnabled = true
+            }
+        });
+        using var orderRequest = CreateSignedRequest(HttpMethod.Post, orderPath, orderBody);
+        using var orderResponse = await _httpClient.SendAsync(orderRequest, cancellationToken);
+        if (!orderResponse.IsSuccessStatusCode)
+        {
+            throw new DeliveryPricingException(
+                await GetProviderErrorMessageAsync(
+                    orderResponse,
+                    "Lalamove",
+                    "tạo chuyến giao hàng",
+                    cancellationToken));
+        }
+
+        using var orderDocument = await JsonDocument.ParseAsync(
+            await orderResponse.Content.ReadAsStreamAsync(cancellationToken),
+            cancellationToken: cancellationToken);
+        return ReadDispatchResult(orderDocument.RootElement);
+    }
+
+    public async Task<LalamoveDeliveryStatusResult> GetOrderStatusAsync(
+        string orderId,
+        CancellationToken cancellationToken)
+    {
+        ValidateConfiguration();
+        if (string.IsNullOrWhiteSpace(orderId))
+        {
+            throw new DeliveryPricingException("Thiếu mã chuyến giao hàng Lalamove.");
+        }
+
+        var path = $"/v3/orders/{Uri.EscapeDataString(orderId)}";
+        using var request = CreateSignedRequest(HttpMethod.Get, path, "");
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new DeliveryPricingException(
+                await GetProviderErrorMessageAsync(
+                    response,
+                    "Lalamove",
+                    "cập nhật trạng thái chuyến",
+                    cancellationToken));
+        }
+
+        using var document = await JsonDocument.ParseAsync(
+            await response.Content.ReadAsStreamAsync(cancellationToken),
+            cancellationToken: cancellationToken);
+        var data = GetRequiredProperty(document.RootElement, "data");
+        return ReadDeliveryStatus(data);
+    }
+
+    private async Task<ResolvedDestination> ResolveDestinationAsync(
+        string address,
+        double? latitude,
+        double? longitude,
+        CancellationToken cancellationToken)
+    {
+        if (latitude.HasValue != longitude.HasValue ||
+            latitude is < -90 or > 90 ||
+            longitude is < -180 or > 180)
+        {
+            throw new DeliveryPricingException("Vị trí giao hàng không hợp lệ.");
+        }
+
+        if (latitude.HasValue && longitude.HasValue)
+        {
+            var gpsAddress = address.Trim();
+            if (string.Equals(gpsAddress, "Vị trí hiện tại", StringComparison.OrdinalIgnoreCase))
+            {
+                gpsAddress = string.IsNullOrWhiteSpace(_openRouteService.ApiKey)
+                    ? $"GPS {latitude.Value.ToString("F6", CultureInfo.InvariantCulture)}, {longitude.Value.ToString("F6", CultureInfo.InvariantCulture)}"
+                    : await ReverseGeocodeAsync(latitude.Value, longitude.Value, cancellationToken);
+            }
+
+            return new ResolvedDestination(latitude.Value, longitude.Value, gpsAddress);
+        }
+
+        if (string.IsNullOrWhiteSpace(address) ||
+            string.Equals(address.Trim(), "Vị trí hiện tại", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new DeliveryPricingException("Vui lòng nhập địa chỉ giao hàng hoặc chọn vị trí hiện tại.");
+        }
+
+        if (string.IsNullOrWhiteSpace(_openRouteService.ApiKey))
+        {
+            throw new DeliveryPricingException(
+                "Chưa cấu hình OpenRouteService API key để tìm tọa độ địa chỉ. Chạy scripts\\Configure-OpenRouteServiceSecret.ps1 bằng khóa mới rồi khởi động lại ứng dụng, hoặc chọn Dùng vị trí hiện tại.");
+        }
+
+        var searchUrl = $"{_openRouteService.BaseUrl.TrimEnd('/')}/geocode/search" +
+            $"?text={Uri.EscapeDataString(address.Trim())}&boundary.country=VNM&size=1";
+        using var request = new HttpRequestMessage(HttpMethod.Get, searchUrl);
+        request.Headers.TryAddWithoutValidation("Authorization", _openRouteService.ApiKey);
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new DeliveryPricingException(
+                await GetProviderErrorMessageAsync(
+                    response,
+                    "OpenRouteService",
+                    "xác định tọa độ địa chỉ",
+                    cancellationToken));
+        }
+
+        using var document = await JsonDocument.ParseAsync(
+            await response.Content.ReadAsStreamAsync(cancellationToken),
+            cancellationToken: cancellationToken);
+        if (!document.RootElement.TryGetProperty("features", out var features) ||
+            features.ValueKind != JsonValueKind.Array ||
+            features.GetArrayLength() == 0)
+        {
+            throw new DeliveryPricingException("Không tìm thấy vị trí cho địa chỉ này. Vui lòng ghi địa chỉ cụ thể hơn.");
+        }
+
+        var feature = features[0];
+        var coordinates = GetRequiredProperty(GetRequiredProperty(feature, "geometry"), "coordinates");
+        if (coordinates.ValueKind != JsonValueKind.Array || coordinates.GetArrayLength() < 2 ||
+            coordinates[0].ValueKind != JsonValueKind.Number ||
+            coordinates[1].ValueKind != JsonValueKind.Number)
+        {
+            throw new DeliveryPricingException("OpenRouteService trả về tọa độ địa chỉ không hợp lệ.");
+        }
+
+        var longitudeValue = coordinates[0].GetDouble();
+        var latitudeValue = coordinates[1].GetDouble();
+        var resolvedAddress = TryGetString(
+            GetRequiredProperty(feature, "properties"),
+            "label",
+            out var label)
+            ? label
+            : address.Trim();
+
+        return new ResolvedDestination(latitudeValue, longitudeValue, resolvedAddress);
+    }
+
+    private async Task<string> ReverseGeocodeAsync(
+        double latitude,
+        double longitude,
+        CancellationToken cancellationToken)
+    {
+        var reverseUrl = $"{_openRouteService.BaseUrl.TrimEnd('/')}/geocode/reverse" +
+            $"?point.lat={latitude.ToString(CultureInfo.InvariantCulture)}" +
+            $"&point.lon={longitude.ToString(CultureInfo.InvariantCulture)}&size=1";
+        using var request = new HttpRequestMessage(HttpMethod.Get, reverseUrl);
+        request.Headers.TryAddWithoutValidation("Authorization", _openRouteService.ApiKey);
+        using var response = await _httpClient.SendAsync(request, cancellationToken);
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new DeliveryPricingException(
+                await GetProviderErrorMessageAsync(
+                    response,
+                    "OpenRouteService",
+                    "xác định địa chỉ từ vị trí GPS",
+                    cancellationToken));
+        }
+
+        using var document = await JsonDocument.ParseAsync(
+            await response.Content.ReadAsStreamAsync(cancellationToken),
+            cancellationToken: cancellationToken);
+        if (!document.RootElement.TryGetProperty("features", out var features) ||
+            features.ValueKind != JsonValueKind.Array ||
+            features.GetArrayLength() == 0 ||
+            !TryGetString(
+                GetRequiredProperty(features[0], "properties"),
+                "label",
+                out var label))
+        {
+            throw new DeliveryPricingException("Không tìm thấy địa chỉ cho vị trí GPS đã chọn.");
+        }
+
+        return label;
+    }
+
+    private HttpRequestMessage CreateSignedRequest(HttpMethod method, string path, string body)
+    {
+        var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
+            .ToString(CultureInfo.InvariantCulture);
+        var rawSignature = $"{timestamp}\r\n{method.Method}\r\n{path}\r\n\r\n{body}";
+        var signatureBytes = HMACSHA256.HashData(
+            Encoding.UTF8.GetBytes(_lalamove.ApiSecret),
+            Encoding.UTF8.GetBytes(rawSignature));
+        var signature = Convert.ToHexStringLower(signatureBytes);
+
+        var request = new HttpRequestMessage(
+            method,
+            $"{_lalamove.BaseUrl.TrimEnd('/')}{path}")
+        {
+            Content = string.IsNullOrEmpty(body)
+                ? null
+                : new StringContent(body, Encoding.UTF8, "application/json")
+        };
+        request.Headers.Authorization = new AuthenticationHeaderValue(
+            "hmac",
+            $"{_lalamove.ApiKey}:{timestamp}:{signature}");
+        request.Headers.TryAddWithoutValidation("Market", _lalamove.Market);
+        request.Headers.TryAddWithoutValidation("Request-ID", Guid.NewGuid().ToString());
+        return request;
+    }
+
+    private void ValidateConfiguration()
+    {
+        if (string.IsNullOrWhiteSpace(_lalamove.ApiKey) ||
+            string.IsNullOrWhiteSpace(_lalamove.ApiSecret))
+        {
+            throw new DeliveryPricingException(
+                "Chưa cấu hình Lalamove sandbox API key/secret. Chạy scripts\\Configure-DeliverySecrets.ps1 với thông tin sandbox của bạn rồi khởi động lại ứng dụng.");
+        }
+
+        if (!_lalamove.ApiKey.StartsWith("pk_test", StringComparison.OrdinalIgnoreCase) ||
+            !_lalamove.ApiSecret.StartsWith("sk_test", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new DeliveryPricingException(
+                "Ứng dụng đang chạy Lalamove sandbox nhưng API key/secret không đúng loại. Hãy dùng Public Key bắt đầu bằng pk_test và Secret Key bắt đầu bằng sk_test từ môi trường Sandbox của Lalamove Partner Portal.");
+        }
+
+        if (string.IsNullOrWhiteSpace(_store.DiaChi) ||
+            _store.ViDo is < -90 or > 90 ||
+            _store.KinhDo is < -180 or > 180)
+        {
+            throw new DeliveryPricingException("Chưa cấu hình vị trí cửa hàng hợp lệ.");
+        }
+    }
+
+    private static async Task<string> GetProviderErrorMessageAsync(
+        HttpResponseMessage response,
+        string provider,
+        string operation,
+        CancellationToken cancellationToken)
+    {
+        var fallback = $"{provider} chưa thể {operation} (HTTP {(int)response.StatusCode}).";
+        var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+        if (string.IsNullOrWhiteSpace(responseBody))
+        {
+            return fallback;
+        }
+
+        string detail = responseBody;
+        var reader = new Utf8JsonReader(Encoding.UTF8.GetBytes(responseBody));
+        if (JsonDocument.TryParseValue(ref reader, out var document))
+        {
+            using (document)
+            {
+                var root = document.RootElement;
+                if (TryGetString(root, "message", out var message))
+                {
+                    detail = message;
+                }
+                else if (TryGetString(root, "msg", out var shortMessage))
+                {
+                    detail = shortMessage;
+                }
+                else if (root.TryGetProperty("errors", out var errors))
+                {
+                    detail = errors.ToString();
+                }
+            }
+        }
+
+        var safeDetail = new string(detail
+            .Where(character => !char.IsControl(character) || character is '\r' or '\n' or '\t')
+            .ToArray());
+        safeDetail = string.Join(" ", safeDetail.Split(
+            (char[]?)null,
+            StringSplitOptions.RemoveEmptyEntries));
+        if (safeDetail.Length > 300)
+        {
+            safeDetail = $"{safeDetail[..300]}…";
+        }
+
+        return string.IsNullOrWhiteSpace(safeDetail)
+            ? fallback
+            : $"{fallback} Chi tiết: {safeDetail}";
+    }
+
+    private static object Coordinates(double latitude, double longitude) => new
+    {
+        lat = latitude.ToString("G17", CultureInfo.InvariantCulture),
+        lng = longitude.ToString("G17", CultureInfo.InvariantCulture)
+    };
+
+    private static string GetCacheKey(string quoteToken) => $"delivery-quote:{quoteToken}";
+
+    private static JsonElement GetRequiredProperty(JsonElement element, string propertyName)
+    {
+        if (!element.TryGetProperty(propertyName, out var value))
+        {
+            throw new DeliveryPricingException("Nhà cung cấp định tuyến trả về dữ liệu không hợp lệ.");
+        }
+
+        return value;
+    }
+
+    private static string GetRequiredString(JsonElement element, string propertyName)
+    {
+        var value = GetRequiredProperty(element, propertyName);
+        if (value.ValueKind != JsonValueKind.String || string.IsNullOrWhiteSpace(value.GetString()))
+        {
+            throw new DeliveryPricingException("Nhà cung cấp định tuyến trả về dữ liệu không hợp lệ.");
+        }
+
+        return value.GetString()!;
+    }
+
+    private static string GetRequiredNumberText(JsonElement element, string propertyName)
+    {
+        var value = GetRequiredProperty(element, propertyName);
+        return value.ValueKind switch
+        {
+            JsonValueKind.String when !string.IsNullOrWhiteSpace(value.GetString()) => value.GetString()!,
+            JsonValueKind.Number => value.GetRawText(),
+            _ => throw new DeliveryPricingException("Nhà cung cấp định tuyến trả về dữ liệu không hợp lệ.")
+        };
+    }
+
+    private static string GetRequiredScalarText(JsonElement element, string propertyName)
+    {
+        var value = GetRequiredProperty(element, propertyName);
+        return value.ValueKind switch
+        {
+            JsonValueKind.String when !string.IsNullOrWhiteSpace(value.GetString()) => value.GetString()!,
+            JsonValueKind.Number => value.GetRawText(),
+            _ => throw new DeliveryPricingException("Lalamove trả về dữ liệu không hợp lệ.")
+        };
+    }
+
+    private static LalamoveDispatchResult ReadDispatchResult(JsonElement root)
+    {
+        var data = GetRequiredProperty(root, "data");
+        var orderId = GetRequiredScalarText(data, "orderId");
+        var deliveryStatus = ReadDeliveryStatus(data);
+        return new LalamoveDispatchResult(
+            orderId,
+            deliveryStatus.Status,
+            deliveryStatus.TrackingUrl,
+            deliveryStatus.DriverName,
+            deliveryStatus.DriverPhone);
+    }
+
+    private static LalamoveDeliveryStatusResult ReadDeliveryStatus(JsonElement data)
+    {
+        var status = GetRequiredString(data, "status");
+        var trackingUrl = TryGetString(data, "shareLink", out var shareLink)
+            ? shareLink
+            : null;
+        string? driverName = null;
+        string? driverPhone = null;
+
+        if (data.TryGetProperty("driver", out var driver) &&
+            driver.ValueKind == JsonValueKind.Object)
+        {
+            if (TryGetString(driver, "name", out var name))
+            {
+                driverName = name;
+            }
+
+            if (TryGetString(driver, "phone", out var phone))
+            {
+                driverPhone = phone;
+            }
+        }
+
+        if (driverName is null && TryGetString(data, "driverName", out var directDriverName))
+        {
+            driverName = directDriverName;
+        }
+
+        if (driverPhone is null && TryGetString(data, "driverPhone", out var directDriverPhone))
+        {
+            driverPhone = directDriverPhone;
+        }
+
+        return new LalamoveDeliveryStatusResult(status, trackingUrl, driverName, driverPhone);
+    }
+
+    private static string NormalizeVietnamesePhone(string phone)
+    {
+        var digits = new string(phone.Where(char.IsDigit).ToArray());
+        if (digits.StartsWith("0", StringComparison.Ordinal))
+        {
+            digits = $"84{digits[1..]}";
+        }
+        else if (!digits.StartsWith("84", StringComparison.Ordinal))
+        {
+            digits = $"84{digits}";
+        }
+
+        if (digits.Length is < 11 or > 12)
+        {
+            throw new DeliveryPricingException("Số điện thoại liên hệ giao hàng không hợp lệ.");
+        }
+
+        return $"+{digits}";
+    }
+
+    private static bool TryGetString(JsonElement element, string propertyName, out string value)
+    {
+        if (element.TryGetProperty(propertyName, out var property) &&
+            property.ValueKind == JsonValueKind.String &&
+            !string.IsNullOrWhiteSpace(property.GetString()))
+        {
+            value = property.GetString()!;
+            return true;
+        }
+
+        value = "";
+        return false;
+    }
+
+    private sealed record ResolvedDestination(double Latitude, double Longitude, string Address);
+
+    private sealed record CachedDeliveryQuote(
+        string RequestAddress,
+        string ResolvedAddress,
+        double? Latitude,
+        double? Longitude,
+        DeliveryQuoteResult Quote);
+}

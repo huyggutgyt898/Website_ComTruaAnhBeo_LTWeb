@@ -11,6 +11,14 @@
       color: #261715;
       overflow-x: hidden;
     }
+    #checkoutContentGrid.order-placed-layout {
+      display: flex;
+      justify-content: center;
+    }
+    #checkoutContentGrid.order-placed-layout #checkoutMainColumn {
+      width: 100%;
+      max-width: 820px;
+    }
     .font-brand {
       font-family: 'Montserrat', 'Inter', sans-serif;
     }

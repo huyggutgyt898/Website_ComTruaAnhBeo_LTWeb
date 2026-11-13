@@ -1,0 +1,208 @@
+@{
+    ViewData["Title"] = "Quản lý tài khoản khách hàng";
+    ViewData["ActiveNav"] = "accounts";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/accounts.css" asp-append-version="true" />
+}
+
+<!-- =======================================================================
+     COLUMN 2: CENTRAL WORKSPACE (WARM CREAM BACKGROUND)
+     ======================================================================= -->
+<main class="center-workspace">
+  <!-- Title & Headline -->
+  <div class="workspace-top-bar">
+    <div class="page-heading-group">
+      <h1>QUẢN LÝ TÀI KHOẢN KHÁCH HÀNG</h1>
+      <p>Theo dõi danh sách khách hàng đăng ký qua website, thông tin liên lạc và quản lý trạng thái tài khoản</p>
+    </div>
+    <div style="display: flex; gap: 8px;">
+      <button type="button" class="btn-refresh-orders" id="btnRefreshAccounts" onclick="fetchAccounts(currentPage)" title="Làm mới dữ liệu từ máy chủ">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+          <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+        </svg>
+        <span>Làm mới danh sách</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- KPI Summary Pills -->
+  <div class="account-kpi-grid">
+    <div class="account-kpi-card account-kpi-total">
+      <div class="kpi-avatar-wrap">👥</div>
+      <div class="kpi-data-wrap">
+        <span class="kpi-label-text">Tổng khách hàng</span>
+        <span class="kpi-count-num" id="kpiTotalAccounts">0</span>
+      </div>
+    </div>
+    <div class="account-kpi-card account-kpi-active">
+      <div class="kpi-avatar-wrap">🟢</div>
+      <div class="kpi-data-wrap">
+        <span class="kpi-label-text">Đang hoạt động</span>
+        <span class="kpi-count-num" id="kpiActiveAccounts">0</span>
+      </div>
+    </div>
+    <div class="account-kpi-card account-kpi-locked">
+      <div class="kpi-avatar-wrap">🔒</div>
+      <div class="kpi-data-wrap">
+        <span class="kpi-label-text">Đang bị khóa</span>
+        <span class="kpi-count-num" id="kpiLockedAccounts">0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toolbar: Search & Filter -->
+  <div class="account-toolbar-card">
+    <!-- Search Box -->
+    <div class="account-search-box">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="var(--text-muted)">
+        <path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/>
+      </svg>
+      <input type="text" id="searchAccountInput" class="account-search-input" placeholder="Tìm theo tên khách hàng, số điện thoại, email...">
+    </div>
+
+    <!-- Status Filter Select -->
+    <select id="filterAccountStatus" class="account-select-filter" onchange="handleStatusFilterChange()">
+      <option value="ALL">Tất cả trạng thái</option>
+      <option value="ACTIVE">Đang hoạt động</option>
+      <option value="LOCKED">Đã khóa</option>
+    </select>
+
+    <!-- Reset Button -->
+    <button type="button" class="btn-filter-reset" onclick="resetAllFilters()" title="Đặt lại bộ lọc">
+      <span>↺</span>
+      <span>Đặt lại</span>
+    </button>
+  </div>
+
+  <!-- Account List Table -->
+  <div class="account-table-container">
+    <table class="account-data-table">
+      <thead>
+        <tr>
+          <th style="width: 80px;">Mã KH</th>
+          <th>Khách hàng</th>
+          <th>Số điện thoại</th>
+          <th>Email</th>
+          <th>Địa chỉ</th>
+          <th>Trạng thái</th>
+          <th style="text-align: right; width: 100px;">Thao tác</th>
+        </tr>
+      </thead>
+      <tbody id="accountTableBody">
+        <tr>
+          <td colspan="7" style="text-align: center; padding: 28px; color: var(--text-muted);">
+            <div style="font-size: 26px; margin-bottom: 8px;">⏳</div>
+            Đang tải danh sách tài khoản khách hàng từ máy chủ...
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Dedicated Empty State -->
+    <div class="account-empty-state-wrap" id="accountEmptyState" style="display: none;">
+      <div class="account-empty-icon">👥</div>
+      <h3 class="account-empty-title">Không tìm thấy tài khoản khách hàng</h3>
+      <p class="account-empty-desc">Không có dữ liệu khách hàng nào phù hợp với điều kiện tìm kiếm hoặc chưa có khách hàng đăng ký.</p>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+        <button type="button" class="btn-refresh-orders" onclick="resetAllFilters()">
+          <span>🔄</span>
+          <span>Tải lại danh sách</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pagination Bar -->
+  <div class="order-toolbar-card" id="accountPaginationBar" style="display: none; flex-direction: row; justify-content: space-between; align-items: center; margin-top: -8px;">
+    <span style="font-size: 13px; font-weight: 600; color: var(--text-secondary);" id="paginationInfoText">
+      Hiển thị 0 - 0 trên 0 tài khoản
+    </span>
+    <div id="paginationButtonsWrap" style="display: flex; gap: 6px;">
+      <!-- Rendered via JS -->
+    </div>
+  </div>
+</main>
+
+<!-- =======================================================================
+     COLUMN 3: RIGHT DETAIL & ACTION PANEL (~390px)
+     ======================================================================= -->
+<aside class="account-detail-panel right-action-panel" id="accountDetailPanel">
+  <!-- Empty Placeholder when no account selected -->
+  <div class="panel-empty-placeholder" id="panelEmptyPlaceholder">
+    <div class="empty-icon">👤</div>
+    <h3>CHỌN MỘT TÀI KHOẢN</h3>
+    <p>Bấm vào bất kỳ dòng khách hàng nào trong danh sách bên trái để xem thông tin chi tiết và quản lý trạng thái tài khoản.</p>
+  </div>
+
+  <!-- Detailed Content when account is selected -->
+  <div id="panelDetailContent" style="display: none; flex-direction: column; height: 100%;">
+    <!-- Header -->
+    <div class="account-panel-header">
+      <div class="account-panel-title-wrap">
+        <h2>HỒ SƠ KHÁCH HÀNG</h2>
+        <span id="panelSubtitle">Chi tiết &amp; quản lý tài khoản</span>
+      </div>
+      <span class="badge-acc-status badge-acc-active" id="panelAccountStatusBadge">
+        Đang hoạt động
+      </span>
+    </div>
+
+    <!-- Scrollable Body -->
+    <div class="account-panel-body">
+      <!-- 1. Personal Information Card -->
+      <div class="user-profile-header-card">
+        <div class="user-profile-avatar-lg" id="panelAccountAvatar">--</div>
+        <div class="user-profile-info-wrap">
+          <span class="user-profile-name" id="panelAccountFullName">--</span>
+          <span style="font-size: 12px; font-weight: 700; color: var(--brand-burgundy); margin-bottom: 2px;" id="panelAccountMaTk">--</span>
+          <span style="font-size: 12px; font-weight: 700; color: var(--text-primary); font-family: monospace;" id="panelAccountPhone">--</span>
+          <span style="font-size: 11.5px; color: var(--text-secondary);" id="panelAccountEmail">--</span>
+        </div>
+      </div>
+
+      <!-- 2. Address Card -->
+      <div class="panel-section-box">
+        <div class="panel-section-header">
+          <span>📍 Địa chỉ nhận hàng</span>
+        </div>
+        <div id="panelAccountAddress" style="font-size: 13px; color: var(--text-primary); line-height: 1.5; padding: 4px 0;">
+          --
+        </div>
+      </div>
+
+      <!-- 3. Account Role & Security Info -->
+      <div class="panel-section-box">
+        <div class="panel-section-header">
+          <span>🛡️ Phân quyền &amp; Trạng thái</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12.5px;">
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--text-muted);">Vai trò hệ thống:</span>
+            <strong style="color: #2E7D32;">Khách hàng (KhachHang)</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--text-muted);">Tình trạng đăng nhập:</span>
+            <strong id="panelAccountLoginState">Cho phép đăng nhập</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Account Security Notice -->
+      <div class="preservation-notice-banner">
+        <strong>Chính sách tài khoản:</strong> Khi tài khoản bị khóa, khách hàng sẽ không thể đăng nhập để đặt món. Mọi dữ liệu đơn hàng đã phát sinh trước đó vẫn được lưu trữ bảo lưu trên hệ thống.
+      </div>
+    </div>
+
+    <!-- Sticky Footer with Management Action Buttons -->
+    <div class="account-panel-actions-footer" id="panelActionsFooter">
+      <!-- Rendered dynamically via JS -->
+    </div>
+  </div>
+</aside>
+
+@section Scripts {
+    <script src="~/js/accounts.js" asp-append-version="true"></script>
+}

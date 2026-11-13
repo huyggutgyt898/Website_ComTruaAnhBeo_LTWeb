@@ -1,0 +1,187 @@
+<!-- =========================================================================
+     CƠM TRƯA ANH BÉO - SHARED ADMIN HEADER & SIDEBAR COMPONENT
+     Views/Shared/_AdminHeader.cshtml
+     ========================================================================= -->
+
+<!-- FULL-WIDTH DARK BURGUNDY HEADER -->
+<header class="admin-header" id="sharedAdminHeader">
+  <div class="header-left">
+    <div class="brand-logo-icon">
+      <!-- Vietnamese Rice Bowl with Steaming Fragrance Icon -->
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="var(--brand-yellow)">
+        <path d="M12 2C11.5 2 11 2.5 11 3C11 3.5 11.5 4 12 4C13 4 14 5 14 6C14 7 13 8 12 8C11.45 8 11 8.45 11 9C11 9.55 11.45 10 12 10C14.21 10 16 8.21 16 6C16 3.79 14.21 2 12 2M7.5 4C7 4 6.5 4.5 6.5 5C6.5 5.5 7 6 7.5 6C8.33 6 9 6.67 9 7.5C9 8.33 8.33 9 7.5 9C6.95 9 6.5 9.45 6.5 10C6.5 10.55 6.95 11 7.5 11C9.43 11 11 9.43 11 7.5C11 5.57 9.43 4 7.5 4M2 13C2 17.42 5.58 21 10 21H14C18.42 21 22 17.42 22 13V12H2V13M10 22.5C9.45 22.5 9 22.95 9 23.5C9 23.78 9.22 24 9.5 24H14.5C14.78 24 15 23.78 15 23.5C15 22.95 14.55 22.5 14 22.5H10Z"/>
+      </svg>
+    </div>
+    <div class="brand-text-container">
+      <span class="brand-title">CƠM TRƯA ANH BÉO</span>
+      <span class="brand-subtitle">Hệ thống quản lý bán cơm</span>
+    </div>
+  </div>
+
+  <div class="header-right">
+    <!-- Sound Alert Toggle Button -->
+    <button class="sound-toggle-btn" id="soundToggleBtn" title="Âm thanh thông báo: ĐANG BẬT" aria-label="Bật/tắt âm thanh chuông báo">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+        <path d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77zm-2.5 9.77l-4.5-4.5H3v6h4l4.5 4.5v-6zm5 0c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+      </svg>
+    </button>
+
+    <!-- Notification Bell with Unread Badge & Dropdown -->
+    <div class="notification-wrapper">
+      <button class="notification-btn" id="notiBtn" title="Thông báo hệ thống">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+          <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
+        </svg>
+        <span class="notification-badge" id="notiBadgeCount">3</span>
+      </button>
+
+      <div class="notification-dropdown" id="notiDropdown">
+        <div class="dropdown-header">
+          <h4>Thông báo hệ thống</h4>
+          <span class="badge-unread">3 mới</span>
+        </div>
+        <div class="dropdown-list">
+          <div class="noti-item unread">
+            <span class="noti-item-icon">🔔</span>
+            <div class="noti-item-text">
+              <strong>Đơn hàng mới #DH-1025</strong>
+              <p>Khách hàng vừa đặt 2 phần cơm sườn bì chả nướng than.</p>
+              <span class="noti-time">Vừa xong</span>
+            </div>
+          </div>
+          <div class="noti-item unread">
+            <span class="noti-item-icon">🛵</span>
+            <div class="noti-item-text">
+              <strong>Tài xế Lalamove đã nhận đơn</strong>
+              <p>Tài xế đang đến nhận đơn #DH-1023 tại quán.</p>
+              <span class="noti-time">10 phút trước</span>
+            </div>
+          </div>
+          <div class="noti-item unread">
+            <span class="noti-item-icon">⭐</span>
+            <div class="noti-item-text">
+              <strong>Đánh giá 5 sao từ khách hàng</strong>
+              <p>Cơm nóng hổi, sườn ướp đậm đà rất vừa miệng!</p>
+              <span class="noti-time">25 phút trước</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Profile with Dropdown Menu -->
+    <div class="admin-profile-wrapper">
+      <div class="admin-profile" id="adminProfileBtn" onclick="toggleAdminProfileDropdown(event)" title="Tài khoản quản trị" role="button" tabindex="0" aria-haspopup="menu" aria-expanded="false">
+        <div class="profile-avatar">QT</div>
+        <div class="profile-info">
+          <span class="profile-name">Quản trị viên</span>
+          <span class="profile-role">Quản trị viên</span>
+        </div>
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" class="profile-chevron">
+          <path d="M7.41 8.59L12 13.17L16.59 8.59L18 10L12 16L6 10L7.41 8.59Z"/>
+        </svg>
+      </div>
+
+      <!-- Admin Profile Dropdown Menu -->
+      <div class="admin-profile-dropdown" id="adminProfileDropdown" role="menu" aria-label="Menu tài khoản quản trị">
+        <div class="profile-dropdown-header">
+          <strong>Quản trị viên</strong>
+          <span>admin@comtruaanhbeo.vn</span>
+        </div>
+        <div class="profile-dropdown-divider"></div>
+        <a asp-controller="Home" asp-action="Index" class="profile-dropdown-item" role="menuitem" title="Quay lại trang bán hàng (Trang chủ)">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+          </svg>
+          <span>Xem trang bán hàng</span>
+        </a>
+        <div class="profile-dropdown-divider"></div>
+        <button type="button" class="profile-dropdown-item item-logout" role="menuitem" onclick="openLogoutModal()" title="Đăng xuất khỏi hệ thống quản trị">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M17 7L15.59 8.41L18.17 11H8V13H18.17L15.59 15.58L17 17L22 12L17 7M4 5H12V3H4C2.9 3 2 3.9 2 5V19C2 20.1 2.9 21 4 21H12V19H4V5Z"/>
+          </svg>
+          <span>Đăng xuất</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- FIXED GOLDEN-YELLOW NAVIGATION SIDEBAR -->
+<aside class="admin-sidebar" id="sharedAdminSidebar">
+  <nav class="sidebar-nav">
+    <!-- Item 1: Quản lý đơn hàng -->
+    <a class="sidebar-nav-item" data-nav="orders" asp-controller="Admin" asp-action="Orders" title="Trang Quản lý đơn hàng">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+        <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3M19 19H5V5H19V19M17 12H7V10H17V12M13 16H7V14H13V16M17 8H7V6H17V8Z"/>
+      </svg>
+      <span>Quản lý đơn hàng</span>
+    </a>
+
+    <!-- Item 2: Quản lý món ăn -->
+    <a class="sidebar-nav-item" data-nav="dishes" asp-controller="Admin" asp-action="Products" title="Trang Quản lý món ăn">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+        <path d="M18.06 22.99H5.94C4.33 22.99 3 21.66 3 20.05V13.88C3 13.06 3.67 12.39 4.49 12.39H19.51C20.33 12.39 21 13.06 21 13.88V20.05C21 21.66 19.67 22.99 18.06 22.99M12 2C10.9 2 10 2.9 10 4V10H14V4C14 2.9 13.1 2 12 2M6 4C4.9 4 4 4.9 4 6V10H8V6C8 4.9 7.1 4 6 4M18 4C16.9 4 16 4.9 16 6V10H20V6C20 4.9 19.1 4 18 4Z"/>
+      </svg>
+      <span>Quản lý món ăn</span>
+    </a>
+
+    <!-- Item 3: Quản lý khuyến mãi -->
+    <a class="sidebar-nav-item" data-nav="promotions" asp-controller="Admin" asp-action="Promotions" title="Quản lý khuyến mãi">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+        <path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/>
+      </svg>
+      <span>Quản lý khuyến mãi</span>
+    </a>
+
+    <!-- Item 4: Quản lý tài khoản -->
+    <a class="sidebar-nav-item" data-nav="accounts" asp-controller="Admin" asp-action="Accounts" title="Quản lý tài khoản">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+      </svg>
+      <span>Quản lý tài khoản</span>
+    </a>
+
+    <!-- Item 5: Thống kê & Báo cáo -->
+    <a class="sidebar-nav-item" data-nav="statistics" asp-controller="Admin" asp-action="Statistics" title="Thống kê & Báo cáo">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+        <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3M19 19H5V5H19V19M7 10H9V17H7V10M11 7H13V17H11V7M15 13H17V17H15V13Z"/>
+      </svg>
+      <span>Thống kê & báo cáo</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer-info">
+    <div><strong>Cơm Trưa Anh Béo</strong></div>
+    <div>Phiên bản v2.6.4 Pro</div>
+  </div>
+</aside>
+
+<!-- SHARED LOGOUT CONFIRMATION MODAL -->
+<div class="admin-modal-backdrop" id="logoutConfirmModal" style="display: none;">
+  <div class="admin-modal-box" style="max-width: 440px;">
+    <div class="admin-modal-header">
+      <h3>XÁC NHẬN ĐĂNG XUẤT</h3>
+      <button type="button" class="btn-modal-close" onclick="closeLogoutModal()">✕</button>
+    </div>
+    <div class="admin-modal-body" style="padding: 24px 20px; text-align: center;">
+      <div style="font-size: 40px; margin-bottom: 12px;">👋</div>
+      <p style="font-size: 14.5px; font-weight: 700; color: var(--brand-burgundy); margin-bottom: 6px;">
+        Bạn có chắc chắn muốn đăng xuất?
+      </p>
+      <p style="font-size: 12.5px; color: var(--text-secondary); margin: 0;">
+        Phiên làm việc hiện tại của tài khoản quản trị <strong>Anh Béo</strong> sẽ kết thúc an toàn.
+      </p>
+    </div>
+    <div class="admin-modal-footer">
+      <button type="button" class="bulk-action-btn bulk-btn-print" onclick="closeLogoutModal()">
+        Hủy bỏ
+      </button>
+      <form id="adminLogoutForm" asp-controller="Admin" asp-action="Logout" method="post" style="margin: 0; display: inline;">
+        <button type="submit" class="bulk-action-btn bulk-btn-cancel">
+          Xác nhận đăng xuất
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

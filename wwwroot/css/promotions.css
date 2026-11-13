@@ -1,0 +1,798 @@
+/**
+ * Cơm Trưa Anh Béo - Promotions Management Module (Quản lý khuyến mãi)
+ * File: wwwroot/css/promotions.css
+ */
+
+@import url("admin-common.css");
+
+/* ==========================================================================
+   PROMOTIONS BADGES & COUPON TAGS
+   ========================================================================== */
+.coupon-code-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #FFF8E6;
+  border: 1.5px dashed var(--brand-burgundy);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 800;
+  font-size: 13.5px;
+  color: var(--brand-burgundy);
+  letter-spacing: 0.5px;
+  user-select: all;
+  box-shadow: 0 1px 3px rgba(74, 21, 17, 0.08);
+}
+
+.coupon-code-pill svg {
+  width: 14px;
+  height: 14px;
+  fill: var(--brand-burgundy);
+}
+
+.promo-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.promo-type-percent {
+  background: #E1F5FE;
+  color: #0277BD;
+  border: 1px solid rgba(2, 119, 189, 0.25);
+}
+
+.promo-type-fixed {
+  background: #E8F5E9;
+  color: #2E7D32;
+  border: 1px solid rgba(46, 125, 50, 0.25);
+}
+
+.promo-type-shipping {
+  background: #FFF3E0;
+  color: #E65100;
+  border: 1px solid rgba(230, 81, 0, 0.25);
+}
+
+/* ==========================================================================
+   USAGE PROGRESS BAR
+   ========================================================================== */
+.usage-cell-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 110px;
+}
+
+.usage-text-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.usage-progress-bar {
+  width: 100%;
+  height: 6px;
+  background: #E8DDD1;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.usage-progress-fill {
+  height: 100%;
+  background: var(--brand-burgundy);
+  border-radius: var(--radius-full);
+  transition: width 0.3s ease;
+}
+
+.usage-progress-fill.near-limit {
+  background: var(--warning);
+}
+
+.usage-progress-fill.full {
+  background: var(--danger);
+}
+
+.date-status-upcoming {
+  background: #E3F2FD;
+  color: #0D47A1;
+}
+
+/* ==========================================================================
+   INTERACTIVE DISCOUNT VALIDATOR / CALCULATOR WIDGET (IN RIGHT PANEL)
+   ========================================================================== */
+.discount-tester-card {
+  background: #FAF5EE;
+  border: 1.5px dashed var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  margin-top: 14px;
+  margin-bottom: 14px;
+}
+
+.tester-title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.tester-title-text {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--brand-burgundy);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+}
+
+.tester-input-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.tester-field-group label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  margin-bottom: 3px;
+}
+
+.tester-field-group input {
+  width: 100%;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--white);
+  color: var(--brand-burgundy);
+  outline: none;
+}
+
+.tester-field-group input:focus {
+  border-color: var(--brand-burgundy);
+}
+
+.btn-test-calculator {
+  width: 100%;
+  height: 34px;
+  background: var(--brand-yellow);
+  color: var(--brand-burgundy);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(74, 21, 17, 0.1);
+}
+
+.btn-test-calculator:hover {
+  background: var(--brand-yellow-hover);
+  transform: translateY(-1px);
+}
+
+.tester-result-box {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  display: none;
+  border: 1px solid transparent;
+}
+
+.tester-result-box.valid {
+  display: block;
+  background: #E8F7EC;
+  border-color: #A5D6A7;
+  color: #1B5E20;
+}
+
+.tester-result-box.invalid {
+  display: block;
+  background: #FFEBEE;
+  border-color: #EF9A9A;
+  color: #B71C1C;
+}
+
+.tester-calc-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.tester-calc-total {
+  border-top: 1px dashed rgba(0, 0, 0, 0.15);
+  padding-top: 6px;
+  margin-top: 6px;
+  font-weight: 800;
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+/* ==========================================================================
+   FILTER TABS / PILLS
+   ========================================================================== */
+.quick-type-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.quick-type-pill {
+  padding: 6px 12px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid var(--border-light);
+  background: var(--white);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.quick-type-pill:hover {
+  border-color: var(--brand-burgundy);
+  color: var(--brand-burgundy);
+}
+
+.quick-type-pill.active {
+  background: var(--brand-burgundy);
+  color: var(--white);
+  border-color: var(--brand-burgundy);
+}
+
+/* Status Badges */
+.badge-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.badge-status .status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background: currentColor;
+}
+
+.badge-available {
+  background: var(--success-bg);
+  color: var(--success);
+  border-color: rgba(22, 128, 58, 0.2);
+}
+
+.badge-status-inactive {
+  background: #FFF8E1;
+  color: #F57F17;
+  border: 1px solid rgba(245, 127, 23, 0.3);
+}
+
+.badge-status-expired {
+  background: #FFEBEE;
+  color: #C62828;
+  border: 1px solid rgba(198, 40, 40, 0.3);
+}
+
+.badge-status-exhausted {
+  background: #EEEEEE;
+  color: #616161;
+  border: 1px solid #DEDEDE;
+}
+/* ==========================================================================
+   SAFETY FALLBACKS & MODALS
+   ========================================================================== */
+.pill-radio-label.active-danger {
+  background: #ECEFF1;
+  border-color: #B0BEC5;
+  color: #37474F;
+}
+
+.modal-backdrop,
+.admin-modal-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(40, 10, 8, 0.6) !important;
+  backdrop-filter: blur(3px) !important;
+  display: none;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 99999 !important;
+  padding: 16px !important;
+}
+
+.modal-backdrop.active,
+.admin-modal-backdrop.active {
+  display: flex !important;
+}
+
+.promo-load-state {
+  display: flex;
+  min-height: 180px;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.promo-load-state[hidden],
+#promoTableContainer[hidden],
+.empty-state-card[hidden] {
+  display: none !important;
+}
+
+.promo-load-error {
+  flex-direction: column;
+  color: var(--danger);
+}
+
+#promoEmptyState {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  padding: 40px 24px;
+  text-align: center;
+}
+
+#promoEmptyState .btn-save {
+  width: auto;
+  padding: 0 18px;
+}
+
+#promoEmptyState .empty-state-icon {
+  font-size: 32px;
+}
+
+#promoEmptyState .empty-state-title {
+  color: var(--brand-burgundy);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+#promoEmptyState .empty-state-desc {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+#promoTable tbody tr.selected-row {
+  background: #fff8e6;
+  box-shadow: inset 3px 0 var(--brand-burgundy);
+}
+
+.promo-name {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--brand-burgundy);
+}
+
+.promo-secondary-text {
+  margin-top: 4px;
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+.promo-status-cell {
+  text-align: center;
+}
+
+.promo-no-results {
+  padding: 40px !important;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.promo-panel-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: #f0ece5;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.promo-panel-status.badge-available,
+.promo-panel-status.date-status-upcoming,
+.promo-panel-status.badge-status-expired,
+.promo-panel-status.badge-status-exhausted {
+  border: 1px solid currentColor;
+}
+
+.badge-status {
+  cursor: default;
+}
+
+#formPromoCode:disabled {
+  background: #f3efe9;
+  color: var(--text-secondary);
+  cursor: not-allowed;
+}
+
+/* Page layout */
+body[data-active-nav="promotions"] .center-workspace {
+  min-width: 0;
+  max-width: calc(100vw - var(--sidebar-width) - var(--right-panel-width));
+}
+
+body[data-active-nav="promotions"] .right-action-panel {
+  min-width: var(--right-panel-width);
+}
+
+.kpi-pills-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.kpi-pill {
+  display: flex;
+  min-width: 0;
+  min-height: 64px;
+  align-items: center;
+  padding: 12px 14px;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  background: var(--white);
+}
+
+.kpi-pill-content {
+  display: flex;
+  min-width: 0;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.kpi-pill-label {
+  min-width: 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.kpi-pill-val {
+  flex: 0 0 auto;
+  color: var(--brand-burgundy);
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.search-filter-card {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.7fr) repeat(3, minmax(120px, 1fr));
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+}
+
+.search-filter-card .search-box {
+  width: 100%;
+  min-width: 0;
+}
+
+.search-filter-card .search-input,
+.select-filter {
+  width: 100%;
+  min-width: 0;
+  height: 40px;
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background-color: var(--white);
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+.select-filter {
+  padding: 0 30px 0 10px;
+  cursor: pointer;
+}
+
+.select-filter:focus,
+.search-filter-card .search-input:focus {
+  border-color: var(--brand-burgundy);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(74, 21, 17, 0.08);
+}
+
+.promo-summary {
+  display: flex;
+  min-height: 20px;
+  align-items: center;
+  margin-top: 10px;
+  color: var(--text-secondary);
+  font-size: 12.5px;
+}
+
+.table-container {
+  max-width: 100%;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  overscroll-behavior-x: contain;
+}
+
+.data-table {
+  min-width: 820px;
+}
+
+.promo-code-cell,
+.promo-code-cell .coupon-code-pill {
+  white-space: nowrap;
+}
+
+#promoTable tbody tr {
+  cursor: pointer;
+}
+
+#promoTable tbody tr:focus-visible {
+  outline: 2px solid var(--brand-burgundy);
+  outline-offset: -2px;
+}
+
+.promo-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.promo-form .form-group {
+  min-width: 0;
+  margin-bottom: 0;
+  gap: 6px;
+}
+
+.promo-form .form-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  min-width: 0;
+  margin: 0;
+}
+
+.promo-form .form-row .flex-1 {
+  min-width: 0;
+  flex: initial;
+}
+
+.promo-form .form-row label {
+  min-height: 34px;
+  line-height: 1.35;
+}
+
+.promo-form .form-control {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  height: 40px;
+  font-size: 13px;
+}
+
+.promo-code-input {
+  font-family: "Courier New", Courier, monospace;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.promo-form .price-input-wrapper {
+  width: 100%;
+  min-width: 0;
+}
+
+.promo-form .field-hint {
+  color: var(--text-secondary);
+  font-size: 11.5px;
+  line-height: 1.4;
+}
+
+.promo-overview-card {
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.promo-panel-status {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.coupon-code-pill {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.panel-header {
+  gap: 12px;
+}
+
+.panel-header-title-group {
+  min-width: 0;
+}
+
+.panel-header-title-group h2,
+.panel-header-title-group span {
+  overflow-wrap: anywhere;
+}
+
+.panel-header .btn-create-dish {
+  min-height: 40px;
+  flex: 0 0 auto;
+  justify-content: center;
+}
+
+.promo-panel-footer {
+  flex-direction: column;
+  gap: 8px;
+}
+
+.promo-panel-footer .btn-save,
+.promo-panel-footer .promo-cancel-button {
+  width: 100%;
+  min-height: 40px;
+  height: 40px;
+  flex: none;
+  justify-content: center;
+}
+
+.promo-panel-footer .btn-save:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.tester-field-group input {
+  height: 40px;
+  font-size: 13px;
+}
+
+.btn-test-calculator {
+  height: 40px;
+}
+
+.btn-test-calculator:hover {
+  transform: none;
+}
+
+@media (max-width: 1300px) {
+  .search-filter-card {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .search-filter-card .search-box {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1200px) {
+  body[data-active-nav="promotions"] .center-workspace {
+    max-width: calc(100vw - var(--sidebar-width) - 340px);
+  }
+
+  body[data-active-nav="promotions"] .right-action-panel {
+    width: 340px;
+    min-width: 340px;
+    max-width: 340px;
+  }
+
+  .promo-date-row {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+}
+
+@media (max-width: 900px) {
+  body[data-active-nav="promotions"] .center-workspace {
+    width: 100%;
+    max-width: 100%;
+    overflow: visible;
+  }
+
+  body[data-active-nav="promotions"] .right-action-panel {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    height: auto;
+    max-height: none;
+    position: relative;
+    top: auto;
+  }
+
+  .kpi-pills-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .center-workspace {
+    padding: 20px 16px;
+  }
+
+  .workspace-top-bar {
+    margin-bottom: 16px;
+  }
+
+  .page-heading-group h1 {
+    font-size: 20px;
+  }
+
+  .page-heading-group p {
+    line-height: 1.5;
+  }
+
+  .search-filter-card {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .search-filter-card .search-box {
+    grid-column: auto;
+  }
+
+  .promo-form .form-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .promo-form .form-row label {
+    min-height: 0;
+  }
+
+  .promo-form .form-control {
+    height: 44px;
+    font-size: 16px;
+  }
+
+  .select-filter,
+  .search-filter-card .search-input {
+    height: 44px;
+    font-size: 16px;
+  }
+
+  .panel-header,
+  .panel-body,
+  .panel-footer {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+}

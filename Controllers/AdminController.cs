@@ -534,6 +534,38 @@ public sealed class AdminController : Controller
         });
     }
 
+    [HttpPost("api/orders/{orderId:int}/delivery/simulate-complete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CompleteSimulatedDelivery(int orderId, CancellationToken cancellationToken)
+    {
+        var updatedCount = await _db.DonHangs
+            .Where(order =>
+                order.MaDon == orderId &&
+                (order.TrangThai == "DangChuanBi" || order.TrangThai == "ThatBai"))
+            .ExecuteUpdateAsync(
+                setters => setters.SetProperty(order => order.TrangThai, "HoanThanh"),
+                cancellationToken);
+
+        if (updatedCount == 0)
+        {
+            var currentStatus = await _db.DonHangs
+                .Where(order => order.MaDon == orderId)
+                .Select(order => order.TrangThai)
+                .FirstOrDefaultAsync(cancellationToken);
+            if (currentStatus is null)
+            {
+                return NotFound(new { message = "Không tìm thấy đơn hàng." });
+            }
+
+            if (currentStatus != "HoanThanh")
+            {
+                return Conflict(new { message = "Đơn hàng không còn ở trạng thái có thể hoàn tất mô phỏng." });
+            }
+        }
+
+        return Ok(new { status = "COMPLETED", statusLabel = "Giao thành công" });
+    }
+
     [HttpPost("api/orders/{orderId:int}/delivery/refresh")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> RefreshDeliveryStatus(int orderId, CancellationToken cancellationToken)

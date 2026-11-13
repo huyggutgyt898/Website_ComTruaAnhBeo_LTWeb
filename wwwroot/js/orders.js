@@ -1124,18 +1124,36 @@ function simulateDeliveryOrder() {
   simulation.timeoutId = window.setTimeout(() => {
     if (simulatedDeliveryStates.get(order.id) !== simulation) return;
 
-    const currentOrder = orders.find(item => item.id === order.id);
-    if (!currentOrder) {
-      simulatedDeliveryStates.delete(order.id);
-      return;
+    simulation.timeoutId = null;
+    completeSimulatedDelivery(order.id, simulation);
+  }, simulatedDeliveryDuration);
+}
+
+async function completeSimulatedDelivery(orderId, simulation) {
+  try {
+    const response = await fetch(
+      `/admin/api/orders/${encodeURIComponent(orderId)}/delivery/simulate-complete`,
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          RequestVerificationToken: getAntiforgeryToken()
+        },
+        cache: "no-store"
+      });
+    const result = await response.json().catch(() => null);
+    if (!response.ok) {
+      throw new Error(result?.message || `Không thể hoàn tất mô phỏng giao hàng (HTTP ${response.status}).`);
     }
 
-    simulation.status = "COMPLETED";
-    simulation.deliveryStatus = "Đã giao hàng (mô phỏng)";
-    simulation.timeoutId = null;
+    if (simulatedDeliveryStates.get(orderId) !== simulation) return;
+    simulatedDeliveryStates.delete(orderId);
+    const currentOrder = orders.find(item => item.id === orderId);
+    if (!currentOrder) return;
+
     Object.assign(currentOrder, {
-      status: simulation.status,
-      deliveryStatus: simulation.deliveryStatus,
+      status: result.status,
+      deliveryStatus: "Đã giao hàng (mô phỏng)",
       driver: null,
       trackingUrl: null,
       isDeliverySimulation: true
@@ -1145,7 +1163,15 @@ function simulateDeliveryOrder() {
     renderOrderTable();
     renderRightPanel();
     showToast(`Đơn #${currentOrder.trackingCode || currentOrder.id} đã hoàn thành (mô phỏng).`);
-  }, simulatedDeliveryDuration);
+  } catch (error) {
+    if (simulatedDeliveryStates.get(orderId) === simulation) {
+      simulatedDeliveryStates.delete(orderId);
+    }
+    await loadOrders();
+    showToast(
+      error instanceof Error ? error.message : "Không thể lưu trạng thái hoàn thành đơn hàng.",
+      "danger");
+  }
 }
 
 async function confirmPayment() {

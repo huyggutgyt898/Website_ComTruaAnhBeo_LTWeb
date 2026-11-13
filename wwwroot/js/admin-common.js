@@ -29,45 +29,22 @@ const SHARED_COMPONENTS_TEMPLATE = `
       </svg>
     </button>
 
-    <!-- Notification Bell with Unread Badge & Dropdown -->
+    <!-- New Order Notifications -->
     <div class="notification-wrapper">
-      <button type="button" class="notification-btn" id="notiBtn" title="Thông báo hệ thống">
+      <button type="button" class="notification-btn" id="notiBtn" title="Đơn hàng mới" aria-label="Đơn hàng mới" aria-controls="notiDropdown" aria-expanded="false">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
           <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
         </svg>
-        <span class="notification-badge" id="notiBadgeCount">3</span>
+        <span class="notification-badge" id="notiBadgeCount" style="display: none;"></span>
       </button>
 
-      <div class="notification-dropdown" id="notiDropdown">
+      <div class="notification-dropdown" id="notiDropdown" role="region" aria-label="Đơn hàng mới">
         <div class="dropdown-header">
-          <h4>Thông báo hệ thống</h4>
-          <span class="badge-unread">3 mới</span>
+          <h4>Đơn hàng mới</h4>
+          <span class="notification-count" id="notiPendingCount">0 đơn mới</span>
         </div>
-        <div class="dropdown-list">
-          <div class="noti-item unread">
-            <span class="noti-item-icon">🔔</span>
-            <div class="noti-item-text">
-              <strong>Đơn hàng mới #DH-1025</strong>
-              <p>Khách hàng vừa đặt 2 phần cơm sườn bì chả nướng than.</p>
-              <span class="noti-time">Vừa xong</span>
-            </div>
-          </div>
-          <div class="noti-item unread">
-            <span class="noti-item-icon">🛵</span>
-            <div class="noti-item-text">
-              <strong>Tài xế Lalamove đã nhận đơn</strong>
-              <p>Tài xế đang đến nhận đơn #DH-1023 tại quán.</p>
-              <span class="noti-time">10 phút trước</span>
-            </div>
-          </div>
-          <div class="noti-item unread">
-            <span class="noti-item-icon">⭐</span>
-            <div class="noti-item-text">
-              <strong>Đánh giá 5 sao từ khách hàng</strong>
-              <p>Cơm nóng hổi, sườn ướp đậm đà rất vừa miệng!</p>
-              <span class="noti-time">25 phút trước</span>
-            </div>
-          </div>
+        <div class="dropdown-list" id="notiList">
+          <div class="notification-empty-state">Đang tải đơn mới...</div>
         </div>
       </div>
     </div>
@@ -236,6 +213,8 @@ async function initSharedComponents() {
 
   // Đã khớp với AdminController route /admin/current hoặc tùy chỉnh tránh lỗi 404
   await updateAdminProfile();
+  loadOrderNotifications();
+  window.setInterval(loadOrderNotifications, 15000);
 }
 
 async function updateAdminProfile() {
@@ -271,6 +250,109 @@ async function updateAdminProfile() {
   } catch (error) {
     // Im lặng bỏ qua lỗi mạng tạm thời để không làm phiền admin
   }
+}
+
+async function loadOrderNotifications() {
+  const list = document.getElementById('notiList');
+  if (!list || isLoadingOrderNotifications) return;
+
+  isLoadingOrderNotifications = true;
+  try {
+    const response = await fetch('/admin/api/orders', {
+      headers: { Accept: 'application/json' },
+      credentials: 'same-origin',
+      cache: 'no-store'
+    });
+    if (!response.ok) {
+      throw new Error(`Không thể tải thông báo đơn hàng (HTTP ${response.status}).`);
+    }
+
+    const orders = await response.json();
+    if (!Array.isArray(orders)) {
+      throw new Error('Dữ liệu thông báo đơn hàng không hợp lệ.');
+    }
+
+    const newOrders = orders
+      .filter(order => order?.status === 'PENDING')
+      .sort((left, right) => new Date(right.createdAt) - new Date(left.createdAt));
+    renderOrderNotifications(newOrders);
+  } catch (error) {
+    console.error('Không thể tải thông báo đơn hàng.', error);
+    const errorState = document.createElement('div');
+    errorState.className = 'notification-empty-state notification-error';
+    errorState.textContent = 'Không thể tải thông báo đơn hàng. Dữ liệu có thể đã cũ.';
+    list.replaceChildren(errorState);
+  } finally {
+    isLoadingOrderNotifications = false;
+  }
+}
+
+function renderOrderNotifications(orders) {
+  const list = document.getElementById('notiList');
+  const badge = document.getElementById('notiBadgeCount');
+  const countLabel = document.getElementById('notiPendingCount');
+  const button = document.getElementById('notiBtn');
+  if (!list || !badge || !countLabel || !button) return;
+
+  const count = orders.length;
+  badge.textContent = count > 99 ? '99+' : String(count);
+  badge.style.display = count ? 'flex' : 'none';
+  countLabel.textContent = `${count} đơn mới`;
+  button.setAttribute('aria-label', count ? `Đơn hàng mới, ${count} đơn chờ xác nhận` : 'Đơn hàng mới');
+
+  if (count === 0) {
+    if (list.firstElementChild?.classList.contains('notification-empty-state') &&
+        !list.firstElementChild.classList.contains('notification-error')) return;
+    const emptyState = document.createElement('div');
+    emptyState.className = 'notification-empty-state';
+    emptyState.textContent = 'Chưa có đơn hàng mới.';
+    list.replaceChildren(emptyState);
+    return;
+  }
+
+  const existingItems = [...list.querySelectorAll('.noti-item-link')];
+  if (existingItems.length === count &&
+      orders.every((order, index) => existingItems[index].dataset.orderId === String(order.id))) return;
+
+  list.replaceChildren();
+  orders.forEach(order => {
+    const trackingCode = order.trackingCode || order.id;
+    const item = document.createElement('a');
+    item.className = 'noti-item noti-item-link new-order-notification';
+    item.href = `/admin/orders?orderId=${encodeURIComponent(String(order.id))}`;
+    item.dataset.orderId = String(order.id);
+    item.setAttribute('aria-label', `Mở đơn hàng mới ${trackingCode}`);
+
+    const icon = document.createElement('span');
+    icon.className = 'noti-item-icon';
+    icon.setAttribute('aria-hidden', 'true');
+    icon.textContent = '📦';
+
+    const text = document.createElement('div');
+    text.className = 'noti-item-text';
+
+    const title = document.createElement('strong');
+    title.textContent = `Đơn mới #${trackingCode}`;
+
+    const summary = document.createElement('p');
+    const itemCount = Array.isArray(order.items)
+      ? order.items.reduce((total, dish) => total + (Number(dish.qty) || 0), 0)
+      : 0;
+    summary.textContent = itemCount
+      ? `${order.customerName || 'Khách hàng'} · ${itemCount} phần`
+      : `${order.customerName || 'Khách hàng'} vừa đặt đơn.`;
+
+    const time = document.createElement('span');
+    time.className = 'noti-time';
+    const createdAt = new Date(order.createdAt);
+    time.textContent = Number.isNaN(createdAt.getTime())
+      ? ''
+      : createdAt.toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+
+    text.append(title, summary, time);
+    item.append(icon, text);
+    list.append(item);
+  });
 }
 
 function highlightActiveNavigation() {
@@ -314,6 +396,7 @@ window.toggleAdminProfileDropdown = function(e) {
 };
 
 let isSharedGlobalEventsBound = false;
+let isLoadingOrderNotifications = false;
 
 function bindSharedHeaderEvents() {
   const notiBtn = document.getElementById('notiBtn');
@@ -324,6 +407,9 @@ function bindSharedHeaderEvents() {
       e.stopPropagation();
       closeAllDropdowns(notiDropdown);
       notiDropdown.classList.toggle('active');
+      const isOpen = notiDropdown.classList.contains('active');
+      notiBtn.setAttribute('aria-expanded', String(isOpen));
+      if (isOpen) loadOrderNotifications();
     };
   }
 
@@ -370,6 +456,7 @@ function bindSharedHeaderEvents() {
 
       if (curNotiDropdown && !curNotiDropdown.contains(e.target) && curNotiBtn && !curNotiBtn.contains(e.target)) {
         curNotiDropdown.classList.remove('active');
+        curNotiBtn.setAttribute('aria-expanded', 'false');
       }
       if (curProfileDropdown && !curProfileDropdown.contains(e.target) && curProfileBtn && !curProfileBtn.contains(e.target)) {
         curProfileDropdown.classList.remove('active');
@@ -394,6 +481,7 @@ function closeAllDropdowns(exceptElement) {
 
   if (notiDropdown && notiDropdown !== exceptElement) {
     notiDropdown.classList.remove('active');
+    document.getElementById('notiBtn')?.setAttribute('aria-expanded', 'false');
   }
   if (profileDropdown && profileDropdown !== exceptElement) {
     profileDropdown.classList.remove('active');

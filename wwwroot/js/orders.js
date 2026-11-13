@@ -29,6 +29,9 @@ let isLoadingOrders = false;
 let orderLoadError = "";
 let hasLoadedOrders = false;
 let deliverySyncError = "";
+const simulatedDeliveryStates = new Map();
+const deliverySimulationOnlyOrders = new Set();
+const simulatedDeliveryDuration = 5000;
 
 // Filters State
 let currentSearch = "";
@@ -175,23 +178,6 @@ function initEventListeners() {
     });
   }
 
-  // Header Notifications & Dropdown
-  const notiBtn = document.getElementById("notiBtn");
-  const notiDropdown = document.getElementById("notiDropdown");
-  if (notiBtn && notiDropdown) {
-    notiBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      initAudioContext();
-      notiDropdown.classList.toggle("active");
-    });
-
-    document.addEventListener("click", (e) => {
-      if (!notiDropdown.contains(e.target) && e.target !== notiBtn) {
-        notiDropdown.classList.remove("active");
-      }
-    });
-  }
-
   // Sound Toggle Button
   const soundBtn = document.getElementById("soundToggleBtn");
   if (soundBtn) {
@@ -245,7 +231,37 @@ async function loadOrders(refreshDelivery = true) {
       throw new Error("Dữ liệu đơn hàng từ máy chủ không hợp lệ.");
     }
 
-    const updatedOrders = result.map(order => ({ ...order, id: String(order.id) }));
+    const updatedOrders = result.map(serverOrder => {
+      const order = { ...serverOrder, id: String(serverOrder.id) };
+      if (deliverySimulationOnlyOrders.has(order.id)) {
+        if (order.status !== "PREPARING") {
+          deliverySimulationOnlyOrders.delete(order.id);
+        } else {
+          order.deliveryOrderId = null;
+          order.deliveryStatus = null;
+          order.driver = null;
+          order.trackingUrl = null;
+        }
+      }
+
+      const simulation = simulatedDeliveryStates.get(order.id);
+      if (!simulation) return order;
+
+      if (order.status !== simulation.originalStatus) {
+        if (simulation.timeoutId !== null) window.clearTimeout(simulation.timeoutId);
+        simulatedDeliveryStates.delete(order.id);
+        return order;
+      }
+
+      return {
+        ...order,
+        status: simulation.status,
+        deliveryStatus: simulation.deliveryStatus,
+        driver: null,
+        trackingUrl: null,
+        isDeliverySimulation: true
+      };
+    });
     const previousOrderIds = new Set(orders.map(order => order.id));
     const newOrders = hasLoadedOrders
       ? updatedOrders.filter(order => !previousOrderIds.has(order.id))
@@ -256,6 +272,11 @@ async function loadOrders(refreshDelivery = true) {
     });
     orders = updatedOrders;
     hasLoadedOrders = true;
+    const requestedOrderId = new URLSearchParams(window.location.search).get("orderId");
+    if (requestedOrderId && orders.some(order => order.id === requestedOrderId)) {
+      selectedOrderId = requestedOrderId;
+      window.history.replaceState(null, "", window.location.pathname);
+    }
     if (!orders.some(order => order.id === selectedOrderId)) selectedOrderId = null;
     if (newOrders.length > 0) {
       playNotificationChime();
@@ -279,7 +300,7 @@ async function loadOrders(refreshDelivery = true) {
 
 async function refreshSelectedDeliveryStatus() {
   const order = orders.find(item => item.id === selectedOrderId);
-  if (!order?.deliveryOrderId || ["COMPLETED", "FAILED", "CANCELED"].includes(order.status)) {
+  if (!order?.deliveryOrderId || order.isDeliverySimulation || ["COMPLETED", "FAILED", "CANCELED"].includes(order.status)) {
     deliverySyncError = "";
     return;
   }
@@ -639,7 +660,7 @@ async function executeBulkAction(actionType) {
     const results = [];
     for (const order of ordersToConfirm) {
       try {
-        const response = await fetch(`/admin/api/orders/${encodeURIComponent(order.id)}/confirm`, {
+        const response = await fetch(`/admin/api/orders/${encodeURIComponent(order.id)}/confirm?simulateDelivery=true`, {
           method: "POST",
           headers: {
             Accept: "application/json",
@@ -652,26 +673,21 @@ async function executeBulkAction(actionType) {
           throw new Error(result?.message || `HTTP ${response.status}`);
         }
 
-        results.push({
-          order,
-          dispatchError: result.dispatchError || null
-        });
+        deliverySimulationOnlyOrders.add(order.id);
+        results.push({ error: null });
       } catch (error) {
-        results.push({
-          order,
-          dispatchError: error instanceof Error ? error.message : "Không thể xác nhận đơn."
-        });
+        results.push({ error: error instanceof Error ? error.message : "Không thể xác nhận đơn." });
       }
     }
 
     await loadOrders();
-    const failures = results.filter(result => result.dispatchError);
+    const failures = results.filter(result => result.error);
     if (failures.length > 0) {
       showToast(
-        `Đã xử lý ${results.length - failures.length}/${results.length} đơn hoàn chỉnh. Kiểm tra các đơn còn lại trong danh sách; một số đơn có thể đã xác nhận nhưng chưa gọi được Lalamove.`,
+        `Đã xác nhận ${results.length - failures.length}/${results.length} đơn. Kiểm tra danh sách để xem các đơn chưa xử lý.`,
         "warning");
     } else {
-      showToast(`Đã xác nhận ${results.length} đơn; bếp và Lalamove đang xử lý song song.`, "success");
+      showToast(`Đã xác nhận ${results.length} đơn; giao hàng sẽ được mô phỏng.`, "success");
     }
   } else if (actionType === "PRINT") {
     showToast("Chức năng in phiếu hàng loạt chưa được hỗ trợ.", "warning");
@@ -783,7 +799,7 @@ function renderRightPanel() {
   const btnConfirmPay = document.getElementById("btnConfirmPayment");
   const canConfirmPayment = order.isBankPayment
     ? order.status === "PENDING"
-    : order.isCodPayment && order.status === "COMPLETED";
+    : order.isCodPayment && order.status === "COMPLETED" && !order.isDeliverySimulation;
   btnConfirmPay.style.display = !order.isPaid && canConfirmPayment
     ? "inline-flex"
     : "none";
@@ -825,7 +841,9 @@ function renderLalamoveSection(order) {
   } else if (order.deliveryStatus) {
     driverBox.style.display = "none";
     statusText.textContent = order.deliveryStatus;
-    statusText.style.color = order.status === "FAILED" ? "var(--danger)" : "#E65100";
+    statusText.style.color = order.status === "COMPLETED"
+      ? "var(--success)"
+      : order.status === "FAILED" ? "var(--danger)" : "#E65100";
   } else if (order.status === "FINDING_DRIVER") {
     driverBox.style.display = "none";
     statusText.textContent = "Đang phát tín hiệu tìm tài xế Lalamove gần nhất...";
@@ -953,10 +971,10 @@ function renderContextualActions(order) {
   } else if (order.status === "CONFIRMED") {
     buttonsHtml += `
       <p class="payment-confirmation-required" role="status">
-        Tiếp tục đưa đơn vào bếp và tự động tìm tài xế Lalamove.
+        Đưa đơn vào bếp; việc tìm tài xế và giao hàng sẽ được mô phỏng, không gọi Lalamove thật.
       </p>
       <button class="btn-order-action btn-primary-burgundy" onclick="transitionOrderStatus('CONFIRMED')">
-        🍳 Bắt đầu bếp và tìm tài xế
+        🍳 Bắt đầu bếp (mô phỏng giao hàng)
       </button>
       <button class="btn-order-action btn-secondary-action" onclick="openPrintTicketModal()">
         🖨️ In phiếu bếp
@@ -968,8 +986,11 @@ function renderContextualActions(order) {
         ? `<p class="payment-confirmation-required" role="status">
             Bếp đang chế biến; Lalamove đang điều phối tài xế song song.
           </p>`
-        : `<button class="btn-order-action btn-primary-burgundy" onclick="dispatchDeliveryOrder()">
-            🛵 Thử lại tìm tài xế Lalamove
+        : `<p class="payment-confirmation-required" role="status">
+            Mô phỏng: đơn sẽ chuyển sang đang giao hàng rồi hoàn thành sau 5 giây; không gọi Lalamove thật.
+          </p>
+          <button class="btn-order-action btn-primary-burgundy" onclick="simulateDeliveryOrder()">
+            🛵 Tìm tài xế Lalamove (mô phỏng)
           </button>`}
       <button class="btn-order-action btn-secondary-action" onclick="openPrintTicketModal()">
         🖨️ In lại phiếu bếp
@@ -985,7 +1006,9 @@ function renderContextualActions(order) {
     buttonsHtml += `
       <p class="payment-confirmation-required" role="status">
         ${order.status === "DELIVERING"
-          ? "Tài xế đang giao hàng. Đơn chỉ hoàn thành khi Lalamove xác nhận giao thành công."
+          ? order.isDeliverySimulation
+            ? "Đang giao hàng (mô phỏng). Đơn sẽ tự chuyển sang hoàn thành sau 5 giây."
+            : "Tài xế đang giao hàng. Đơn chỉ hoàn thành khi Lalamove xác nhận giao thành công."
           : "Tài xế đã nhận chuyến. Đang chờ cập nhật quá trình giao hàng."}
       </p>
       <button class="btn-order-action btn-secondary-action" onclick="openPrintTicketModal()">
@@ -995,7 +1018,7 @@ function renderContextualActions(order) {
   } else if (order.status === "COMPLETED") {
     buttonsHtml += `
       <div style="text-align: center; color: var(--success); font-weight: 700; font-size: 13px; padding: 6px 0;">
-        ✓ Lalamove đã xác nhận giao hàng thành công
+        ${order.isDeliverySimulation ? "✓ Đơn hàng đã hoàn thành (mô phỏng)" : "✓ Lalamove đã xác nhận giao hàng thành công"}
       </div>
       <button class="btn-order-action btn-secondary-action" onclick="openPrintTicketModal()">
         🖨️ In lại hóa đơn
@@ -1007,8 +1030,8 @@ function renderContextualActions(order) {
         ✕ Đơn hàng đã dừng xử lý (${order.status === 'CANCELED' ? 'Đã hủy' : 'Giao thất bại'})
       </div>
       ${order.status === "FAILED" ? `
-        <button class="btn-order-action btn-primary-burgundy" onclick="dispatchDeliveryOrder()">
-          🔄 Gọi lại tài xế Lalamove
+        <button class="btn-order-action btn-primary-burgundy" onclick="simulateDeliveryOrder()">
+          🔄 Mô phỏng gọi lại tài xế
         </button>
       ` : ""}
       <button class="btn-order-action btn-secondary-action" onclick="openPrintTicketModal()">
@@ -1042,7 +1065,7 @@ async function transitionOrderStatus(nextStatus) {
   if (confirmButton) confirmButton.disabled = true;
 
   try {
-    const response = await fetch(`/admin/api/orders/${encodeURIComponent(order.id)}/confirm`, {
+    const response = await fetch(`/admin/api/orders/${encodeURIComponent(order.id)}/confirm?simulateDelivery=true`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -1055,8 +1078,7 @@ async function transitionOrderStatus(nextStatus) {
       throw new Error(result?.message || `Không thể xác nhận đơn hàng (HTTP ${response.status}).`);
     }
 
-    order.status = result.status;
-    order.statusLabel = result.statusLabel;
+    deliverySimulationOnlyOrders.add(order.id);
     await loadOrders();
     if (result.dispatchError) {
       showToast(
@@ -1064,7 +1086,7 @@ async function transitionOrderStatus(nextStatus) {
         "warning");
     } else {
       showToast(
-        `Đã xác nhận đơn #${order.trackingCode || order.id}; bếp và Lalamove đang xử lý song song.`,
+        `Đã xác nhận đơn #${order.trackingCode || order.id}; giao hàng sẽ được mô phỏng.`,
         "success");
     }
   } catch (error) {
@@ -1073,37 +1095,57 @@ async function transitionOrderStatus(nextStatus) {
   }
 }
 
-async function dispatchDeliveryOrder() {
+function simulateDeliveryOrder() {
   if (!selectedOrderId) return;
   const order = orders.find(item => item.id === selectedOrderId);
-  if (!order) return;
+  if (!order || !["PREPARING", "FAILED"].includes(order.status) || simulatedDeliveryStates.has(order.id)) return;
 
-  const dispatchButton = document.querySelector("#panelActionsFooter .btn-primary-burgundy");
-  if (dispatchButton) dispatchButton.disabled = true;
+  const simulation = {
+    originalStatus: order.status,
+    status: "DELIVERING",
+    deliveryStatus: "Đang giao hàng (mô phỏng)",
+    timeoutId: null
+  };
+  simulatedDeliveryStates.set(order.id, simulation);
+  deliverySyncError = "";
+  Object.assign(order, {
+    status: simulation.status,
+    deliveryStatus: simulation.deliveryStatus,
+    driver: null,
+    trackingUrl: null,
+    isDeliverySimulation: true
+  });
 
-  try {
-    const response = await fetch(
-      `/admin/api/orders/${encodeURIComponent(order.id)}/delivery`,
-      {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          RequestVerificationToken: getAntiforgeryToken()
-        },
-        cache: "no-store"
-      });
-    const result = await response.json().catch(() => null);
-    if (!response.ok) {
-      throw new Error(result?.message || `Không thể gọi tài xế Lalamove (HTTP ${response.status}).`);
+  renderKPIs();
+  renderOrderTable();
+  renderRightPanel();
+  showToast(`Đơn #${order.trackingCode || order.id} đang giao hàng (mô phỏng).`, "info");
+
+  simulation.timeoutId = window.setTimeout(() => {
+    if (simulatedDeliveryStates.get(order.id) !== simulation) return;
+
+    const currentOrder = orders.find(item => item.id === order.id);
+    if (!currentOrder) {
+      simulatedDeliveryStates.delete(order.id);
+      return;
     }
 
-    deliverySyncError = "";
-    await loadOrders();
-    showToast(`Đã tạo chuyến Lalamove cho đơn #${order.trackingCode || order.id}.`, "success");
-  } catch (error) {
-    showToast(error instanceof Error ? error.message : "Không thể gọi tài xế Lalamove.", "danger");
-    await loadOrders();
-  }
+    simulation.status = "COMPLETED";
+    simulation.deliveryStatus = "Đã giao hàng (mô phỏng)";
+    simulation.timeoutId = null;
+    Object.assign(currentOrder, {
+      status: simulation.status,
+      deliveryStatus: simulation.deliveryStatus,
+      driver: null,
+      trackingUrl: null,
+      isDeliverySimulation: true
+    });
+
+    renderKPIs();
+    renderOrderTable();
+    renderRightPanel();
+    showToast(`Đơn #${currentOrder.trackingCode || currentOrder.id} đã hoàn thành (mô phỏng).`);
+  }, simulatedDeliveryDuration);
 }
 
 async function confirmPayment() {
@@ -1310,13 +1352,6 @@ function showToast(message, type = "success") {
     toast.style.transition = "all 0.3s ease";
     setTimeout(() => toast.remove(), 300);
   }, 3200);
-}
-
-function markAllNotiRead() {
-  document.querySelectorAll(".noti-item").forEach(item => item.classList.remove("unread"));
-  const badge = document.getElementById("notiBadgeCount");
-  if (badge) badge.style.display = "none";
-  showToast("Đã đánh dấu đọc tất cả thông báo", "info");
 }
 
 /* Navigation click handler */

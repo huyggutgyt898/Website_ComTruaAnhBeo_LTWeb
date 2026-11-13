@@ -352,7 +352,10 @@ public sealed class AdminController : Controller
 
     [HttpPost("api/orders/{orderId:int}/confirm")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ConfirmOrder(int orderId, CancellationToken cancellationToken)
+    public async Task<IActionResult> ConfirmOrder(
+        int orderId,
+        CancellationToken cancellationToken,
+        [FromQuery] bool simulateDelivery = false)
     {
         var order = await _db.DonHangs
             .Include(item => item.VanChuyen)
@@ -381,31 +384,34 @@ public sealed class AdminController : Controller
         await _db.SaveChangesAsync(cancellationToken);
 
         string? dispatchError = null;
-        try
+        if (!simulateDelivery)
         {
-            if (order.VanChuyen is null || order.VanChuyen.TrangThai == "Huy")
+            try
             {
-                await CreateDeliveryForOrderAsync(order, cancellationToken);
+                if (order.VanChuyen is null || order.VanChuyen.TrangThai == "Huy")
+                {
+                    await CreateDeliveryForOrderAsync(order, cancellationToken);
+                }
             }
-        }
-        catch (DeliveryPricingException exception)
-        {
-            dispatchError = exception.Message;
-        }
-        catch (DbUpdateException exception)
-        {
-            _logger.LogError(exception, "Could not save Lalamove delivery for confirmed order {OrderId}.", orderId);
-            dispatchError = "Lalamove có thể đã nhận chuyến nhưng ứng dụng không lưu được. Kiểm tra chuyến trong Lalamove trước khi thử lại để tránh tạo chuyến trùng.";
-        }
-        catch (HttpRequestException exception)
-        {
-            _logger.LogError(exception, "Could not connect to a delivery provider for order {OrderId}.", orderId);
-            dispatchError = "Không kết nối được với Lalamove hoặc dịch vụ định vị. Kiểm tra kết nối mạng/cấu hình rồi thử lại.";
-        }
-        catch (JsonException exception)
-        {
-            _logger.LogError(exception, "Invalid delivery provider response for order {OrderId}.", orderId);
-            dispatchError = "Lalamove hoặc dịch vụ định vị trả về dữ liệu không hợp lệ. Kiểm tra log máy chủ trước khi thử lại.";
+            catch (DeliveryPricingException exception)
+            {
+                dispatchError = exception.Message;
+            }
+            catch (DbUpdateException exception)
+            {
+                _logger.LogError(exception, "Could not save Lalamove delivery for confirmed order {OrderId}.", orderId);
+                dispatchError = "Lalamove có thể đã nhận chuyến nhưng ứng dụng không lưu được. Kiểm tra chuyến trong Lalamove trước khi thử lại để tránh tạo chuyến trùng.";
+            }
+            catch (HttpRequestException exception)
+            {
+                _logger.LogError(exception, "Could not connect to a delivery provider for order {OrderId}.", orderId);
+                dispatchError = "Không kết nối được với Lalamove hoặc dịch vụ định vị. Kiểm tra kết nối mạng/cấu hình rồi thử lại.";
+            }
+            catch (JsonException exception)
+            {
+                _logger.LogError(exception, "Invalid delivery provider response for order {OrderId}.", orderId);
+                dispatchError = "Lalamove hoặc dịch vụ định vị trả về dữ liệu không hợp lệ. Kiểm tra log máy chủ trước khi thử lại.";
+            }
         }
 
         return Ok(new
@@ -413,8 +419,8 @@ public sealed class AdminController : Controller
             status = MapOrderStatus(order.TrangThai),
             statusLabel = GetOrderStatusLabel(order.TrangThai),
             dispatchError,
-            deliveryOrderId = order.VanChuyen?.LalamoveOrderId,
-            deliveryStatus = order.VanChuyen is null
+            deliveryOrderId = simulateDelivery ? null : order.VanChuyen?.LalamoveOrderId,
+            deliveryStatus = simulateDelivery || order.VanChuyen is null
                 ? null
                 : GetDeliveryStatusLabel(order.VanChuyen.TrangThai)
         });

@@ -26,45 +26,22 @@
       </svg>
     </button>
 
-    <!-- Notification Bell with Unread Badge & Dropdown -->
+    <!-- New Order Notifications -->
     <div class="notification-wrapper">
-      <button class="notification-btn" id="notiBtn" title="Thông báo hệ thống">
+      <button type="button" class="notification-btn" id="notiBtn" title="Đơn hàng mới" aria-label="Đơn hàng mới" aria-controls="notiDropdown" aria-expanded="false">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
           <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
         </svg>
-        <span class="notification-badge" id="notiBadgeCount">3</span>
+        <span class="notification-badge" id="notiBadgeCount" style="display: none;"></span>
       </button>
 
-      <div class="notification-dropdown" id="notiDropdown">
+      <div class="notification-dropdown" id="notiDropdown" role="region" aria-label="Đơn hàng mới">
         <div class="dropdown-header">
-          <h4>Thông báo hệ thống</h4>
-          <span class="badge-unread">3 mới</span>
+          <h4>Đơn hàng mới</h4>
+          <span class="notification-count" id="notiPendingCount">0 đơn mới</span>
         </div>
-        <div class="dropdown-list">
-          <div class="noti-item unread">
-            <span class="noti-item-icon">🔔</span>
-            <div class="noti-item-text">
-              <strong>Đơn hàng mới #DH-1025</strong>
-              <p>Khách hàng vừa đặt 2 phần cơm sườn bì chả nướng than.</p>
-              <span class="noti-time">Vừa xong</span>
-            </div>
-          </div>
-          <div class="noti-item unread">
-            <span class="noti-item-icon">🛵</span>
-            <div class="noti-item-text">
-              <strong>Tài xế Lalamove đã nhận đơn</strong>
-              <p>Tài xế đang đến nhận đơn #DH-1023 tại quán.</p>
-              <span class="noti-time">10 phút trước</span>
-            </div>
-          </div>
-          <div class="noti-item unread">
-            <span class="noti-item-icon">⭐</span>
-            <div class="noti-item-text">
-              <strong>Đánh giá 5 sao từ khách hàng</strong>
-              <p>Cơm nóng hổi, sườn ướp đậm đà rất vừa miệng!</p>
-              <span class="noti-time">25 phút trước</span>
-            </div>
-          </div>
+        <div class="dropdown-list" id="notiList">
+          <div class="notification-empty-state">Đang tải đơn mới...</div>
         </div>
       </div>
     </div>

@@ -26,7 +26,6 @@ const StatsState = {
 // =============================================================================
 document.addEventListener('DOMContentLoaded', () => {
   initDefaultDates();
-  initNotificationControls();
   initSoundToggle();
 
   // Tải dữ liệu ban đầu từ Backend API cho tab mặc định (Doanh thu)
@@ -703,24 +702,6 @@ function showTableLoading(tbodyId, colSpan) {
       </td>
     </tr>
   `;
-}
-
-function initNotificationControls() {
-  const notiBtn = document.getElementById('notiBtn');
-  const notiDropdown = document.getElementById('notiDropdown');
-
-  if (notiBtn && notiDropdown) {
-    notiBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      notiDropdown.classList.toggle('active');
-    });
-
-    document.addEventListener('click', (e) => {
-      if (!notiDropdown.contains(e.target) && e.target !== notiBtn) {
-        notiDropdown.classList.remove('active');
-      }
-    });
-  }
 }
 
 function initSoundToggle() {

@@ -872,29 +872,6 @@ function showToast(message, type = "success") {
 /* ========================================================================
    14. HEADER NOTIFICATIONS & NAVIGATION
    ======================================================================== */
-const notiBtn = document.getElementById("notiBtn");
-const notiDropdown = document.getElementById("notiDropdown");
-
-if (notiBtn && notiDropdown) {
-  notiBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    notiDropdown.classList.toggle("active");
-  });
-
-  document.addEventListener("click", (e) => {
-    if (!notiDropdown.contains(e.target) && e.target !== notiBtn) {
-      notiDropdown.classList.remove("active");
-    }
-  });
-}
-
-function markAllNotiRead() {
-  document.querySelectorAll(".noti-item").forEach(item => item.classList.remove("unread"));
-  const badge = document.getElementById("notiBadgeCount");
-  if (badge) badge.style.display = "none";
-  showToast("Đã đánh dấu đọc tất cả thông báo", "info");
-}
-
 function handleNavClick(module) {
   if (module === 'mon-an') {
     window.location.href = "/admin/products";

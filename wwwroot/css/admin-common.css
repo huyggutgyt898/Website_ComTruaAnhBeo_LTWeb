@@ -261,6 +261,7 @@ svg {
   top: 48px;
   right: 0;
   width: 330px;
+  max-width: calc(100vw - 24px);
   background: var(--white);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
@@ -292,7 +293,7 @@ svg {
   margin: 0;
 }
 
-.badge-unread {
+.notification-count {
   background: rgba(74, 21, 17, 0.1);
   color: var(--brand-burgundy);
   font-size: 11px;
@@ -315,11 +316,21 @@ svg {
   transition: background 0.15s ease;
 }
 
+.noti-item-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.noti-item-link:focus-visible {
+  outline: 2px solid var(--brand-yellow);
+  outline-offset: -2px;
+}
+
 .noti-item:hover {
   background: #FDF9F3;
 }
 
-.noti-item.unread {
+.noti-item.new-order-notification {
   background: #FFFBF0;
 }
 
@@ -333,6 +344,22 @@ svg {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
+}
+
+.noti-item-text p {
+  margin: 0;
+}
+
+.notification-empty-state {
+  padding: 20px 16px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  text-align: center;
+}
+
+.notification-error {
+  color: var(--danger);
 }
 
 .noti-item strong {

@@ -97,6 +97,58 @@ namespace ComTruaAnhBeo.Controllers
             return Ok(dishes);
         }
 
+        [HttpGet("/api/promotions")]
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public async Task<IActionResult> Promotions(CancellationToken cancellationToken)
+        {
+            var now = DateTime.Now;
+            var promotions = await _db.KhuyenMais
+                .AsNoTracking()
+                .Where(promotion =>
+                    promotion.NgayBatDau <= now &&
+                    promotion.NgayKetThuc >= now &&
+                    (!promotion.TongLuotToiDa.HasValue ||
+                        _db.DonHangs.Count(order =>
+                            order.MaCode == promotion.MaCode &&
+                            order.TrangThai != "Huy" &&
+                            order.TrangThai != "DaHuy") < promotion.TongLuotToiDa.Value))
+                .OrderBy(promotion => promotion.NgayKetThuc)
+                .Select(promotion => new
+                {
+                    promotion.MaCode,
+                    promotion.LoaiGiam,
+                    promotion.ApDungCho,
+                    promotion.GiaTri,
+                    promotion.GiamToiDa,
+                    promotion.DonToiThieu,
+                    promotion.NgayKetThuc
+                })
+                .ToListAsync(cancellationToken);
+
+            return Ok(promotions.Select(promotion =>
+            {
+                var type = promotion.LoaiGiam.Trim().ToUpperInvariant();
+                var scope = promotion.ApDungCho.Trim().ToUpperInvariant();
+                var isShippingDiscount = type is "SHIPPING" or "SHIP" or "PHISHIP" ||
+                    scope is "PHISHIP" or "PHIGIAO";
+                var isPercentageDiscount = type is "PERCENT" or "PHANTRAM";
+
+                return new
+                {
+                    code = promotion.MaCode,
+                    discountType = isShippingDiscount
+                        ? "SHIPPING"
+                        : isPercentageDiscount
+                            ? "PERCENT"
+                            : "FIXED_AMOUNT",
+                    discountValue = promotion.GiaTri,
+                    maxDiscount = promotion.GiamToiDa,
+                    minOrderValue = promotion.DonToiThieu,
+                    endDate = promotion.NgayKetThuc
+                };
+            }));
+        }
+
         [HttpGet("/api/orders/{trackingCode}/payment-status")]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public async Task<IActionResult> GetOrderPaymentStatus(

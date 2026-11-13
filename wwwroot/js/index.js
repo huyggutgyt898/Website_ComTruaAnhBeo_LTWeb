@@ -130,6 +130,71 @@
       })[character]);
     }
 
+    function renderPromotions(promotions) {
+      const promotionList = document.getElementById("promotionCodeList");
+      promotionList.innerHTML = promotions.map(promotion => {
+        const code = escapeHtml(promotion.code);
+        const title = promotion.discountType === "PERCENT"
+          ? `Giảm ${Number(promotion.discountValue).toLocaleString("vi-VN")}%`
+          : promotion.discountType === "SHIPPING"
+            ? "Giảm phí giao hàng"
+            : `Giảm ${formatVND(promotion.discountValue)}`;
+        const description = promotion.discountType === "PERCENT"
+          ? `Giảm ${Number(promotion.discountValue).toLocaleString("vi-VN")}% giá trị món${promotion.maxDiscount ? `, tối đa ${formatVND(promotion.maxDiscount)}` : ""}.`
+          : promotion.discountType === "SHIPPING"
+            ? `Hỗ trợ phí giao hàng tối đa ${formatVND(promotion.discountValue)}.`
+            : `Giảm ${formatVND(promotion.discountValue)} trên đơn hàng.`;
+        const minOrder = Number(promotion.minOrderValue) > 0
+          ? `<p class="mt-2 text-xs text-stone-500">Đơn tối thiểu ${formatVND(promotion.minOrderValue)}</p>`
+          : "";
+        const expiration = new Date(promotion.endDate);
+        const expirationText = Number.isNaN(expiration.getTime())
+          ? ""
+          : `<p class="mt-2 text-xs text-stone-500">Có hiệu lực đến ${expiration.toLocaleDateString("vi-VN")}</p>`;
+
+        return `
+          <article class="rounded-xl border border-stone-200 bg-white p-5">
+            <div class="flex items-start justify-between gap-3">
+              <h2 class="font-brand text-lg font-black text-plt-brown">${title}</h2>
+              <span class="rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-extrabold uppercase text-amber-900">Đang áp dụng</span>
+            </div>
+            <p class="mt-2 text-sm text-stone-600">${description}</p>
+            ${minOrder}
+            ${expirationText}
+            <div class="mt-4 flex items-center justify-between gap-3 rounded-lg bg-stone-50 p-3">
+              <code class="font-bold tracking-wide text-stone-900">${code}</code>
+              <button type="button" data-copy-promotion="${code}" class="shrink-0 rounded-lg border border-stone-300 bg-white px-3 py-2 text-xs font-bold text-plt-brown hover:bg-amber-50 focus:outline-none focus:ring-2 focus:ring-plt-brown">Sao chép</button>
+            </div>
+          </article>`;
+      }).join("");
+    }
+
+    async function loadPromotions() {
+      const status = document.getElementById("promotionStatus");
+      status.textContent = "Đang tải khuyến mãi…";
+
+      try {
+        const response = await fetch("/api/promotions", {
+          cache: "no-store",
+          headers: { Accept: "application/json" }
+        });
+        const promotions = await response.json().catch(() => null);
+        if (!response.ok) {
+          throw new Error(promotions?.message || `Không thể tải khuyến mãi (HTTP ${response.status}).`);
+        }
+        if (!Array.isArray(promotions)) {
+          throw new Error("Dữ liệu khuyến mãi từ máy chủ không hợp lệ.");
+        }
+
+        renderPromotions(promotions);
+        status.textContent = promotions.length
+          ? `Có ${promotions.length} mã khuyến mãi đang áp dụng.`
+          : "Hiện chưa có mã khuyến mãi đang áp dụng.";
+      } catch (error) {
+        status.innerHTML = `${escapeHtml(error.message || "Không thể tải khuyến mãi.")} <button type="button" data-retry-promotions class="font-bold text-plt-brown underline">Thử lại</button>`;
+      }
+    }
+
     function renderCategoryFilters() {
       const filterBar = document.getElementById("categoryFilterBar");
       const categories = [...new Set(MENU_ITEMS.map(item => item.catId))]
@@ -899,6 +964,7 @@
       // Render thực đơn & giỏ hàng ban đầu
       renderMenuGrid();
       loadMenuItems();
+      loadPromotions();
       updateCartAndCheckoutUI();
       initReviewSection();
 
@@ -917,16 +983,22 @@
         });
       });
 
-      document.querySelectorAll("[data-copy-promotion]").forEach(button => {
-        button.addEventListener("click", async () => {
+      document.getElementById("promotionCodeList").addEventListener("click", async event => {
+        if (event.target.closest("[data-retry-promotions]")) {
+          loadPromotions();
+          return;
+        }
+
+        const button = event.target.closest("[data-copy-promotion]");
+        if (button) {
           const code = button.getAttribute("data-copy-promotion");
           try {
             await navigator.clipboard.writeText(code);
-            showToast(`Đã sao chép mã mẫu ${code}.`);
+            showToast(`Đã sao chép mã ${code}.`);
           } catch {
             showToast("Không thể sao chép mã. Vui lòng thử lại hoặc sao chép thủ công.");
           }
-        });
+        }
       });
 
       // 2. Giỏ hàng trên Header mở thẳng quy trình đặt hàng.

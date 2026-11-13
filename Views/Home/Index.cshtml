@@ -363,43 +363,10 @@
         <h1 class="font-brand text-2xl font-black uppercase text-plt-brown">Mã khuyến mãi</h1>
         <p class="mt-2 text-sm text-stone-600">Chọn sao chép mã bạn muốn tham khảo.</p>
         <div class="mt-5 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          Đây là <strong>dữ liệu mẫu minh họa giao diện</strong>, không phải ưu đãi đang áp dụng và không dùng được khi thanh toán.
+          Danh sách mã khuyến mãi đang có hiệu lực. Điều kiện áp dụng được kiểm tra khi thanh toán.
         </div>
-        <div id="promotionCodeList" class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <article class="rounded-xl border border-stone-200 bg-white p-5">
-            <div class="flex items-start justify-between gap-3">
-              <h2 class="font-brand text-lg font-black text-plt-brown">Giảm 10%</h2>
-              <span class="rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-extrabold uppercase text-amber-900">Mẫu</span>
-            </div>
-            <p class="mt-2 text-sm text-stone-600">Mã minh họa: giảm 10% giá trị món.</p>
-            <div class="mt-4 flex items-center justify-between gap-3 rounded-lg bg-stone-50 p-3">
-              <code class="font-bold tracking-wide text-stone-900">ANHBEO10</code>
-              <button type="button" data-copy-promotion="ANHBEO10" class="shrink-0 rounded-lg border border-stone-300 bg-white px-3 py-2 text-xs font-bold text-plt-brown hover:bg-amber-50 focus:outline-none focus:ring-2 focus:ring-plt-brown">Sao chép</button>
-            </div>
-          </article>
-          <article class="rounded-xl border border-stone-200 bg-white p-5">
-            <div class="flex items-start justify-between gap-3">
-              <h2 class="font-brand text-lg font-black text-plt-brown">Giảm 15.000đ</h2>
-              <span class="rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-extrabold uppercase text-amber-900">Mẫu</span>
-            </div>
-            <p class="mt-2 text-sm text-stone-600">Mã minh họa: giảm 15.000đ trên đơn hàng.</p>
-            <div class="mt-4 flex items-center justify-between gap-3 rounded-lg bg-stone-50 p-3">
-              <code class="font-bold tracking-wide text-stone-900">COMTRUA15K</code>
-              <button type="button" data-copy-promotion="COMTRUA15K" class="shrink-0 rounded-lg border border-stone-300 bg-white px-3 py-2 text-xs font-bold text-plt-brown hover:bg-amber-50 focus:outline-none focus:ring-2 focus:ring-plt-brown">Sao chép</button>
-            </div>
-          </article>
-          <article class="rounded-xl border border-stone-200 bg-white p-5">
-            <div class="flex items-start justify-between gap-3">
-              <h2 class="font-brand text-lg font-black text-plt-brown">Miễn phí giao hàng</h2>
-              <span class="rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-extrabold uppercase text-amber-900">Mẫu</span>
-            </div>
-            <p class="mt-2 text-sm text-stone-600">Mã minh họa cho ưu đãi phí giao hàng.</p>
-            <div class="mt-4 flex items-center justify-between gap-3 rounded-lg bg-stone-50 p-3">
-              <code class="font-bold tracking-wide text-stone-900">SHIP0D</code>
-              <button type="button" data-copy-promotion="SHIP0D" class="shrink-0 rounded-lg border border-stone-300 bg-white px-3 py-2 text-xs font-bold text-plt-brown hover:bg-amber-50 focus:outline-none focus:ring-2 focus:ring-plt-brown">Sao chép</button>
-            </div>
-          </article>
-        </div>
+        <p id="promotionStatus" class="mt-5 text-sm text-stone-600" role="status" aria-live="polite">Đang tải khuyến mãi…</p>
+        <div id="promotionCodeList" class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3" aria-live="polite"></div>
       </div>
     </section>
 
